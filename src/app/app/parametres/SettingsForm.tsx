@@ -19,6 +19,7 @@ export function SettingsForm({ settings }: { settings: PricingSettings }) {
     { name: "vat_rate", label: "TVA (%)", value: settings.vat_rate, step: "0.1" },
     { name: "deposit_rate", label: "Acompte à la signature (%)", value: pct(settings.deposit_rate), step: "1" },
     { name: "quote_validity_days", label: "Validité des devis (jours)", value: settings.quote_validity_days, step: "1" },
+    { name: "invoice_due_days", label: "Échéance des factures (jours, 0 = à réception)", value: settings.invoice_due_days ?? 0, step: "1" },
   ];
 
   return (

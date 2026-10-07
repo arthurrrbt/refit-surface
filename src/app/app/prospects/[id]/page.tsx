@@ -9,6 +9,7 @@ import { getLeadAgentData } from "@/lib/agents/data";
 import { LEAD_STATUSES, contactName, getLead, leadStatusLabels } from "@/lib/leads";
 import Loading from "../../loading";
 import { updateLeadStatus } from "../actions";
+import { ContactForm } from "../ContactForm";
 import { StatusBadge, UniversBadge } from "../StatusBadge";
 import { FollowupCard, ProposalCard, QualificationPanel } from "../../agents/components";
 import { PendingButton, RequalifyButton } from "../../agents/ui";
@@ -83,7 +84,18 @@ async function LeadDetailView({ params }: { params: PageProps<"/app/prospects/[i
             )}
           </Info>
           <Info label="Accepte les communications">{c ? (c.marketing_consent ? "Oui" : "Non") : null}</Info>
+          <Info label="Adresse">{c?.address}</Info>
+          <Info label="SIRET">{c?.siret}</Info>
         </dl>
+
+        {c && (
+          <details className="mt-4 border-t border-ink/10 pt-3">
+            <summary className="cursor-pointer text-sm font-semibold text-accent-strong">Modifier les coordonnées</summary>
+            <div className="mt-3">
+              <ContactForm contact={c} />
+            </div>
+          </details>
+        )}
       </div>
 
       <form action={updateLeadStatus} className="flex flex-wrap items-center gap-2 rounded-sm bg-paper p-4 shadow-sm">

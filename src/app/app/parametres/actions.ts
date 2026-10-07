@@ -18,6 +18,7 @@ const settingsSchema = z.object({
   vat_rate: percent,
   quote_validity_days: z.coerce.number().int().min(1).max(365),
   deposit_rate: percent,
+  invoice_due_days: z.coerce.number().int().min(0).max(90),
 });
 
 /** Les pourcentages sont saisis en % (35) et stockés en fraction (0.35), sauf la TVA. */
@@ -37,6 +38,7 @@ export async function saveSettings(_prev: SettingsState, formData: FormData): Pr
       vat_rate: s.vat_rate,
       quote_validity_days: s.quote_validity_days,
       deposit_rate: s.deposit_rate / 100,
+      invoice_due_days: s.invoice_due_days,
     })
     .eq("id", true);
   if (error) return { error: "Enregistrement impossible." };

@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { ArrowLeft, Download, ExternalLink, FileText, Mail, PenLine, ShieldCheck } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { contactName } from "@/lib/leads";
+import { invoiceBalance, invoiceKindLabels, listQuoteInvoices } from "@/lib/invoices/data";
 import { getQuote, getSettings, listProducts } from "@/lib/quotes/data";
 import { euro } from "@/lib/quotes/pricing";
 import { CopyButton, PendingButton } from "../../agents/ui";
@@ -14,6 +15,8 @@ import Loading from "../../loading";
 import { PageHeader } from "../../ModulePlaceholder";
 import { markQuoteRefused, reopenQuote, sendQuote } from "../actions";
 import { QuoteEditor } from "../QuoteEditor";
+import { CreateInvoiceButtons } from "../../factures/InvoiceForms";
+import { InvoiceBadge } from "../../factures/InvoiceBadge";
 import { QuoteStatusBadge } from "../QuoteStatusBadge";
 
 export const metadata: Metadata = { title: "Devis" };
@@ -123,6 +126,8 @@ async function QuoteView({ params }: { params: PageProps<"/app/devis/[id]">["par
         </section>
       )}
 
+      {quote.status === "signe" && <QuoteBilling quoteId={quote.id} depositRate={quote.deposit_rate ?? 0.3} />}
+
       {(quote.status === "refuse" || quote.status === "expire") && (
         <form action={reopenQuote} className="rounded-sm bg-paper p-4 shadow-sm">
           <input type="hidden" name="id" value={quote.id} />
@@ -132,6 +137,41 @@ async function QuoteView({ params }: { params: PageProps<"/app/devis/[id]">["par
 
       {quote.status !== "brouillon" && <ReadOnlyLines quote={quote} />}
     </div>
+  );
+}
+
+/** Facturation d'un devis signé : acompte, puis solde (ou facture globale). */
+async function QuoteBilling({ quoteId, depositRate }: { quoteId: string; depositRate: number }) {
+  const invoices = (await listQuoteInvoices(quoteId)).filter((i) => i.status !== "annulee");
+  const hasDeposit = invoices.some((i) => i.kind === "acompte");
+  const hasFinal = invoices.some((i) => i.kind !== "acompte");
+  const options: ("acompte" | "solde" | "globale")[] = hasFinal ? [] : hasDeposit ? ["solde"] : ["acompte", "globale"];
+  return (
+    <section className="space-y-3 rounded-sm bg-paper p-5 text-sm shadow-sm">
+      <h2 className="font-display font-semibold">Facturation</h2>
+      {invoices.length > 0 && (
+        <ul className="space-y-2">
+          {invoices.map((inv) => {
+            const b = invoiceBalance(inv);
+            return (
+              <li key={inv.id}>
+                <Link href={`/app/factures/${inv.id}`} className="flex flex-wrap items-center gap-2 rounded-sm border border-ink/10 p-3 hover:border-ink/30">
+                  <span className="font-semibold">{inv.number ?? "Brouillon"}</span>
+                  <span className="text-ink/60">{invoiceKindLabels[inv.kind]}</span>
+                  <InvoiceBadge status={inv.status} overdue={b.overdue} partial={inv.amount_paid > 0 && b.remaining > 0} />
+                  <span className="ml-auto font-semibold">{euro.format(inv.total_ttc)}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      {options.length > 0 ? (
+        <CreateInvoiceButtons quoteId={quoteId} depositPercent={Math.round(depositRate * 100)} options={options} />
+      ) : (
+        <p className="text-ink/50">Ce devis est entièrement facturé.</p>
+      )}
+    </section>
   );
 }
 

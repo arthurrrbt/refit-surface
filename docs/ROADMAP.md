@@ -56,7 +56,8 @@ Règle d'or : **les agents proposent, l'humain valide** avant tout envoi externe
 - [ ] CRM : fiches contacts, pipeline des demandes
 - [x] Catalogue produits (prix TEGO) + moteur de chiffrage matière + main d'œuvre, marge et €/jour
 - [x] Devis PDF (mentions légales, numérotation continue) + signature électronique maison avec certificat de preuve
-- [ ] Factures + connexion à la plateforme agréée
+- [x] Factures (acompte / solde / globale), numérotation continue, immuabilité en base, encaissements, relances
+- [ ] Transmission via une plateforme agréée (facture électronique, TPE : 01/09/2027)
 - [ ] Planning chantiers, mode PWA hors-ligne léger, photos chantier
 
 ### Phase 4 — Agents IA (semaines 6–10)

@@ -9,6 +9,7 @@ export type PricingSettings = {
   vat_rate: number;
   quote_validity_days: number;
   deposit_rate: number;
+  invoice_due_days: number;
 };
 
 export type Product = {

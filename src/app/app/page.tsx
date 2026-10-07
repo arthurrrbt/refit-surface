@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { ShieldCheck } from "lucide-react";
 import { getDashboardData } from "@/lib/agents/data";
 import { getSessionUser } from "@/lib/auth";
+import { euro } from "@/lib/quotes/pricing";
 import { BriefCard } from "./agents/components";
 import Loading from "./loading";
 import { modules } from "./modules";
@@ -24,7 +25,7 @@ async function Dashboard() {
   const kpis = [
     { label: "Demandes à traiter", value: counts.nouveaux, href: "/app/prospects" },
     { label: "Relances du jour", value: counts.relancesDuJour, href: "/app/agents" },
-    { label: "Propositions IA à valider", value: counts.propositions, href: "/app/agents" },
+    { label: "À encaisser", value: counts.aEncaisser, href: "/app/factures", money: true },
     { label: "Devis en attente", value: counts.devisEnAttente, href: "/app/prospects" },
   ];
 
@@ -42,7 +43,7 @@ async function Dashboard() {
           <li key={k.label}>
             <Link href={k.href} className="block rounded-sm bg-paper p-4 shadow-sm transition-shadow hover:shadow-md">
               <p className="text-xs text-ink/50">{k.label}</p>
-              <p className={`mt-2 font-display text-2xl font-semibold ${k.value ? "text-ink" : "text-ink/30"}`}>{k.value}</p>
+              <p className={`mt-2 font-display text-2xl font-semibold ${k.value ? "text-ink" : "text-ink/30"}`}>{"money" in k ? euro.format(k.value) : k.value}</p>
             </Link>
           </li>
         ))}

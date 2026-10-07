@@ -15,14 +15,17 @@ export const leadStatusLabels: Record<LeadStatus, string> = {
 };
 
 type Contact = {
+  id: string;
   kind: "particulier" | "professionnel";
   company: string | null;
   first_name: string | null;
   last_name: string | null;
   email: string | null;
   phone: string | null;
+  address: string | null;
   postal_code: string | null;
   city: string | null;
+  siret: string | null;
   marketing_consent: boolean;
 };
 

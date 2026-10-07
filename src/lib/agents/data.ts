@@ -104,19 +104,22 @@ export async function getDashboardData() {
   const supabase = await createClient();
   const endOfToday = new Date();
   endOfToday.setHours(23, 59, 59, 999);
-  const [nouveaux, enAttente, relances, propositions, brief] = await Promise.all([
+  const [nouveaux, enAttente, relances, propositions, brief, openInvoices] = await Promise.all([
     supabase.from("leads").select("id", { count: "exact", head: true }).eq("status", "nouveau"),
     supabase.from("leads").select("id", { count: "exact", head: true }).eq("status", "devis_envoye"),
     supabase.from("followups").select("id", { count: "exact", head: true }).eq("status", "a_faire").lte("due_at", endOfToday.toISOString()),
     supabase.from("agent_runs").select("id", { count: "exact", head: true }).eq("agent", "pipeline").eq("status", "propose"),
     supabase.from("agent_runs").select(RUN_FIELDS).eq("agent", "point_du_jour").order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    supabase.from("invoices").select("total_ttc, amount_paid").in("status", ["emise", "transmise"]),
   ]);
+  const toCollect = (openInvoices.data ?? []).reduce((sum, i) => sum + Number(i.total_ttc) - Number(i.amount_paid), 0);
   return {
     counts: {
       nouveaux: nouveaux.count ?? 0,
       devisEnAttente: enAttente.count ?? 0,
       relancesDuJour: relances.count ?? 0,
       propositions: propositions.count ?? 0,
+      aEncaisser: Math.round(toCollect * 100) / 100,
     },
     brief: (brief.data ?? null) as AgentRun<DailyBrief> | null,
   };
