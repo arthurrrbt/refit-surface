@@ -22,7 +22,11 @@ export function SignaturePad({ token, defaultName }: { token: string; defaultNam
   function start(e: React.PointerEvent<HTMLCanvasElement>) {
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
-    e.currentTarget.setPointerCapture(e.pointerId);
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId); // garde le tracé même si le doigt sort du cadre
+    } catch {
+      // Navigateur sans capture : le tracé fonctionne quand même dans le cadre
+    }
     drawing.current = true;
     const { x, y } = point(e);
     ctx.lineWidth = 3;
