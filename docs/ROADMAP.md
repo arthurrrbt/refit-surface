@@ -49,7 +49,7 @@ Règle d'or : **les agents proposent, l'humain valide** avant tout envoi externe
 - [ ] Accueil + 4 pages univers (Home, Glass, Pro, Boat), SEO local Saint-Malo
 - [x] Galerie avant/après filtrable (curseur comparatif), gérée depuis le back-office
 - [x] Formulaire de devis intelligent (univers, surfaces, dimensions, photos) → prospect dans le back-office
-- [ ] Prise de RDV synchronisée avec Outlook
+- [x] Prise de RDV en ligne (créneaux selon disponibilités et planning) + planning back-office + flux .ics pour Outlook
 - [ ] Mentions légales, RGPD, données structurées (LocalBusiness)
 
 ### Phase 3 — Back-office cœur (semaines 4–7)

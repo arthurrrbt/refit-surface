@@ -5,6 +5,7 @@ import { after } from "next/server";
 import { z } from "zod";
 import { MAX_PHOTOS, PHOTO_EXTENSIONS, devisSchema, type DevisInput } from "@/lib/devis/schema";
 import { runQualification } from "@/lib/agents/qualification";
+import { upsertContact } from "@/lib/contacts";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const BUCKET = "lead-photos";
@@ -56,47 +57,9 @@ export async function submitDevis(input: DevisInput): Promise<SubmitResult> {
     photoPaths = d.photos.filter((p) => uploaded.has(p));
   }
 
-  const email = d.email.toLowerCase();
-  const now = new Date().toISOString();
-  const contactFields = {
-    kind: d.kind,
-    company: d.company || null,
-    first_name: d.firstName,
-    last_name: d.lastName,
-    email,
-    phone: d.phone,
-    postal_code: d.postalCode || null,
-    city: d.city || null,
-    privacy_consent_at: now,
-  };
-
   let leadId: string;
   try {
-    const { data: existing } = await supabase
-      .from("contacts")
-      .select("id, marketing_consent")
-      .eq("email", email)
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
-
-    let contactId: string;
-    if (existing) {
-      const { error } = await supabase
-        .from("contacts")
-        .update({ ...contactFields, marketing_consent: existing.marketing_consent || d.marketingConsent })
-        .eq("id", existing.id);
-      if (error) throw error;
-      contactId = existing.id;
-    } else {
-      const { data, error } = await supabase
-        .from("contacts")
-        .insert({ ...contactFields, marketing_consent: d.marketingConsent, source: "site" })
-        .select("id")
-        .single();
-      if (error) throw error;
-      contactId = data.id;
-    }
+    const contactId = await upsertContact(supabase, d);
 
     const { data: lead, error: leadError } = await supabase
       .from("leads")
