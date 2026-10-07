@@ -11,3 +11,12 @@ Site public + back-office PWA avec agents IA pour REFIT Surface (Saint-Malo), po
 - Les agents IA proposent, l'humain valide avant tout envoi externe
 - Données hébergées dans l'UE (Supabase UE, Vercel `cdg1`)
 - Secrets dans `.env.local` (jamais commité) ; modèle dans `.env.example`
+
+## Conventions techniques
+
+- Next.js 16 : `src/proxy.ts` (ex-middleware), `cacheComponents` activé → toute lecture de session/cookies doit être sous `<Suspense>` (voir `AuthGate` dans `src/app/app/layout.tsx`)
+- Auth : `requireUser()` (`src/lib/auth.ts`) dans chaque page, Server Action et Route Handler du back-office ; le proxy n'est qu'une première barrière
+- Base de données : migrations SQL dans `supabase/migrations/`, RLS partout via `public.is_admin()` (table `app_admins`)
+- Charte : tokens Tailwind dans `src/app/globals.css` (`ink`, `paper`, `accent`, `font-display`…) ; logo SVG dans `src/components/brand/Logo.tsx`
+- Contenus éditables : `src/content/site.ts` (coordonnées) et `src/content/univers.ts` (textes des 4 univers)
+- `ButtonLink`/`Button` posent déjà un `display` : pour masquer selon l'écran, envelopper dans un `<div className="hidden sm:block">`

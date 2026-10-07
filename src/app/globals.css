@@ -1,26 +1,47 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Charte REFIT Surface — couleurs relevées sur les visuels de marque (public/brand) */
+@theme {
+  --color-ink: #0d0e0f;
+  --color-ink-2: #17181a;
+  --color-ink-3: #232527;
+  --color-line: #2e3033;
+  --color-paper: #ffffff;
+  --color-mist: #f4f4f2;
+  --color-stone: #8a8d90;
+  --color-accent: #00b4ef;
+  --color-accent-strong: #0092c4;
+
+  /* Matières */
+  --color-wood: #7a4e2d;
+  --color-marble: #2b2d2f;
+  --color-concrete: #c9c7c2;
+  --color-glass: #8ec3e0;
+
+  --font-display: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-lato), ui-sans-serif, system-ui, sans-serif;
+
+  --tracking-brand: 0.32em;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    @apply bg-ink text-paper font-sans antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility eyebrow {
+  @apply font-display text-xs font-medium uppercase tracking-(--tracking-brand) text-stone;
+}
+
+@utility accent-rule {
+  @apply block h-0.5 w-16 bg-accent;
 }

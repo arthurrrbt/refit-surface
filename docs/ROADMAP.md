@@ -32,17 +32,18 @@ supabase/migrations/ → schéma SQL versionné
 | `events` | Planning : visites, métrages, poses (synchronisé avec Outlook) |
 | `followups` | Relances planifiées (J+3 / J+7 / J+15) |
 | `agent_runs` | Journal des actions des agents + validations humaines |
-| `projects_gallery` | Réalisations avant/après publiées sur le site |
+| `gallery_projects` | Réalisations avant/après publiées sur le site |
 
 Règle d'or : **les agents proposent, l'humain valide** avant tout envoi externe (e-mail, devis, publication).
 
 ## Phases
 
 ### Phase 1 — Fondations (semaines 1–2)
-- [ ] Identité visuelle : tokens couleurs/typo, logo SVG, composants de base
-- [ ] Projet Supabase (UE) + schéma initial + auth (compte admin unique)
+- [x] Identité visuelle : tokens couleurs/typo, logo SVG, icônes PWA, composants de base
+- [x] Schéma initial (`supabase/migrations`) + auth Supabase (compte admin unique)
+- [ ] Appliquer la migration sur le projet Supabase + créer le compte gérant
 - [ ] Déploiement Vercel + domaine `refitsurface.fr`
-- [ ] Squelette site public + back-office protégé
+- [x] Squelette site public + back-office protégé (PWA)
 
 ### Phase 2 — Site public (semaines 2–4)
 - [ ] Accueil + 4 pages univers (Home, Glass, Pro, Boat), SEO local Saint-Malo
