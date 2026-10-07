@@ -3,7 +3,8 @@ import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { LogOut } from "lucide-react";
 import { Logo, RMark } from "@/components/brand/Logo";
-import { requireUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { getSessionUser } from "@/lib/auth";
 import { signOut } from "./actions";
 import { BottomNav, SidebarNav } from "./AppNav";
 
@@ -14,8 +15,27 @@ export const metadata: Metadata = {
 
 /** Ne rend le contenu qu'après vérification de la session (lecture des cookies → derrière Suspense). */
 async function AuthGate({ children }: { children: ReactNode }) {
-  await requireUser();
+  const { user, isAdmin } = await getSessionUser();
+  if (!user) redirect("/connexion");
+  if (!isAdmin) return <AccessDenied email={user.email} />;
   return children;
+}
+
+function AccessDenied({ email }: { email: string }) {
+  return (
+    <div className="p-4 sm:p-8">
+      <div className="max-w-lg rounded-sm border border-red-200 bg-paper p-6">
+        <h1 className="font-display text-lg font-semibold">Accès refusé</h1>
+        <p className="mt-2 text-sm text-ink/70">
+          Le compte <strong>{email}</strong> est connecté mais n&apos;est pas déclaré comme gérant. Exécutez{" "}
+          <code>supabase/create-admin.sql</code> avec cette adresse dans le SQL Editor de Supabase.
+        </p>
+        <form action={signOut} className="mt-4">
+          <button className="text-sm font-semibold text-accent-strong underline">Se déconnecter</button>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 function PageSkeleton() {

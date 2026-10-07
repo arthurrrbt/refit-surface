@@ -1,14 +1,21 @@
 import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
+import { getSessionUser } from "@/lib/auth";
 import { modules } from "./modules";
 import { PageHeader } from "./ModulePlaceholder";
 
 const kpis = ["Demandes à traiter", "Devis en attente", "Poses cette semaine", "CA du mois"];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const { user } = await getSessionUser();
   return (
     <>
       <PageHeader title="Tableau de bord">Vue d&apos;ensemble de l&apos;activité REFIT Surface.</PageHeader>
       <div className="space-y-8 p-4 sm:p-8">
+        <p className="flex items-center gap-2 text-sm text-ink/60">
+          <ShieldCheck className="size-4 text-accent-strong" />
+          Accès gérant vérifié — {user?.email}
+        </p>
         <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {kpis.map((k) => (
             <li key={k} className="rounded-sm bg-paper p-4 shadow-sm">

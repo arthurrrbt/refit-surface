@@ -5,21 +5,23 @@ import { createClient } from "@/lib/supabase/server";
 export type AdminUser = { id: string; email: string };
 
 /**
- * Couche d'accès : vérifie la session (JWT validé par getClaims) et l'e-mail du gérant.
- * À appeler dans chaque page, Server Action ou Route Handler du back-office.
+ * Lit la session (JWT validé par getClaims) et demande à la base si le compte est gérant
+ * (fonction public.is_admin(), table app_admins) — même règle que les politiques RLS.
  */
-export async function requireUser(): Promise<AdminUser> {
+export async function getSessionUser(): Promise<{ user: AdminUser | null; isAdmin: boolean }> {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
-  if (!claims) redirect("/connexion");
+  if (!claims) return { user: null, isAdmin: false };
 
-  const email = String(claims.email ?? "");
-  const adminEmail = process.env.ADMIN_EMAIL;
-  if (adminEmail && email.toLowerCase() !== adminEmail.toLowerCase()) {
-    await supabase.auth.signOut();
-    redirect("/connexion");
-  }
+  const user = { id: claims.sub, email: String(claims.email ?? "") };
+  const { data: isAdmin, error } = await supabase.rpc("is_admin");
+  return { user, isAdmin: !error && isAdmin === true };
+}
 
-  return { id: claims.sub, email };
+/** À appeler dans chaque page, Server Action et Route Handler du back-office. */
+export async function requireUser(): Promise<AdminUser> {
+  const { user, isAdmin } = await getSessionUser();
+  if (!user || !isAdmin) redirect("/connexion");
+  return user;
 }
