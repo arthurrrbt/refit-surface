@@ -1,4 +1,5 @@
 import { runDailyAgent } from "@/lib/agents/orchestrator";
+import { env } from "@/lib/env";
 
 // La tournée enchaîne plusieurs appels au modèle : on lui laisse jusqu'à 5 minutes.
 export const maxDuration = 300;
@@ -8,7 +9,7 @@ export const maxDuration = 300;
  * « Authorization: Bearer <CRON_SECRET> » ; toute autre requête est refusée.
  */
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET;
+  const secret = env("CRON_SECRET");
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
     return new Response("Non autorisé", { status: 401 });
   }

@@ -6,6 +6,7 @@ import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { site } from "@/content/site";
 import { eventKindLabels } from "@/lib/booking/config";
 import { formatDayLong, formatTime, parisDate, parisToUtc } from "@/lib/booking/time";
+import { env } from "@/lib/env";
 import { getUpcomingEvents } from "@/lib/planning";
 import { CopyButton } from "../agents/ui";
 import Loading from "../loading";
@@ -36,7 +37,8 @@ export default function PlanningPage() {
 async function Planning() {
   const days = await getUpcomingEvents();
   const today = parisDate();
-  const icsUrl = process.env.PLANNING_ICS_TOKEN ? `${site.url}/api/planning/ics?token=${process.env.PLANNING_ICS_TOKEN}` : null;
+  const icsToken = env("PLANNING_ICS_TOKEN");
+  const icsUrl = icsToken ? `${site.url}/api/planning/ics?token=${icsToken}` : null;
 
   return (
     <div className="space-y-6 p-4 sm:p-8">

@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { eventKindLabels, type EventKind } from "@/lib/booking/config";
 import { buildIcs } from "@/lib/booking/ics";
+import { env } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
@@ -8,7 +9,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * Protégé par un jeton secret dans l'URL (PLANNING_ICS_TOKEN).
  */
 export async function GET(request: Request) {
-  const expected = process.env.PLANNING_ICS_TOKEN;
+  const expected = env("PLANNING_ICS_TOKEN");
   const token = new URL(request.url).searchParams.get("token") ?? "";
   if (!expected || token.length !== expected.length || !timingSafeEqual(Buffer.from(token), Buffer.from(expected))) {
     return new Response("Non autorisé", { status: 401 });

@@ -1,5 +1,7 @@
 // Types et utilitaires de la galerie, utilisables côté client comme côté serveur.
 
+import { SUPABASE_URL } from "./env";
+
 export type GalleryProject = {
   id: string;
   slug: string;
@@ -20,7 +22,7 @@ export type PublicGalleryProject = Omit<GalleryProject, "before_path" | "after_p
 };
 
 export function galleryPublicUrl(path: string) {
-  return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/gallery/${path}`;
+  return `${SUPABASE_URL}/storage/v1/object/public/gallery/${path}`;
 }
 
 export function slugify(text: string) {

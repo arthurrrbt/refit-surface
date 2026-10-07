@@ -1,8 +1,8 @@
+import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/lib/env";
+
 export function getSupabaseEnv() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) return null;
-  return { url, key };
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) return null;
+  return { url: SUPABASE_URL, key: SUPABASE_PUBLISHABLE_KEY };
 }
 
 export function requireSupabaseEnv() {

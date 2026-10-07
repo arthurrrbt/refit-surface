@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 // Photos de la galerie servies par le stockage public Supabase
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 
 const nextConfig: NextConfig = {
   // Développement : autorise un téléphone du réseau local (ex. http://192.168.1.104:3000)
