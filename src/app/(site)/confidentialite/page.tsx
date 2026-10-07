@@ -16,7 +16,7 @@ const treatments = [
   {
     name: "Demande de devis (formulaire du site)",
     data: "Nom, prénom, e-mail, téléphone, code postal, ville, type de client (particulier ou professionnel), société, description du projet, surfaces et dimensions, photos que vous envoyez.",
-    purpose: "Étudier votre projet, vous recontacter et établir un devis.",
+    purpose: "Étudier votre projet, vous envoyer un e-mail récapitulatif de votre demande, vous recontacter et établir un devis.",
     basis: "Mesures précontractuelles prises à votre demande (art. 6.1.b du RGPD).",
     duration: "3 ans après notre dernier échange si aucun contrat n'est conclu ; sinon, durée du contrat puis archivage (voir ci-dessous).",
   },
@@ -135,6 +135,12 @@ export default function ConfidentialitePage() {
               <td>Hébergement et affichage du site</td>
               <td>Serveurs à Paris ; société américaine</td>
               <td>Data Privacy Framework UE–États-Unis et clauses contractuelles types</td>
+            </tr>
+            <tr>
+              <td>Microsoft Ireland Operations Ltd (Microsoft 365)</td>
+              <td>Messagerie : envoi des e-mails (confirmation de demande, devis, factures) et réception de vos réponses</td>
+              <td>Union européenne</td>
+              <td>Accord de traitement des données (DPA) et clauses contractuelles types</td>
             </tr>
             <tr>
               <td>Anthropic PBC (États-Unis)</td>

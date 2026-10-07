@@ -1,11 +1,15 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
+import { headers } from "next/headers";
 import { after } from "next/server";
 import { z } from "zod";
 import { MAX_PHOTOS, PHOTO_EXTENSIONS, devisSchema, type DevisInput } from "@/lib/devis/schema";
 import { runQualification } from "@/lib/agents/qualification";
 import { upsertContact } from "@/lib/contacts";
+import { galleryPublicUrl } from "@/lib/gallery-shared";
+import { devisConfirmationEmail, type ExampleProject } from "@/lib/mail/devis-confirmation";
+import { sendMail } from "@/lib/mail/send";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const BUCKET = "lead-photos";
@@ -92,11 +96,53 @@ export async function submitDevis(input: DevisInput): Promise<SubmitResult> {
     return { ok: false, error: "Votre demande n'a pas pu être enregistrée. Réessayez ou appelez-nous." };
   }
 
-  // L'agent Qualification analyse la demande une fois la réponse envoyée au visiteur
+  // Adresse du site telle que vue par le visiteur (liens de l'e-mail valides en test comme en production)
+  const h = await headers();
+  const origin = `https://${h.get("x-forwarded-host") ?? h.get("host")}`.replace("https://localhost", "http://localhost");
+
   after(async () => {
+    // E-mail de confirmation au client (récapitulatif + exemple de réalisation)
+    const mail = await sendDevisConfirmation(d, photoPaths.length, origin);
+    if (!mail.ok) console.warn(`Confirmation devis ${leadId} : ${mail.error}`);
+    // Analyse IA de la demande
     const result = await runQualification(leadId);
     if (!result.ok) console.warn(`Qualification ${leadId} : ${result.error}`);
   });
 
   return { ok: true };
+}
+
+/** Envoie le récapitulatif au client, au plus 3 fois par adresse et par 24 h (anti-abus). */
+async function sendDevisConfirmation(d: DevisInput, photoCount: number, origin: string) {
+  const db = createAdminClient();
+  const email = d.email.toLowerCase();
+  const since = new Date(Date.now() - 24 * 3600_000).toISOString();
+  const { count } = await db
+    .from("leads")
+    .select("id, contacts!inner(email)", { count: "exact", head: true })
+    .eq("contacts.email", email)
+    .gte("created_at", since);
+  if ((count ?? 0) > 3) return { ok: false as const, error: "limite de 3 confirmations par 24 h atteinte" };
+
+  // Réalisation publiée la plus récente du même univers, à défaut la plus récente tout court
+  const pick = async (univers?: string) => {
+    let q = db
+      .from("gallery_projects")
+      .select("title, city, before_path, after_path")
+      .eq("published", true)
+      .not("before_path", "is", null)
+      .not("after_path", "is", null)
+      .order("published_at", { ascending: false })
+      .limit(1);
+    if (univers) q = q.eq("univers", univers);
+    const { data } = await q.maybeSingle();
+    return data;
+  };
+  const project = (await pick(d.univers)) ?? (await pick());
+  const example: ExampleProject | null = project
+    ? { title: project.title, city: project.city, beforeUrl: galleryPublicUrl(project.before_path!), afterUrl: galleryPublicUrl(project.after_path!) }
+    : null;
+
+  const { subject, html, text } = devisConfirmationEmail(d, photoCount, origin, example);
+  return sendMail({ to: email, subject, html, text });
 }
