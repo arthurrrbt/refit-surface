@@ -41,14 +41,14 @@ Règle d'or : **les agents proposent, l'humain valide** avant tout envoi externe
 ### Phase 1 — Fondations (semaines 1–2)
 - [x] Identité visuelle : tokens couleurs/typo, logo SVG, icônes PWA, composants de base
 - [x] Schéma initial (`supabase/migrations`) + auth Supabase (compte admin unique)
-- [ ] Appliquer la migration sur le projet Supabase + créer le compte gérant
+- [x] Appliquer la migration sur le projet Supabase + créer le compte gérant
 - [ ] Déploiement Vercel + domaine `refitsurface.fr`
 - [x] Squelette site public + back-office protégé (PWA)
 
 ### Phase 2 — Site public (semaines 2–4)
 - [ ] Accueil + 4 pages univers (Home, Glass, Pro, Boat), SEO local Saint-Malo
 - [ ] Galerie avant/après filtrable (curseur comparatif)
-- [ ] Formulaire de devis intelligent (univers, surfaces, dimensions, photos)
+- [x] Formulaire de devis intelligent (univers, surfaces, dimensions, photos) → prospect dans le back-office
 - [ ] Prise de RDV synchronisée avec Outlook
 - [ ] Mentions légales, RGPD, données structurées (LocalBusiness)
 

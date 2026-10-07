@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { ContactOptions } from "@/components/site/ContactOptions";
-import { ComingSoon, PageIntro } from "@/components/site/PageIntro";
+import { PageIntro } from "@/components/site/PageIntro";
+import { DevisForm } from "./DevisForm";
 
 export const metadata: Metadata = {
   title: "Demande de devis",
@@ -15,9 +17,14 @@ export default function DevisPage() {
         Décrivez les surfaces à rénover, ajoutez quelques photos et les dimensions approximatives : nous
         préparons une première estimation puis venons valider sur place.
       </PageIntro>
-      {/* Phase 2 : formulaire intelligent (univers, surfaces, dimensions, photos) */}
-      <ComingSoon>Le formulaire de devis en ligne arrive très bientôt. En attendant, contactez-nous directement :</ComingSoon>
-      <ContactOptions />
+      {/* useSearchParams (?univers=) → limite de Suspense requise */}
+      <Suspense fallback={<div className="min-h-[60vh]" />}>
+        <DevisForm />
+      </Suspense>
+      <div className="border-t border-line">
+        <p className="mx-auto max-w-7xl px-4 pt-12 font-display text-lg font-semibold sm:px-6">Vous préférez appeler ?</p>
+        <ContactOptions />
+      </div>
     </>
   );
 }

@@ -6,7 +6,7 @@ import { Logo, RMark } from "@/components/brand/Logo";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import { signOut } from "./actions";
-import { BottomNav, SidebarNav } from "./AppNav";
+import { BottomNav, BottomNavStatic, SidebarNav, SidebarNavStatic } from "./AppNav";
 import Loading from "./loading";
 
 export const metadata: Metadata = {
@@ -48,7 +48,9 @@ export default function BackOfficeLayout({ children }: LayoutProps<"/app">) {
           <Logo size="sm" />
         </Link>
         <nav aria-label="Back-office" className="flex-1">
-          <SidebarNav />
+          <Suspense fallback={<SidebarNavStatic />}>
+            <SidebarNav />
+          </Suspense>
         </nav>
         <form action={signOut}>
           <button className="flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-sm text-paper/50 hover:bg-ink-2 hover:text-paper">
@@ -82,7 +84,9 @@ export default function BackOfficeLayout({ children }: LayoutProps<"/app">) {
           aria-label="Navigation mobile"
           className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-ink pb-[env(safe-area-inset-bottom)] lg:hidden"
         >
-          <BottomNav />
+          <Suspense fallback={<BottomNavStatic />}>
+            <BottomNav />
+          </Suspense>
         </nav>
       </div>
     </div>
