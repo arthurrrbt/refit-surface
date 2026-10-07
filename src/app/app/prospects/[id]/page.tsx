@@ -2,14 +2,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
-import { ArrowLeft, Mail, MapPin, Phone, Sparkles } from "lucide-react";
+import { ArrowLeft, FilePlus, FileText, Mail, MapPin, Phone, Sparkles } from "lucide-react";
+import { listLeadQuotes } from "@/lib/quotes/data";
+import { euro } from "@/lib/quotes/pricing";
 import { getLeadAgentData } from "@/lib/agents/data";
 import { LEAD_STATUSES, contactName, getLead, leadStatusLabels } from "@/lib/leads";
 import Loading from "../../loading";
 import { updateLeadStatus } from "../actions";
 import { StatusBadge, UniversBadge } from "../StatusBadge";
 import { FollowupCard, ProposalCard, QualificationPanel } from "../../agents/components";
-import { RequalifyButton } from "../../agents/ui";
+import { PendingButton, RequalifyButton } from "../../agents/ui";
+import { createQuoteFromLead } from "../../devis/actions";
+import { QuoteStatusBadge } from "../../devis/QuoteStatusBadge";
 
 export const metadata: Metadata = { title: "Prospect" };
 
@@ -33,7 +37,7 @@ export default function LeadPage({ params }: PageProps<"/app/prospects/[id]">) {
 async function LeadDetailView({ params }: { params: PageProps<"/app/prospects/[id]">["params"] }) {
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
-  const [lead, ai] = await Promise.all([getLead(id), getLeadAgentData(id)]);
+  const [lead, ai, quotes] = await Promise.all([getLead(id), getLeadAgentData(id), listLeadQuotes(id)]);
   if (!lead) notFound();
   const c = lead.contacts;
 
@@ -98,6 +102,25 @@ async function LeadDetailView({ params }: { params: PageProps<"/app/prospects/[i
           Enregistrer
         </button>
       </form>
+
+      <Section title={`Devis (${quotes.length})`}>
+        <div className="space-y-2">
+          {quotes.map((q) => (
+            <Link key={q.id} href={`/app/devis/${q.id}`} className="flex items-center gap-3 rounded-sm border border-ink/10 p-3 text-sm hover:border-ink/30">
+              <FileText className="size-4 text-ink/50" />
+              <span className="font-semibold">{q.number ?? "Brouillon"}</span>
+              <QuoteStatusBadge status={q.status} />
+              <span className="ml-auto font-semibold">{euro.format(q.total_ttc)}</span>
+            </Link>
+          ))}
+          <form action={createQuoteFromLead}>
+            <input type="hidden" name="lead_id" value={lead.id} />
+            <PendingButton variant="primary" pendingLabel="Création…">
+              <FilePlus className="size-4" /> Créer un devis
+            </PendingButton>
+          </form>
+        </div>
+      </Section>
 
       {ai.proposals.map((p) => (
         <ProposalCard key={p.id} run={p} />

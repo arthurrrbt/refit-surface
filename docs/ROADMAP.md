@@ -54,8 +54,8 @@ Règle d'or : **les agents proposent, l'humain valide** avant tout envoi externe
 
 ### Phase 3 — Back-office cœur (semaines 4–7)
 - [ ] CRM : fiches contacts, pipeline des demandes
-- [ ] Catalogue produits + moteur de chiffrage
-- [ ] Devis PDF + signature sur mobile
+- [x] Catalogue produits (prix TEGO) + moteur de chiffrage matière + main d'œuvre, marge et €/jour
+- [x] Devis PDF (mentions légales, numérotation continue) + signature électronique maison avec certificat de preuve
 - [ ] Factures + connexion à la plateforme agréée
 - [ ] Planning chantiers, mode PWA hors-ligne léger, photos chantier
 
