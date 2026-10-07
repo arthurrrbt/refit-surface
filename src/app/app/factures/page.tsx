@@ -26,8 +26,8 @@ export default function InvoicesPage() {
 
 async function InvoiceList() {
   const invoices = await listInvoices();
-  const rows = invoices.map((inv) => ({ ...inv, ...invoiceBalance(inv) }));
-  const open = rows.filter((r) => r.status !== "brouillon" && r.status !== "annulee" && r.remaining > 0);
+  const rows = invoices.map((inv) => ({ ...inv, ...invoiceBalance(inv, inv.creditsImputed) }));
+  const open = rows.filter((r) => r.kind !== "avoir" && r.status !== "brouillon" && r.status !== "annulee" && r.remaining > 0);
   const toCollect = open.reduce((s, r) => s + r.remaining, 0);
   const overdue = open.filter((r) => r.overdue);
   const overdueAmount = overdue.reduce((s, r) => s + r.remaining, 0);
@@ -55,16 +55,16 @@ async function InvoiceList() {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-semibold">{r.number ?? "Brouillon"}</span>
-                    <InvoiceBadge status={r.status} overdue={r.overdue} partial={r.amount_paid > 0 && r.remaining > 0} />
+                    <InvoiceBadge kind={r.kind} status={r.status} overdue={r.overdue} partial={r.amount_paid > 0 && r.remaining > 0} />
                     <span className="text-xs text-ink/50">{invoiceKindLabels[r.kind]}</span>
                   </div>
                   <p className="mt-1 truncate text-sm">{contactName(r.contacts)}</p>
                   <p className="text-xs text-ink/50">
                     {r.issued_at ? `Émise le ${dateFr.format(new Date(r.issued_at))}` : `Créée le ${dateFr.format(new Date(r.created_at))}`}
-                    {r.remaining > 0 && r.status !== "brouillon" ? ` · reste ${euro.format(r.remaining)}` : ""}
+                    {r.remaining > 0 && r.status !== "brouillon" && r.status !== "annulee" ? ` · ${r.kind === "avoir" ? "à rembourser" : "reste"} ${euro.format(r.remaining)}` : ""}
                   </p>
                 </div>
-                <span className="font-display font-semibold">{euro.format(r.total_ttc)}</span>
+                <span className={`font-display font-semibold ${r.kind === "avoir" ? "text-violet-700" : ""}`}>{euro.format(r.total_ttc)}</span>
                 <ChevronRight className="size-5 text-ink/30" />
               </Link>
             </li>

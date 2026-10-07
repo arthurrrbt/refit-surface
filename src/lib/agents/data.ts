@@ -110,9 +110,15 @@ export async function getDashboardData() {
     supabase.from("followups").select("id", { count: "exact", head: true }).eq("status", "a_faire").lte("due_at", endOfToday.toISOString()),
     supabase.from("agent_runs").select("id", { count: "exact", head: true }).eq("agent", "pipeline").eq("status", "propose"),
     supabase.from("agent_runs").select(RUN_FIELDS).eq("agent", "point_du_jour").order("created_at", { ascending: false }).limit(1).maybeSingle(),
-    supabase.from("invoices").select("total_ttc, amount_paid").in("status", ["emise", "transmise"]),
+    supabase.from("invoices").select("id, kind, total_ttc, amount_paid, amount_imputed, credited_invoice_id, status").neq("status", "brouillon"),
   ]);
-  const toCollect = (openInvoices.data ?? []).reduce((sum, i) => sum + Number(i.total_ttc) - Number(i.amount_paid), 0);
+  // Reste à encaisser : factures ouvertes − encaissements − avoirs imputés
+  const all = openInvoices.data ?? [];
+  const imputed = new Map<string, number>();
+  for (const i of all) if (i.kind === "avoir" && i.credited_invoice_id) imputed.set(i.credited_invoice_id, (imputed.get(i.credited_invoice_id) ?? 0) + Number(i.amount_imputed));
+  const toCollect = all
+    .filter((i) => i.kind !== "avoir" && (i.status === "emise" || i.status === "transmise"))
+    .reduce((sum, i) => sum + Math.max(Number(i.total_ttc) - Number(i.amount_paid) - (imputed.get(i.id) ?? 0), 0), 0);
   return {
     counts: {
       nouveaux: nouveaux.count ?? 0,

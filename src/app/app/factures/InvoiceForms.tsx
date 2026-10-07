@@ -6,7 +6,7 @@ import type { InvoiceLineRow } from "@/lib/invoices/data";
 import { invoiceTotals, lineTotal, type InvoiceLineInput } from "@/lib/invoices/totals";
 import { euro } from "@/lib/quotes/pricing";
 import { PendingButton } from "../agents/ui";
-import { addPayment, createInvoiceFromQuote, emitInvoice, saveInvoiceDraft, type InvoiceActionState } from "./actions";
+import { addPayment, createCreditNote, createInvoiceFromQuote, emitInvoice, saveInvoiceDraft, type InvoiceActionState } from "./actions";
 
 const field = "block w-full rounded-sm border border-ink/15 bg-paper px-2.5 py-2 text-sm focus:border-accent focus:outline-none";
 const num = (v: string) => {
@@ -134,20 +134,21 @@ export function InvoiceEditor({
 }
 
 /** Émission (avec confirmation) : numéro définitif, facture figée. */
-export function EmitInvoiceForm({ id }: { id: string }) {
+export function EmitInvoiceForm({ id, creditNote = false }: { id: string; creditNote?: boolean }) {
   const [state, action] = useActionState<InvoiceActionState, FormData>(emitInvoice, {});
   return (
     <form
       action={action}
       onSubmit={(e) => {
-        if (!window.confirm("Émettre cette facture ? Elle recevra son numéro définitif et ne pourra plus être modifiée.")) e.preventDefault();
+        const what = creditNote ? "cet avoir" : "cette facture";
+        if (!window.confirm(`Émettre ${what} ? Le document recevra son numéro définitif et ne pourra plus être modifié.`)) e.preventDefault();
       }}
       className="space-y-2 rounded-sm border border-accent/30 bg-paper p-4 shadow-sm"
     >
       <input type="hidden" name="id" value={id} />
       <p className="text-sm text-ink/70">Enregistrez d&apos;abord vos modifications. Une facture émise ne se modifie plus : une erreur se corrige par un avoir.</p>
       <PendingButton variant="primary" pendingLabel="Émission…">
-        Émettre la facture
+        {creditNote ? "Émettre l'avoir" : "Émettre la facture"}
       </PendingButton>
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
     </form>
@@ -155,7 +156,7 @@ export function EmitInvoiceForm({ id }: { id: string }) {
 }
 
 /** Saisie d'un encaissement. */
-export function PaymentForm({ invoiceId, remaining, today }: { invoiceId: string; remaining: number; today: string }) {
+export function PaymentForm({ invoiceId, remaining, today, refund = false }: { invoiceId: string; remaining: number; today: string; refund?: boolean }) {
   const [state, action] = useActionState<InvoiceActionState, FormData>(addPayment, {});
   return (
     <form action={action} className="grid gap-2 sm:grid-cols-5">
@@ -165,7 +166,7 @@ export function PaymentForm({ invoiceId, remaining, today }: { invoiceId: string
         <input type="date" name="paid_on" defaultValue={today} required className={`${field} mt-1`} />
       </label>
       <label className="text-xs font-semibold">
-        Montant TTC
+        {refund ? "Montant remboursé TTC" : "Montant TTC"}
         <input name="amount" inputMode="decimal" defaultValue={remaining > 0 ? remaining.toFixed(2) : ""} required className={`${field} mt-1`} />
       </label>
       <label className="text-xs font-semibold">
@@ -206,6 +207,41 @@ export function CreateInvoiceButtons({ quoteId, depositPercent, options }: { quo
           </PendingButton>
         ))}
       </div>
+      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+    </form>
+  );
+}
+
+/** Avoir sur une facture émise : total (annule la facture) ou partiel (montant HT + motif). */
+export function CreditNoteForm({ invoiceId, creditableHt, allowTotal }: { invoiceId: string; creditableHt: number; allowTotal: boolean }) {
+  const [state, action] = useActionState<InvoiceActionState, FormData>(createCreditNote, {});
+  const [mode, setMode] = useState<"total" | "partiel">(allowTotal ? "total" : "partiel");
+  return (
+    <form action={action} className="space-y-3">
+      <input type="hidden" name="invoice_id" value={invoiceId} />
+      <div className="flex flex-wrap gap-4 text-sm">
+        {allowTotal && (
+          <label className="flex items-center gap-2">
+            <input type="radio" name="mode" value="total" checked={mode === "total"} onChange={() => setMode("total")} className="accent-accent" />
+            Avoir total (annule la facture)
+          </label>
+        )}
+        <label className="flex items-center gap-2">
+          <input type="radio" name="mode" value="partiel" checked={mode === "partiel"} onChange={() => setMode("partiel")} className="accent-accent" />
+          Avoir partiel
+        </label>
+      </div>
+      {mode === "partiel" && (
+        <label className="block text-xs font-semibold">
+          Montant HT à créditer (au plus {euro.format(creditableHt)})
+          <input name="amount_ht" inputMode="decimal" required className={`${field} mt-1 max-w-48`} />
+        </label>
+      )}
+      <label className="block text-xs font-semibold">
+        Motif (imprimé sur l&apos;avoir)
+        <input name="motif" required minLength={3} placeholder="Erreur de quantité, geste commercial, prestation annulée…" className={`${field} mt-1`} />
+      </label>
+      <PendingButton pendingLabel="Préparation…">Préparer l&apos;avoir</PendingButton>
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
     </form>
   );

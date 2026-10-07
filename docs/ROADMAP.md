@@ -57,6 +57,7 @@ Règle d'or : **les agents proposent, l'humain valide** avant tout envoi externe
 - [x] Catalogue produits (prix TEGO) + moteur de chiffrage matière + main d'œuvre, marge et €/jour
 - [x] Devis PDF (mentions légales, numérotation continue) + signature électronique maison avec certificat de preuve
 - [x] Factures (acompte / solde / globale), numérotation continue, immuabilité en base, encaissements, relances
+- [x] Avoirs (total / partiel), numérotation A-AAAA-0001, imputation et remboursement
 - [ ] Transmission via une plateforme agréée (facture électronique, TPE : 01/09/2027)
 - [ ] Planning chantiers, mode PWA hors-ligne léger, photos chantier
 

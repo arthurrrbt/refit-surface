@@ -17,6 +17,11 @@ export async function GET(_request: Request, { params }: RouteContext<"/facture/
     .maybeSingle();
   const invoice = data as InvoiceRow | null;
   if (!invoice) return new Response("Facture introuvable", { status: 404 });
+  if (invoice.kind === "avoir" && invoice.credited_invoice_id) {
+    // Mention obligatoire : référence de la facture corrigée
+    const { data: original } = await db.from("invoices").select("id, number, issued_at").eq("id", invoice.credited_invoice_id).maybeSingle();
+    invoice.original = original as InvoiceRow["original"];
+  }
 
   let body: Buffer | null = null;
   if (invoice.pdf_path) {

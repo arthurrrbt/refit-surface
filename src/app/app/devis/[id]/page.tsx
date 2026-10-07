@@ -142,23 +142,25 @@ async function QuoteView({ params }: { params: PageProps<"/app/devis/[id]">["par
 
 /** Facturation d'un devis signé : acompte, puis solde (ou facture globale). */
 async function QuoteBilling({ quoteId, depositRate }: { quoteId: string; depositRate: number }) {
-  const invoices = (await listQuoteInvoices(quoteId)).filter((i) => i.status !== "annulee");
+  const all = await listQuoteInvoices(quoteId);
+  // Les avoirs n'empêchent pas de facturer : seules les factures non annulées comptent
+  const invoices = all.filter((i) => i.status !== "annulee" && i.kind !== "avoir");
   const hasDeposit = invoices.some((i) => i.kind === "acompte");
   const hasFinal = invoices.some((i) => i.kind !== "acompte");
   const options: ("acompte" | "solde" | "globale")[] = hasFinal ? [] : hasDeposit ? ["solde"] : ["acompte", "globale"];
   return (
     <section className="space-y-3 rounded-sm bg-paper p-5 text-sm shadow-sm">
       <h2 className="font-display font-semibold">Facturation</h2>
-      {invoices.length > 0 && (
+      {all.length > 0 && (
         <ul className="space-y-2">
-          {invoices.map((inv) => {
+          {all.map((inv) => {
             const b = invoiceBalance(inv);
             return (
               <li key={inv.id}>
                 <Link href={`/app/factures/${inv.id}`} className="flex flex-wrap items-center gap-2 rounded-sm border border-ink/10 p-3 hover:border-ink/30">
                   <span className="font-semibold">{inv.number ?? "Brouillon"}</span>
                   <span className="text-ink/60">{invoiceKindLabels[inv.kind]}</span>
-                  <InvoiceBadge status={inv.status} overdue={b.overdue} partial={inv.amount_paid > 0 && b.remaining > 0} />
+                  <InvoiceBadge kind={inv.kind} status={inv.status} overdue={b.overdue} partial={inv.amount_paid > 0 && b.remaining > 0} />
                   <span className="ml-auto font-semibold">{euro.format(inv.total_ttc)}</span>
                 </Link>
               </li>

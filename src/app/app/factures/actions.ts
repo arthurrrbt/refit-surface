@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth";
 import { addDays, parisDate } from "@/lib/booking/time";
-import { getInvoice, type ClientSnapshot } from "@/lib/invoices/data";
+import { creditedHt, getInvoice, type ClientSnapshot } from "@/lib/invoices/data";
 import { renderInvoicePdf } from "@/lib/invoices/pdf";
 import { invoiceTotals, type InvoiceLineInput } from "@/lib/invoices/totals";
 import { getQuote } from "@/lib/quotes/data";
@@ -52,7 +52,8 @@ export async function createInvoiceFromQuote(_prev: InvoiceActionState, formData
     .from("invoices")
     .select("id, number, kind, status, total_ht")
     .eq("quote_id", quote.id)
-    .neq("status", "annulee");
+    .neq("status", "annulee")
+    .neq("kind", "avoir");
   const others = existing ?? [];
 
   if (parsed.kind === "acompte" && others.some((i) => i.kind === "acompte")) return { error: "Une facture d'acompte existe déjà pour ce devis." };
@@ -148,55 +149,96 @@ export async function saveInvoiceDraft(input: z.input<typeof draftSchema>): Prom
 }
 
 /**
- * Émet la facture : identité du client figée, échéance, numéro continu attribué par la base
- * (fonction emit_invoice), PDF archivé et lien de téléchargement pour le client.
+ * Émet la facture ou l'avoir : identité du client figée, échéance, numéro continu attribué par la base
+ * (fonction emit_invoice, série F ou A), imputation des avoirs, PDF archivé et lien de téléchargement.
  */
 export async function emitInvoice(_prev: InvoiceActionState, formData: FormData): Promise<InvoiceActionState> {
   await requireUser();
   const id = z.uuid().safeParse(formData.get("id"));
   if (!id.success) return { error: "Facture invalide." };
   const invoice = await getInvoice(id.data);
-  if (!invoice || invoice.status !== "brouillon") return { error: "Facture introuvable ou déjà émise." };
-  if (!invoice.invoice_lines.length || invoice.total_ttc === 0) return { error: "La facture est vide." };
-  if (invoice.kind !== "acompte" && !invoice.service_date) return { error: "Indiquez la date de réalisation des travaux puis enregistrez." };
-
-  const c = invoice.contacts;
-  if (!c?.address || !c.city) return { error: "Adresse du client incomplète : complétez-la sur la fiche prospect." };
-  const person = [c.first_name, c.last_name].filter(Boolean).join(" ");
-  const snapshot: ClientSnapshot = {
-    name: c.company ? `${c.company}${person ? ` — ${person}` : ""}` : person,
-    company: c.company,
-    kind: c.kind,
-    address: c.address,
-    postal_code: c.postal_code,
-    city: c.city,
-    email: c.email,
-    siren: c.siret ? c.siret.replace(/\s/g, "").slice(0, 9) : null,
-  };
-  if (c.kind === "professionnel" && !snapshot.siren) return { error: "Client professionnel : indiquez son SIRET sur la fiche prospect (mention obligatoire)." };
+  if (!invoice || invoice.status !== "brouillon") return { error: "Document introuvable ou déjà émis." };
+  if (!invoice.invoice_lines.length) return { error: "Le document est vide." };
 
   const supabase = await createClient();
+  const isCreditNote = invoice.kind === "avoir";
+  let snapshot: ClientSnapshot;
+
+  if (isCreditNote) {
+    // Avoir : montant négatif, plafonné à ce qui reste créditable sur la facture d'origine
+    if (invoice.total_ttc >= 0) return { error: "Le montant d'un avoir doit être négatif." };
+    const { data: original } = await supabase
+      .from("invoices")
+      .select("id, status, total_ht, client_snapshot")
+      .eq("id", invoice.credited_invoice_id!)
+      .single();
+    if (!original || original.status === "brouillon") return { error: "La facture d'origine est introuvable ou non émise." };
+    const { data: others } = await supabase
+      .from("invoices")
+      .select("total_ht")
+      .eq("credited_invoice_id", original.id)
+      .neq("status", "brouillon");
+    const already = (others ?? []).reduce((sum, o) => sum + Math.abs(Number(o.total_ht)), 0);
+    if (Math.abs(invoice.total_ht) > Number(original.total_ht) - already + 0.005) {
+      return { error: "L'avoir dépasse le montant restant de la facture d'origine." };
+    }
+    snapshot = original.client_snapshot as ClientSnapshot;
+  } else {
+    if (invoice.total_ttc <= 0) return { error: "Le montant de la facture doit être positif." };
+    if (invoice.kind !== "acompte" && !invoice.service_date) return { error: "Indiquez la date de réalisation des travaux puis enregistrez." };
+    const c = invoice.contacts;
+    if (!c?.address || !c.city) return { error: "Adresse du client incomplète : complétez-la sur la fiche prospect." };
+    const person = [c.first_name, c.last_name].filter(Boolean).join(" ");
+    snapshot = {
+      name: c.company ? `${c.company}${person ? ` — ${person}` : ""}` : person,
+      company: c.company,
+      kind: c.kind,
+      address: c.address,
+      postal_code: c.postal_code,
+      city: c.city,
+      email: c.email,
+      siren: c.siret ? c.siret.replace(/\s/g, "").slice(0, 9) : null,
+    };
+    if (c.kind === "professionnel" && !snapshot.siren) return { error: "Client professionnel : indiquez son SIRET sur la fiche prospect (mention obligatoire)." };
+  }
+
   const { data: settings } = await supabase.from("settings").select("invoice_due_days").single();
   const today = parisDate();
   const { error: prepError } = await supabase
     .from("invoices")
     .update({
       client_snapshot: snapshot,
-      due_at: addDays(today, settings?.invoice_due_days ?? 0),
+      due_at: isCreditNote ? today : addDays(today, settings?.invoice_due_days ?? 0),
       share_token: randomBytes(24).toString("hex"),
     })
     .eq("id", invoice.id);
-  if (prepError) return { error: "Préparation de la facture impossible." };
+  if (prepError) return { error: "Préparation du document impossible." };
 
   const { error: emitError } = await supabase.rpc("emit_invoice", { p_invoice: invoice.id });
   if (emitError) return { error: `Émission impossible : ${emitError.message}` };
+
+  if (isCreditNote) {
+    // Imputation : l'avoir solde d'abord ce qui reste dû sur la facture d'origine, le surplus est à rembourser
+    const originalId = invoice.credited_invoice_id!;
+    const [{ data: original }, { data: otherCredits }] = await Promise.all([
+      supabase.from("invoices").select("total_ttc, amount_paid").eq("id", originalId).single(),
+      supabase.from("invoices").select("amount_imputed").eq("credited_invoice_id", originalId).neq("id", invoice.id).neq("status", "brouillon"),
+    ]);
+    const stillDue = original
+      ? Number(original.total_ttc) - Number(original.amount_paid) - (otherCredits ?? []).reduce((sum, o) => sum + Number(o.amount_imputed), 0)
+      : 0;
+    const imputed = Math.round(Math.min(Math.abs(invoice.total_ttc), Math.max(stillDue, 0)) * 100) / 100;
+    await supabase.from("invoices").update({ amount_imputed: imputed }).eq("id", invoice.id);
+    await recomputeSettlement(invoice.id);
+    await recomputeSettlement(originalId);
+  }
 
   // PDF archivé (en cas d'échec, il est régénéré au téléchargement)
   try {
     const emitted = await getInvoice(invoice.id);
     if (emitted) {
       const pdf = await renderInvoicePdf(emitted);
-      const path = `factures/${emitted.number}.pdf`;
+      const path = `${isCreditNote ? "avoirs" : "factures"}/${emitted.number}.pdf`;
       const { error } = await supabase.storage.from("documents").upload(path, pdf, { contentType: "application/pdf", upsert: true });
       if (!error) await supabase.from("invoices").update({ pdf_path: path }).eq("id", invoice.id);
     }
@@ -211,26 +253,94 @@ export async function deleteInvoiceDraft(formData: FormData) {
   await requireUser();
   const id = z.uuid().parse(formData.get("id"));
   const supabase = await createClient();
-  const { data } = await supabase.from("invoices").select("quote_id").eq("id", id).eq("status", "brouillon").single();
+  const { data } = await supabase.from("invoices").select("quote_id, credited_invoice_id").eq("id", id).eq("status", "brouillon").single();
   const { error } = await supabase.from("invoices").delete().eq("id", id).eq("status", "brouillon");
   if (error) throw error;
-  redirect(data?.quote_id ? `/app/devis/${data.quote_id}` : "/app/factures");
+  redirect(data?.credited_invoice_id ? `/app/factures/${data.credited_invoice_id}` : data?.quote_id ? `/app/devis/${data.quote_id}` : "/app/factures");
 }
 
-async function recomputePaid(invoiceId: string) {
+/**
+ * Recalcule encaissements et statut.
+ * - Facture : payée si encaissements + avoirs imputés couvrent le TTC ; annulée si les avoirs couvrent tout.
+ * - Avoir : soldé si la part imputée + les remboursements couvrent son montant.
+ */
+async function recomputeSettlement(invoiceId: string) {
   const supabase = await createClient();
-  const [{ data: payments }, { data: invoice }] = await Promise.all([
+  const [{ data: payments }, { data: inv }, { data: credits }] = await Promise.all([
     supabase.from("invoice_payments").select("amount, paid_on").eq("invoice_id", invoiceId),
-    supabase.from("invoices").select("total_ttc").eq("id", invoiceId).single(),
+    supabase.from("invoices").select("kind, status, total_ttc, amount_imputed").eq("id", invoiceId).single(),
+    supabase.from("invoices").select("total_ttc, amount_imputed").eq("credited_invoice_id", invoiceId).neq("status", "brouillon"),
   ]);
+  if (!inv || inv.status === "brouillon") return;
+
   const paid = Math.round((payments ?? []).reduce((sum, p) => sum + Number(p.amount), 0) * 100) / 100;
-  const settled = invoice != null && paid >= invoice.total_ttc;
+  const total = Number(inv.total_ttc);
+  let status: "emise" | "payee" | "annulee";
+  if (inv.kind === "avoir") {
+    status = Number(inv.amount_imputed) + paid >= Math.abs(total) - 0.005 ? "payee" : "emise";
+  } else {
+    const creditTotal = (credits ?? []).reduce((sum, c) => sum + Math.abs(Number(c.total_ttc)), 0);
+    const imputed = (credits ?? []).reduce((sum, c) => sum + Number(c.amount_imputed), 0);
+    status = creditTotal >= total - 0.005 ? "annulee" : paid + imputed >= total - 0.005 ? "payee" : "emise";
+  }
   const lastPayment = (payments ?? []).map((p) => p.paid_on).sort().pop();
   await supabase
     .from("invoices")
-    .update({ amount_paid: paid, status: settled ? "payee" : "emise", paid_at: settled && lastPayment ? `${lastPayment}T12:00:00Z` : null })
-    .eq("id", invoiceId)
-    .neq("status", "brouillon");
+    .update({ amount_paid: paid, status, paid_at: status === "payee" ? `${lastPayment ?? parisDate()}T12:00:00Z` : null })
+    .eq("id", invoiceId);
+}
+
+const creditSchema = z.object({
+  invoice_id: z.uuid(),
+  mode: z.enum(["total", "partiel"]),
+  amount_ht: z.preprocess((v) => (v === "" || v == null ? undefined : String(v).replace(",", ".")), z.coerce.number().positive().optional()),
+  motif: z.string().trim().min(3, "Indiquez le motif de l'avoir.").max(500),
+});
+
+/** Prépare un avoir (brouillon) sur une facture émise : total (toutes les lignes en négatif) ou partiel. */
+export async function createCreditNote(_prev: InvoiceActionState, formData: FormData): Promise<InvoiceActionState> {
+  await requireUser();
+  const parsed = creditSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Avoir invalide." };
+  const { invoice_id, mode, amount_ht, motif } = parsed.data;
+
+  const original = await getInvoice(invoice_id);
+  if (!original || original.kind === "avoir") return { error: "Facture introuvable." };
+  if (original.status === "brouillon" || original.status === "annulee") return { error: "Seule une facture émise et non annulée peut faire l'objet d'un avoir." };
+  if (original.credit_notes?.some((n) => n.status === "brouillon")) return { error: "Un avoir est déjà en préparation pour cette facture." };
+
+  const already = creditedHt(original.credit_notes);
+  const creditable = Math.round((original.total_ht - already) * 100) / 100;
+  if (creditable <= 0) return { error: "Cette facture est déjà entièrement créditée." };
+
+  let lines: InvoiceLineInput[];
+  if (mode === "total") {
+    if (already > 0) return { error: `Des avoirs existent déjà : établissez un avoir partiel (au plus ${creditable.toFixed(2)} € HT).` };
+    lines = original.invoice_lines.map((l) => ({ kind: "libre", description: l.description, quantity: l.quantity, unit: l.unit, unit_price: -l.unit_price_ht }));
+  } else {
+    if (!amount_ht) return { error: "Indiquez le montant HT de l'avoir." };
+    if (amount_ht > creditable + 0.005) return { error: `Montant trop élevé : au plus ${creditable.toFixed(2)} € HT.` };
+    lines = [{ kind: "libre", description: `Avoir sur la facture ${original.number} — ${motif}`, quantity: 1, unit: "forfait", unit_price: -amount_ht }];
+  }
+
+  const supabase = await createClient();
+  const { data: note, error } = await supabase
+    .from("invoices")
+    .insert({
+      kind: "avoir",
+      credited_invoice_id: original.id,
+      quote_id: original.quote_id,
+      contact_id: original.contact_id,
+      vat_rate: original.vat_rate,
+      title: `Avoir sur la facture ${original.number}`,
+      notes: `Motif : ${motif}`,
+      service_date: original.service_date,
+    })
+    .select("id")
+    .single();
+  if (error) return { error: "Création de l'avoir impossible." };
+  await writeInvoiceLines(note.id, lines, original.vat_rate);
+  redirect(`/app/factures/${note.id}`);
 }
 
 const paymentSchema = z.object({
@@ -250,7 +360,7 @@ export async function addPayment(_prev: InvoiceActionState, formData: FormData):
   if (!invoice || invoice.status === "brouillon") return { error: "Émettez la facture avant d'enregistrer un paiement." };
   const { error } = await supabase.from("invoice_payments").insert({ ...parsed.data, reference: parsed.data.reference || null });
   if (error) return { error: "Enregistrement impossible." };
-  await recomputePaid(parsed.data.invoice_id);
+  await recomputeSettlement(parsed.data.invoice_id);
   refresh();
   return { ok: true };
 }
@@ -260,7 +370,7 @@ export async function deletePayment(formData: FormData) {
   const parsed = z.object({ id: z.uuid(), invoice_id: z.uuid() }).parse({ id: formData.get("id"), invoice_id: formData.get("invoice_id") });
   const supabase = await createClient();
   await supabase.from("invoice_payments").delete().eq("id", parsed.id);
-  await recomputePaid(parsed.invoice_id);
+  await recomputeSettlement(parsed.invoice_id);
   refresh();
 }
 

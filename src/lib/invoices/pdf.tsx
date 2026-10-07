@@ -9,7 +9,9 @@ function InvoiceDocument({ invoice }: { invoice: InvoiceRow }) {
   const client = invoice.client_snapshot;
   const isPro = client?.kind === "professionnel";
   const vat = Math.round(invoice.total_ht * invoice.vat_rate) / 100;
+  const isCreditNote = invoice.kind === "avoir";
   const title = `${invoiceKindLabels[invoice.kind].toUpperCase()} ${invoice.number ?? "— BROUILLON"}`;
+  const toRefund = Math.round((Math.abs(invoice.total_ttc) - invoice.amount_imputed) * 100) / 100;
 
   return (
     <Document title={`${invoiceKindLabels[invoice.kind]} ${invoice.number ?? "brouillon"} — ${company.name}`} author={company.name} language="fr">
@@ -19,7 +21,10 @@ function InvoiceDocument({ invoice }: { invoice: InvoiceRow }) {
         <Text style={s.title}>{title}</Text>
         <View style={s.accentRule} />
         <Text style={s.meta}>
-          {invoice.issued_at ? `Émise le ${dateFr(invoice.issued_at)}` : "Non émise"}
+          {invoice.issued_at ? `${isCreditNote ? "Émis" : "Émise"} le ${dateFr(invoice.issued_at)}` : "Non émis"}
+          {isCreditNote && invoice.original
+            ? ` · Avoir sur la facture ${invoice.original.number}${invoice.original.issued_at ? ` du ${dateFr(invoice.original.issued_at)}` : ""}`
+            : ""}
           {invoice.service_date ? ` · Travaux réalisés le ${dateFr(invoice.service_date)}` : ""}
           {invoice.quotes?.number ? ` · Devis ${invoice.quotes.number}` : ""}
         </Text>
@@ -69,7 +74,7 @@ function InvoiceDocument({ invoice }: { invoice: InvoiceRow }) {
             <Text>{money(vat)}</Text>
           </View>
           <View style={s.grandTotal}>
-            <Text>{invoice.kind === "solde" ? "Net à payer TTC" : "Total TTC"}</Text>
+            <Text>{isCreditNote ? "Montant de l'avoir TTC" : invoice.kind === "solde" ? "Net à payer TTC" : "Total TTC"}</Text>
             <Text>{money(invoice.total_ttc)}</Text>
           </View>
         </View>
@@ -81,6 +86,15 @@ function InvoiceDocument({ invoice }: { invoice: InvoiceRow }) {
           </View>
         ) : null}
 
+        {isCreditNote ? (
+          <View style={s.section} wrap={false}>
+            <Text style={s.label}>Règlement de l&apos;avoir</Text>
+            <Text>
+              Imputé sur la facture {invoice.original?.number ?? "d'origine"} : {money(invoice.amount_imputed)}
+              {toRefund > 0 ? `. À rembourser au client : ${money(toRefund)}.` : "."}
+            </Text>
+          </View>
+        ) : (
         <View style={s.section} wrap={false}>
           <Text style={s.label}>Règlement</Text>
           <Text>
@@ -92,6 +106,7 @@ function InvoiceDocument({ invoice }: { invoice: InvoiceRow }) {
           <Text style={s.small}>Pas d&apos;escompte pour paiement anticipé. TVA acquittée sur les encaissements.</Text>
           <Text style={s.small}>{company.latePenalty}</Text>
         </View>
+        )}
 
         <View style={s.section} wrap={false}>
           <Text style={s.label}>Mentions</Text>
