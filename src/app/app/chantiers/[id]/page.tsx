@@ -13,6 +13,7 @@ import { PageHeader } from "../../ModulePlaceholder";
 import { UniversBadge } from "../../prospects/StatusBadge";
 import { deleteJobPhoto, setJobStatus, setMaterialStatus } from "../actions";
 import { JobPhotos, NotesForm, PublishForm, ScheduleForm } from "../JobForms";
+import { JobWeather, TravelInfo } from "../../LiveData";
 
 export const metadata: Metadata = { title: "Chantier" };
 
@@ -50,6 +51,8 @@ async function JobView({ params }: { params: PageProps<"/app/chantiers/[id]">["p
     .join("\n");
   const hasBefore = job.photos.some((p) => p.stage === "avant");
   const hasAfter = job.photos.some((p) => p.stage === "apres");
+  // Lieu du chantier : son adresse, à défaut la ville du client
+  const place = job.address || c?.city || null;
 
   return (
     <div className="max-w-4xl space-y-4 p-4 sm:p-8">
@@ -69,6 +72,13 @@ async function JobView({ params }: { params: PageProps<"/app/chantiers/[id]">["p
             {dateFr.format(new Date(`${job.start_date}T12:00:00Z`))}
             {job.end_date && job.end_date !== job.start_date ? ` → ${dateFr.format(new Date(`${job.end_date}T12:00:00Z`))}` : ""}
           </p>
+        )}
+        {place && (
+          <dl className="mt-2 text-sm">
+            <Suspense fallback={null}>
+              <TravelInfo address={place} />
+            </Suspense>
+          </dl>
         )}
         <div className="mt-4 grid grid-cols-2 gap-2 sm:flex">
           {c?.phone && (
@@ -122,6 +132,14 @@ async function JobView({ params }: { params: PageProps<"/app/chantiers/[id]">["p
         <ScheduleForm jobId={job.id} start={job.start_date} end={job.end_date} today={parisDate()} />
         {job.labour_days ? <p className="mt-2 text-xs text-ink/60">Durée prévue au devis : {qty.format(job.labour_days)} jour(s).</p> : null}
       </Section>
+
+      {place && job.status !== "termine" && (
+        <Section title="Météo sur le chantier">
+          <Suspense fallback={<p className="text-sm text-ink/60">Chargement des prévisions…</p>}>
+            <JobWeather address={place} start={job.start_date} end={job.end_date} />
+          </Suspense>
+        </Section>
+      )}
 
       <Section title={`Matière (${materials.length})`}>
         {materials.length ? (

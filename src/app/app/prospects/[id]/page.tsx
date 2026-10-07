@@ -14,6 +14,7 @@ import { StatusBadge, UniversBadge } from "../StatusBadge";
 import { FollowupCard, ProposalCard, QualificationPanel } from "../../agents/components";
 import { PendingButton, RequalifyButton } from "../../agents/ui";
 import { createQuoteFromLead } from "../../devis/actions";
+import { TravelInfo } from "../../LiveData";
 import { QuoteStatusBadge } from "../../devis/QuoteStatusBadge";
 
 export const metadata: Metadata = { title: "Prospect" };
@@ -85,6 +86,11 @@ async function LeadDetailView({ params }: { params: PageProps<"/app/prospects/[i
           </Info>
           <Info label="Accepte les communications">{c ? (c.marketing_consent ? "Oui" : "Non") : null}</Info>
           <Info label="Adresse">{c?.address}</Info>
+          {c && (c.address || c.city) && (
+            <Suspense fallback={null}>
+              <TravelInfo address={[c.address, c.postal_code, c.city].filter(Boolean).join(" ")} />
+            </Suspense>
+          )}
           <Info label="SIRET">{c?.siret}</Info>
         </dl>
 

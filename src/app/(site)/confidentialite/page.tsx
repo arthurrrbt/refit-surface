@@ -143,6 +143,24 @@ export default function ConfidentialitePage() {
               <td>Accord de traitement des données (DPA) et clauses contractuelles types</td>
             </tr>
             <tr>
+              <td>IGN — Géoplateforme (France)</td>
+              <td>Suggestions d&apos;adresses pendant la saisie, localisation des adresses de chantier et calcul du trajet depuis Saint-Malo</td>
+              <td>France</td>
+              <td>Sans objet (service public français)</td>
+            </tr>
+            <tr>
+              <td>Fondation OpenStreetMap (Royaume-Uni)</td>
+              <td>Localisation d&apos;une adresse, uniquement si le service de l&apos;IGN ne répond pas</td>
+              <td>Royaume-Uni</td>
+              <td>Décision d&apos;adéquation de la Commission européenne</td>
+            </tr>
+            <tr>
+              <td>MET Norway — institut météorologique norvégien</td>
+              <td>Prévisions météo des chantiers : seule une position arrondie (environ 1 km) est transmise, jamais l&apos;adresse</td>
+              <td>Norvège (Espace économique européen)</td>
+              <td>Sans objet (EEE)</td>
+            </tr>
+            <tr>
               <td>Anthropic PBC (États-Unis)</td>
               <td>Analyse des demandes par IA (voir ci-dessus)</td>
               <td>États-Unis</td>

@@ -10,6 +10,7 @@ import { env } from "@/lib/env";
 import { getUpcomingEvents } from "@/lib/planning";
 import { CopyButton } from "../agents/ui";
 import Loading from "../loading";
+import { EventWeather } from "../LiveData";
 import { PageHeader } from "../ModulePlaceholder";
 import { deleteEvent } from "./actions";
 import { EventForm } from "./EventForm";
@@ -85,6 +86,11 @@ async function Planning() {
                         >
                           <MapPin className="size-3.5" /> {e.location}
                         </a>
+                      )}
+                      {e.location && (
+                        <Suspense fallback={null}>
+                          <EventWeather location={e.location} date={date} />
+                        </Suspense>
                       )}
                       {e.notes && <p className="mt-1 whitespace-pre-line text-ink/60">{e.notes}</p>}
                     </div>

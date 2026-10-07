@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, type ComponentProps } from "react";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 import { PendingButton } from "../agents/ui";
 import { updateContact, type ContactFormState } from "./actions";
 
@@ -44,7 +45,10 @@ export function ContactForm({ contact }: { contact: Contact }) {
       {input("last_name", "Nom", { autoComplete: "off" }, "sm:col-span-3")}
       {input("email", "E-mail", { type: "email" }, "sm:col-span-3")}
       {input("phone", "Téléphone", { type: "tel" }, "sm:col-span-3")}
-      {input("address", "Adresse", {}, "sm:col-span-6")}
+      <label className="text-xs font-semibold sm:col-span-6">
+        Adresse
+        <AddressAutocomplete name="address" defaultValue={contact.address ?? ""} fill={{ postcode: "postal_code", city: "city" }} tone="light" className={field} />
+      </label>
       {input("postal_code", "Code postal", { inputMode: "numeric" }, "sm:col-span-2")}
       {input("city", "Ville", {}, "sm:col-span-4")}
       {input("siret", "SIRET (professionnels)", { inputMode: "numeric", placeholder: "14 chiffres" }, "sm:col-span-3")}

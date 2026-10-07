@@ -3,6 +3,7 @@ import { Check } from "lucide-react";
 import { CtaBand } from "@/components/site/CtaBand";
 import { MaterialSwatch } from "@/components/site/MaterialSwatch";
 import { RecentProjects } from "@/components/site/RecentProjects";
+import { SunToday } from "@/components/site/SunToday";
 import { ButtonLink } from "@/components/ui/Button";
 import { site } from "@/content/site";
 import { getUnivers, type UniversSlug } from "@/content/univers";
@@ -70,6 +71,7 @@ export function UniversPage({ slug }: { slug: UniversSlug }) {
             </li>
           ))}
         </ul>
+        {slug === "glass" && <SunToday />}
       </section>
 
       <RecentProjects univers={slug} />

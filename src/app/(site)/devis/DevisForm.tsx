@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from "react";
 import { Camera, Check, Loader2, Plus, Trash2, X } from "lucide-react";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 import { Button, buttonClass } from "@/components/ui/Button";
 import { univers as universList } from "@/content/univers";
 import { MAX_PHOTOS, UNIVERS, delais, glassGoals, surfaceTypes, type UniversValue } from "@/lib/devis/schema";
@@ -387,7 +388,10 @@ export function DevisForm() {
             <Field label="E-mail" name="email" type="email" required autoComplete="email" />
             <Field label="Téléphone" name="phone" type="tel" required autoComplete="tel" />
             <Field label="Code postal" name="postalCode" autoComplete="postal-code" inputMode="numeric" />
-            <Field label="Ville" name="city" autoComplete="address-level2" />
+            <label className="block">
+              <span className="text-sm text-paper/80">Ville</span>
+              <AddressAutocomplete name="city" type="commune" fill={{ postcode: "postalCode" }} className={`${input} mt-1.5`} />
+            </label>
           </div>
           <label className="block">
             <span className="text-sm text-paper/80">Message (facultatif)</span>

@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { Camera, Loader2 } from "lucide-react";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 import { preparePhoto } from "@/lib/devis/photos";
 import type { JobPhoto } from "@/lib/jobs/data";
 import { createClient } from "@/lib/supabase/client";
@@ -192,7 +193,7 @@ export function NotesForm({ jobId, notes, address }: { jobId: string; notes: str
       <input type="hidden" name="id" value={jobId} />
       <label className="block text-xs font-semibold">
         Adresse du chantier
-        <input name="address" defaultValue={address} className={field} />
+        <AddressAutocomplete name="address" defaultValue={address} tone="light" className={field} />
       </label>
       <label className="block text-xs font-semibold">
         Notes (accès, code portail, préparation, matériel à prévoir…)

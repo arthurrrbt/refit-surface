@@ -15,6 +15,9 @@ export const site = {
   city: "Saint-Malo",
   region: "Bretagne",
   postalCode: "35400",
+  // Point de départ des trajets et lieu de la météo du site : centre de Saint-Malo (geo.api.gouv.fr).
+  // À remplacer par les coordonnées de l'atelier si besoin.
+  base: { label: "Saint-Malo", lat: 48.6465, lon: -2.0066 },
   areaServed: ["Saint-Malo", "Dinard", "Cancale", "Dinan", "Rennes", "Côte d'Émeraude"],
   // À VÉRIFIER : n'afficher une certification que si elle est réelle et en cours de validité.
   certifications: ["Poseur certifié Cover Styl'", "Films solaires Solar Screen"],

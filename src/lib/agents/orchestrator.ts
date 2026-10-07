@@ -2,6 +2,9 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodTool } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
+import { addDays, parisDate, parisToUtc } from "@/lib/booking/time";
+import { geocodeAddress } from "@/lib/live/geo";
+import { getForecast, summarizeDay } from "@/lib/live/weather";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AGENT_MODEL, describeApiError, getAnthropic } from "./anthropic";
 import { runQualification } from "./qualification";
@@ -25,7 +28,8 @@ Ta tournée :
    - prospect sans nouvelle depuis plus de 30 jours après la dernière relance : propose le statut « perdu ».
    Utilise consulter_prospect si tu as besoin du détail avant de décider.
 4. Propose un changement de statut uniquement quand les faits le justifient (proposer_statut).
-5. Termine en appelant publier_point_du_jour une seule fois : les priorités du jour, concrètes et ordonnées (qui appeler, quoi envoyer, quoi vérifier).
+5. Appelle meteo_des_interventions : pour chaque intervention d'aujourd'hui à après-demain marquée d'alertes (pluie, vent, froid, orages), signale-la dans les priorités (prévenir le client, préparer un report si la pose est en extérieur). Ne signale rien s'il n'y a pas d'alerte.
+6. Termine en appelant publier_point_du_jour une seule fois : les priorités du jour, concrètes et ordonnées (qui appeler, quoi envoyer, quoi vérifier).
 
 Règles :
 - Tu ne fais que préparer : rien n'est envoyé au client sans validation du gérant.
@@ -106,6 +110,39 @@ async function pipelineSnapshot(db: Db) {
     .map((f) => ({ lead_id: f.lead_id, etape: f.step, canal: f.channel, prevue_le: f.due_at.slice(0, 10) }));
 
   return { date: today, a_qualifier, en_cours, relances_dues };
+}
+
+/** Météo des interventions des 3 prochains jours (aujourd'hui compris). */
+async function interventionsWeather(db: Db) {
+  const today = parisDate();
+  const { data, error } = await db
+    .from("events")
+    .select("title, kind, starts_at, location")
+    .not("location", "is", null)
+    .gte("starts_at", parisToUtc(today, "00:00").toISOString())
+    .lt("starts_at", parisToUtc(addDays(today, 3), "00:00").toISOString())
+    .order("starts_at");
+  if (error) return { erreur: error.message };
+
+  return Promise.all(
+    (data ?? []).map(async (e) => {
+      const date = parisDate(new Date(e.starts_at));
+      const place = await geocodeAddress(e.location!);
+      if (!place) return { intervention: e.title, type: e.kind, date, meteo: "adresse non localisée" };
+      const forecast = await getForecast(place.data.lat, place.data.lon);
+      const day = forecast ? summarizeDay(forecast.data, date) : null;
+      return {
+        intervention: e.title,
+        type: e.kind,
+        date,
+        meteo: day
+          ? { temps: day.label, temperatures: `${day.tempMin} à ${day.tempMax} °C`, pluie_mm: day.precipitationMm, vent_max_kmh: day.windMaxKmh, alertes: day.risks }
+          : "prévision indisponible",
+        prevision_du: forecast?.fetchedAt,
+        prevision_ancienne: forecast?.stale ?? false,
+      };
+    }),
+  );
 }
 
 function buildTools(db: Db, log: string[]) {
@@ -223,6 +260,14 @@ function buildTools(db: Db, log: string[]) {
         log.push(`Statut « ${statut} » proposé pour ${lead_id}`);
         return "Proposition enregistrée.";
       },
+    }),
+
+    betaZodTool({
+      name: "meteo_des_interventions",
+      description:
+        "Prévisions météo (source : MET Norway) pour les interventions du planning d'aujourd'hui à après-demain qui ont une adresse : temps, températures, pluie, vent et alertes pour une pose en extérieur.",
+      inputSchema: z.object({}),
+      run: async () => ok(await interventionsWeather(db)),
     }),
 
     betaZodTool({

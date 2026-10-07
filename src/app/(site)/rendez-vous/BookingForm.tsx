@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, type ComponentProps } from "react";
 import { CalendarCheck, CalendarPlus, Check, Loader2 } from "lucide-react";
+import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 import { Button } from "@/components/ui/Button";
 import { univers as universList } from "@/content/univers";
 import type { Slot, SlotDay } from "@/lib/booking/config";
@@ -158,7 +159,10 @@ export function BookingForm({ days }: { days: SlotDay[] }) {
           <Field label="Société / établissement (pros)" name="company" autoComplete="organization" className="sm:col-span-2" />
           <Field label="E-mail" name="email" type="email" required autoComplete="email" />
           <Field label="Téléphone" name="phone" type="tel" required autoComplete="tel" />
-          <Field label="Adresse du rendez-vous" name="address" required autoComplete="street-address" className="sm:col-span-2" />
+          <label className="block text-sm text-paper/80 sm:col-span-2">
+            Adresse du rendez-vous<span className="text-accent"> *</span>
+            <AddressAutocomplete name="address" required fill={{ postcode: "postalCode", city: "city" }} className={input} />
+          </label>
           <Field label="Code postal" name="postalCode" autoComplete="postal-code" inputMode="numeric" />
           <Field label="Ville" name="city" required autoComplete="address-level2" />
           <label className="block text-sm text-paper/80 sm:col-span-2">
