@@ -1,10 +1,13 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import { requireSupabaseEnv } from "./env";
 
 export async function createClient() {
-  // cookies() d'abord : rend l'appel dynamique avant toute autre logique (prérendu Cache Components)
+  // Le client Supabase lit l'heure (expiration des jetons) : on attend la vraie requête,
+  // sinon le prérendu avec cookies (Partial Prefetching) refuse Date.now().
+  await connection();
   const cookieStore = await cookies();
   const { url, key } = requireSupabaseEnv();
 

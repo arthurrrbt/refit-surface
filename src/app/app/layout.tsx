@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import { signOut } from "./actions";
 import { BottomNav, SidebarNav } from "./AppNav";
+import Loading from "./loading";
 
 export const metadata: Metadata = {
   title: { default: "Gestion", template: "%s | REFIT Gestion" },
@@ -34,15 +35,6 @@ function AccessDenied({ email }: { email: string }) {
           <button className="text-sm font-semibold text-accent-strong underline">Se déconnecter</button>
         </form>
       </div>
-    </div>
-  );
-}
-
-function PageSkeleton() {
-  return (
-    <div className="animate-pulse space-y-4 p-6">
-      <div className="h-7 w-48 rounded bg-ink/10" />
-      <div className="h-32 rounded bg-ink/5" />
     </div>
   );
 }
@@ -80,7 +72,7 @@ export default function BackOfficeLayout({ children }: LayoutProps<"/app">) {
         </header>
 
         <main className="flex-1 pb-24 lg:pb-0">
-          <Suspense fallback={<PageSkeleton />}>
+          <Suspense fallback={<Loading />}>
             <AuthGate>{children}</AuthGate>
           </Suspense>
         </main>
