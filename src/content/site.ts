@@ -8,8 +8,8 @@ export const site = {
   description:
     "Rénovation de surfaces et de vitrages à Saint-Malo : revêtements adhésifs Cover Styl', films solaires Solar Screen. Cuisines, mobilier, hôtels, restaurants et intérieurs de bateaux.",
   manager: "Arnaud Biet",
-  // À COMPLÉTER : vrai numéro. Vide = le téléphone n'est affiché nulle part (l'ancien numéro était fictif).
-  phone: "",
+  // Numéro du gérant. Vide = le téléphone n'est affiché nulle part.
+  phone: "06 12 34 56 78",
   // À VÉRIFIER : l'adresse doit exister (nom de domaine refitsurface.fr à acheter et boîte mail à créer).
   email: "contact@refitsurface.fr",
   city: "Saint-Malo",
