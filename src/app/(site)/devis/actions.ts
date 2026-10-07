@@ -1,8 +1,10 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
+import { after } from "next/server";
 import { z } from "zod";
 import { MAX_PHOTOS, PHOTO_EXTENSIONS, devisSchema, type DevisInput } from "@/lib/devis/schema";
+import { runQualification } from "@/lib/agents/qualification";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const BUCKET = "lead-photos";
@@ -68,6 +70,7 @@ export async function submitDevis(input: DevisInput): Promise<SubmitResult> {
     privacy_consent_at: now,
   };
 
+  let leadId: string;
   try {
     const { data: existing } = await supabase
       .from("contacts")
@@ -113,6 +116,7 @@ export async function submitDevis(input: DevisInput): Promise<SubmitResult> {
       .select("id")
       .single();
     if (leadError) throw leadError;
+    leadId = lead.id;
 
     if (photoPaths.length) {
       const { error } = await supabase
@@ -124,6 +128,12 @@ export async function submitDevis(input: DevisInput): Promise<SubmitResult> {
     console.error("submitDevis", error);
     return { ok: false, error: "Votre demande n'a pas pu être enregistrée. Réessayez ou appelez-nous." };
   }
+
+  // L'agent Qualification analyse la demande une fois la réponse envoyée au visiteur
+  after(async () => {
+    const result = await runQualification(leadId);
+    if (!result.ok) console.warn(`Qualification ${leadId} : ${result.error}`);
+  });
 
   return { ok: true };
 }

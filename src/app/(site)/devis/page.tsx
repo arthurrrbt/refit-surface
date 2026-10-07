@@ -4,6 +4,9 @@ import { ContactOptions } from "@/components/site/ContactOptions";
 import { PageIntro } from "@/components/site/PageIntro";
 import { DevisForm } from "./DevisForm";
 
+// Laisse le temps à l'agent Qualification (lancé après la réponse via after())
+export const maxDuration = 60;
+
 export const metadata: Metadata = {
   title: "Demande de devis",
   description: "Demandez un devis de rénovation de surfaces ou de pose de films pour vitrages à Saint-Malo.",

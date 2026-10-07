@@ -2,13 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
-import { ArrowLeft, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowLeft, Mail, MapPin, Phone, Sparkles } from "lucide-react";
+import { getLeadAgentData } from "@/lib/agents/data";
 import { LEAD_STATUSES, contactName, getLead, leadStatusLabels } from "@/lib/leads";
 import Loading from "../../loading";
 import { updateLeadStatus } from "../actions";
 import { StatusBadge, UniversBadge } from "../StatusBadge";
+import { FollowupCard, ProposalCard, QualificationPanel } from "../../agents/components";
+import { RequalifyButton } from "../../agents/ui";
 
 export const metadata: Metadata = { title: "Prospect" };
+
+// Laisse le temps à une nouvelle analyse IA lancée depuis la fiche
+export const maxDuration = 120;
 
 const dateFormat = new Intl.DateTimeFormat("fr-FR", { dateStyle: "full", timeStyle: "short", timeZone: "Europe/Paris" });
 
@@ -27,7 +33,7 @@ export default function LeadPage({ params }: PageProps<"/app/prospects/[id]">) {
 async function LeadDetailView({ params }: { params: PageProps<"/app/prospects/[id]">["params"] }) {
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
-  const lead = await getLead(id);
+  const [lead, ai] = await Promise.all([getLead(id), getLeadAgentData(id)]);
   if (!lead) notFound();
   const c = lead.contacts;
 
@@ -92,6 +98,34 @@ async function LeadDetailView({ params }: { params: PageProps<"/app/prospects/[i
           Enregistrer
         </button>
       </form>
+
+      {ai.proposals.map((p) => (
+        <ProposalCard key={p.id} run={p} />
+      ))}
+
+      <Section title="Analyse IA">
+        <div className="space-y-4">
+          {ai.qualification ? (
+            <QualificationPanel run={ai.qualification} email={c?.email ?? null} />
+          ) : (
+            <p className="flex items-center gap-2 text-sm text-ink/60">
+              <Sparkles className="size-4 text-accent-strong" /> Pas encore analysée : l&apos;agent s&apos;en charge à
+              l&apos;arrivée de la demande ou lors de sa tournée du matin.
+            </p>
+          )}
+          <RequalifyButton leadId={lead.id} label={ai.qualification ? "Relancer l'analyse" : "Analyser maintenant"} />
+        </div>
+      </Section>
+
+      {ai.followups.length > 0 && (
+        <Section title={`Relances (${ai.followups.length})`}>
+          <div className="space-y-2">
+            {ai.followups.map((f) => (
+              <FollowupCard key={f.id} followup={f} contact={c} />
+            ))}
+          </div>
+        </Section>
+      )}
 
       <Section title="Surfaces">
         <ul className="divide-y divide-ink/10 text-sm">

@@ -60,9 +60,9 @@ Règle d'or : **les agents proposent, l'humain valide** avant tout envoi externe
 - [ ] Planning chantiers, mode PWA hors-ligne léger, photos chantier
 
 ### Phase 4 — Agents IA (semaines 6–10)
-1. [ ] Qualification client (formulaire → classement univers, questions manquantes, proposition de RDV)
+1. [x] Qualification client (texte + photos → note, faisabilité, questions, brouillon de réponse) — automatique à chaque demande
 2. [ ] Devis (photos + dimensions + produit → pré-chiffrage)
-3. [ ] CRM / Relances (J+3 / J+7 / J+15, brouillons à valider)
+3. [x] Agent REFIT autonome (cron quotidien) : qualifie les retards, programme les relances J+3/J+7/J+15 avec brouillons, propose les statuts, publie le point du jour
 4. [ ] Pilotage (synthèse hebdo : CA, marge matière, jours de pose, devis en attente, conversion)
 5. [ ] Planning chantier (visites, commandes, rappels clients)
 6. [ ] Marketing (posts avant/après, études de cas)
