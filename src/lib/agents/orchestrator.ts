@@ -3,7 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { betaZodTool } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { AGENT_MODEL, getAnthropic } from "./anthropic";
+import { AGENT_MODEL, describeApiError, getAnthropic } from "./anthropic";
 import { runQualification } from "./qualification";
 
 /**
@@ -318,16 +318,7 @@ export async function runDailyAgent(trigger: "cron" | "manuel"): Promise<DailyRu
     return { ok: true, runId: run.id, actions };
   } catch (error) {
     console.error("runDailyAgent", error);
-    const message =
-      error instanceof Anthropic.AuthenticationError
-        ? "Clé API Claude invalide."
-        : error instanceof Anthropic.RateLimitError
-          ? "Limite d'utilisation de l'API atteinte."
-          : error instanceof Anthropic.APIError
-            ? `Erreur de l'API Claude (${error.status ?? "réseau"}).`
-            : error instanceof Error
-              ? error.message
-              : "Erreur inattendue.";
+    const message = describeApiError(error);
     await db
       .from("agent_runs")
       .update({ status: "erreur", error: message, output: { actions, iterations } })

@@ -2,7 +2,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { AGENT_MODEL, getAnthropic } from "./anthropic";
+import { AGENT_MODEL, describeApiError, getAnthropic } from "./anthropic";
 import { qualificationSchema } from "./qualification-schema";
 
 // Consignes stables (en tête de requête) ; les données de la demande vont dans le message utilisateur.
@@ -196,9 +196,6 @@ export async function runQualification(leadId: string): Promise<RunResult> {
     return { ok: true, runId: run.id };
   } catch (error) {
     console.error("runQualification", error);
-    if (error instanceof Anthropic.AuthenticationError) return logError("Clé API Claude invalide.");
-    if (error instanceof Anthropic.RateLimitError) return logError("Limite d'utilisation de l'API atteinte, réessayez plus tard.");
-    if (error instanceof Anthropic.APIError) return logError(`Erreur de l'API Claude (${error.status ?? "réseau"}).`);
-    return logError("Erreur inattendue pendant l'analyse.");
+    return logError(describeApiError(error));
   }
 }
