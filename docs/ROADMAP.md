@@ -1,0 +1,73 @@
+# REFIT Surface — Feuille de route
+
+Stack : Next.js 16 (App Router, TypeScript, Tailwind 4) · Supabase (Postgres, Auth, Storage, pg_cron — région UE) · API Claude (agents) · Vercel (région `cdg1`) · Microsoft Graph (Outlook) · Brevo/Resend (e-mails) · Plateforme agréée (factures électroniques).
+
+## Architecture
+
+```
+src/app/
+  (site)/            → site public : accueil, /home, /glass, /pro, /boat,
+                       /realisations, /devis, /rendez-vous, /contact
+  app/               → back-office PWA (protégé, un seul compte admin)
+    prospects/  devis/  factures/  planning/  chantiers/  pilotage/  agents/
+  api/               → webhooks, crons, endpoints agents
+src/lib/
+  supabase/          → clients serveur / navigateur
+  agents/            → définitions des agents Claude + outils (tool use)
+  pricing/           → moteur de chiffrage (prix TEGO, pertes, objectif €/jour)
+supabase/migrations/ → schéma SQL versionné
+```
+
+## Modèle de données (première version)
+
+| Table | Rôle |
+|---|---|
+| `contacts` | Particuliers et pros (hôtels, restaurants, architectes, chantiers navals) |
+| `leads` | Demandes entrantes : univers (home/glass/pro/boat), statut du pipeline, source |
+| `lead_photos` | Photos et dimensions envoyées par le client ou prises sur chantier |
+| `products` | Références Cover Styl' / films Solar Screen, prix d'achat TEGO, laize |
+| `quotes` / `quote_lines` | Devis versionnés, signature, statut |
+| `invoices` / `invoice_lines` | Factures (numérotation continue, transmission via la plateforme agréée) |
+| `jobs` | Chantiers : dates de pose, matériel, commandes |
+| `events` | Planning : visites, métrages, poses (synchronisé avec Outlook) |
+| `followups` | Relances planifiées (J+3 / J+7 / J+15) |
+| `agent_runs` | Journal des actions des agents + validations humaines |
+| `projects_gallery` | Réalisations avant/après publiées sur le site |
+
+Règle d'or : **les agents proposent, l'humain valide** avant tout envoi externe (e-mail, devis, publication).
+
+## Phases
+
+### Phase 1 — Fondations (semaines 1–2)
+- [ ] Identité visuelle : tokens couleurs/typo, logo SVG, composants de base
+- [ ] Projet Supabase (UE) + schéma initial + auth (compte admin unique)
+- [ ] Déploiement Vercel + domaine `refitsurface.fr`
+- [ ] Squelette site public + back-office protégé
+
+### Phase 2 — Site public (semaines 2–4)
+- [ ] Accueil + 4 pages univers (Home, Glass, Pro, Boat), SEO local Saint-Malo
+- [ ] Galerie avant/après filtrable (curseur comparatif)
+- [ ] Formulaire de devis intelligent (univers, surfaces, dimensions, photos)
+- [ ] Prise de RDV synchronisée avec Outlook
+- [ ] Mentions légales, RGPD, données structurées (LocalBusiness)
+
+### Phase 3 — Back-office cœur (semaines 4–7)
+- [ ] CRM : fiches contacts, pipeline des demandes
+- [ ] Catalogue produits + moteur de chiffrage
+- [ ] Devis PDF + signature sur mobile
+- [ ] Factures + connexion à la plateforme agréée
+- [ ] Planning chantiers, mode PWA hors-ligne léger, photos chantier
+
+### Phase 4 — Agents IA (semaines 6–10)
+1. [ ] Qualification client (formulaire → classement univers, questions manquantes, proposition de RDV)
+2. [ ] Devis (photos + dimensions + produit → pré-chiffrage)
+3. [ ] CRM / Relances (J+3 / J+7 / J+15, brouillons à valider)
+4. [ ] Pilotage (synthèse hebdo : CA, marge matière, jours de pose, devis en attente, conversion)
+5. [ ] Planning chantier (visites, commandes, rappels clients)
+6. [ ] Marketing (posts avant/après, études de cas)
+7. [ ] Prospection B2B (hôtels, restaurants, architectes, nautisme) — opt-out obligatoire
+
+## Points de vigilance
+- **Facture électronique** : réception obligatoire depuis le 01/09/2026, émission TPE au 01/09/2027 → transmission via une plateforme agréée, pas de développement maison du flux.
+- **Prospection** : B2B par e-mail autorisée avec désinscription ; B2C uniquement avec consentement ; téléphone → Bloctel.
+- **RGPD** : hébergement UE, registre des traitements, durée de conservation des prospects (3 ans).
