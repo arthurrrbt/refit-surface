@@ -47,6 +47,7 @@ export type QuoteRow = {
   title: string | null;
   lead_id: string | null;
   contact_id: string;
+  job_id: string | null;
   univers: string | null;
   status: QuoteStatus;
   issued_at: string | null;

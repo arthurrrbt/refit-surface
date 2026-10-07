@@ -59,7 +59,7 @@ Règle d'or : **les agents proposent, l'humain valide** avant tout envoi externe
 - [x] Factures (acompte / solde / globale), numérotation continue, immuabilité en base, encaissements, relances
 - [x] Avoirs (total / partiel), numérotation A-AAAA-0001, imputation et remboursement
 - [ ] Transmission via une plateforme agréée (facture électronique, TPE : 01/09/2027)
-- [ ] Planning chantiers, mode PWA hors-ligne léger, photos chantier
+- [x] Suivi des chantiers : création à la signature, matière à commander (TEGO), planification de la pose, photos avant/pendant/après, publication galerie
 
 ### Phase 4 — Agents IA (semaines 6–10)
 1. [x] Qualification client (texte + photos → note, faisabilité, questions, brouillon de réponse) — automatique à chaque demande

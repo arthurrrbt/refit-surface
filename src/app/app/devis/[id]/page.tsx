@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { ArrowLeft, Download, ExternalLink, FileText, Mail, PenLine, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Download, ExternalLink, FileText, HardHat, Mail, PenLine, ShieldCheck } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { contactName } from "@/lib/leads";
 import { invoiceBalance, invoiceKindLabels, listQuoteInvoices } from "@/lib/invoices/data";
@@ -15,6 +15,7 @@ import Loading from "../../loading";
 import { PageHeader } from "../../ModulePlaceholder";
 import { markQuoteRefused, reopenQuote, sendQuote } from "../actions";
 import { QuoteEditor } from "../QuoteEditor";
+import { createJob } from "../../chantiers/actions";
 import { CreateInvoiceButtons } from "../../factures/InvoiceForms";
 import { InvoiceBadge } from "../../factures/InvoiceBadge";
 import { QuoteStatusBadge } from "../QuoteStatusBadge";
@@ -123,6 +124,25 @@ async function QuoteView({ params }: { params: PageProps<"/app/devis/[id]">["par
           <a href={`/app/devis/${quote.id}/pdf`} target="_blank" className="inline-flex items-center gap-2 rounded-sm bg-ink px-3 py-2 font-semibold text-paper">
             <Download className="size-4" /> Télécharger le devis signé
           </a>
+        </section>
+      )}
+
+      {quote.status === "signe" && (
+        <section className="flex flex-wrap items-center gap-3 rounded-sm bg-paper p-5 text-sm shadow-sm">
+          <HardHat className="size-5 text-accent-strong" />
+          <span className="flex-1 font-display font-semibold">Chantier</span>
+          {quote.job_id ? (
+            <Link href={`/app/chantiers/${quote.job_id}`} className="rounded-sm bg-ink px-3 py-2 font-semibold text-paper">
+              Ouvrir le chantier
+            </Link>
+          ) : (
+            <form action={createJob}>
+              <input type="hidden" name="quote_id" value={quote.id} />
+              <PendingButton variant="primary" pendingLabel="Création…">
+                Créer le chantier
+              </PendingButton>
+            </form>
+          )}
         </section>
       )}
 

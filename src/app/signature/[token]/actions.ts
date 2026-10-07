@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { headers } from "next/headers";
 import { z } from "zod";
 import { parisDate } from "@/lib/booking/time";
+import { createJobFromQuote } from "@/lib/jobs/create";
 import { renderQuotePdf } from "@/lib/quotes/pdf";
 import { getQuoteByToken } from "@/lib/quotes/public";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -83,6 +84,8 @@ export async function signQuote(input: z.input<typeof signSchema>): Promise<Sign
     if (!updated?.length) return { ok: false, error: "Ce devis vient déjà d'être signé." };
 
     if (quote.lead_id) await db.from("leads").update({ status: "gagne" }).eq("id", quote.lead_id);
+    // Le chantier et sa liste de matière sont préparés dès la signature
+    await createJobFromQuote(db, quote.id).catch((e) => console.error("createJobFromQuote", e));
     return { ok: true };
   } catch (error) {
     console.error("signQuote", error);
