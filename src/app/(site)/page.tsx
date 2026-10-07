@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Clock, Leaf, PiggyBank } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { MaterialSwatch } from "@/components/site/MaterialSwatch";
+import { RecentProjects } from "@/components/site/RecentProjects";
 import { CtaBand } from "@/components/site/CtaBand";
 import { ButtonLink } from "@/components/ui/Button";
 import { site } from "@/content/site";
@@ -118,6 +119,8 @@ export default function HomePage() {
           </ul>
         </div>
       </section>
+
+      <RecentProjects />
 
       {/* Pourquoi */}
       <section className="bg-paper text-ink">

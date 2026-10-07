@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import { CtaBand } from "@/components/site/CtaBand";
 import { MaterialSwatch } from "@/components/site/MaterialSwatch";
+import { RecentProjects } from "@/components/site/RecentProjects";
 import { ButtonLink } from "@/components/ui/Button";
 import { getUnivers, type UniversSlug } from "@/content/univers";
 
@@ -58,6 +59,7 @@ export function UniversPage({ slug }: { slug: UniversSlug }) {
         </ul>
       </section>
 
+      <RecentProjects univers={slug} />
       <CtaBand />
     </>
   );

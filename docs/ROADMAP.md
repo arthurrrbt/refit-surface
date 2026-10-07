@@ -47,7 +47,7 @@ Règle d'or : **les agents proposent, l'humain valide** avant tout envoi externe
 
 ### Phase 2 — Site public (semaines 2–4)
 - [ ] Accueil + 4 pages univers (Home, Glass, Pro, Boat), SEO local Saint-Malo
-- [ ] Galerie avant/après filtrable (curseur comparatif)
+- [x] Galerie avant/après filtrable (curseur comparatif), gérée depuis le back-office
 - [x] Formulaire de devis intelligent (univers, surfaces, dimensions, photos) → prospect dans le back-office
 - [ ] Prise de RDV synchronisée avec Outlook
 - [ ] Mentions légales, RGPD, données structurées (LocalBusiness)
