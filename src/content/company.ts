@@ -1,23 +1,51 @@
-// Informations légales imprimées sur les devis et factures — À COMPLÉTER avant le premier envoi.
-// Mentions obligatoires pour un artisan : identité, SIRET, TVA, assurance professionnelle
-// (assureur, contrat, couverture géographique) et médiateur de la consommation (clients particuliers).
+// Identité légale de l'entreprise — imprimée sur les mentions légales, CGV, devis et factures.
+// Chaque valeur entre crochets est À COMPLÉTER après l'immatriculation.
+import { site } from "./site";
 
 export const company = {
-  name: "REFIT Surface",
-  legalForm: "[Forme juridique et capital]",
-  address: "[Adresse]",
-  postalCode: "35400",
-  city: "Saint-Malo",
-  siret: "[SIRET]",
-  rcs: "[RCS / RM]",
-  vatNumber: "[N° TVA intracommunautaire]",
-  phone: "06 12 34 56 78",
-  email: "contact@refitsurface.fr",
+  name: site.name, // dénomination (société) ou nom commercial (entrepreneur individuel)
+  // Micro-entreprise : « Entrepreneur individuel — Arnaud Biet (EI) ».
+  // Société : « SASU au capital de X € » (forme + capital social).
+  legalForm: "[À COMPLÉTER : forme juridique (et capital social si société)]",
+  address: "[À COMPLÉTER : adresse du siège]",
+  postalCode: site.postalCode,
+  city: site.city,
+  siret: "[À COMPLÉTER : SIRET]",
+  // Société : « RCS Saint-Malo n° … ». Micro-entreprise : immatriculation au Registre national des entreprises (RNE).
+  rcs: "[À COMPLÉTER : RCS + ville (société) ou RNE (entrepreneur individuel)]",
+  vatNumber: "[À COMPLÉTER : n° de TVA intracommunautaire]",
+  publicationDirector: site.manager,
+  phone: site.phone,
+  email: site.email,
   website: "www.refitsurface.fr",
-  insurance: "[Assureur — n° de contrat — couverture : France métropolitaine]",
-  mediator: "[Médiateur de la consommation — site internet]",
-  iban: "[IBAN pour les virements]",
-  paymentTerms: "Acompte à la signature, solde à la fin des travaux. Paiement par virement ou chèque.",
+  insurance: "[À COMPLÉTER : assureur, n° de contrat, couverture géographique]",
+  mediator: {
+    name: "[MÉDIATEUR À CHOISIR]",
+    address: "[adresse du médiateur]",
+    website: "[site internet du médiateur]",
+  },
+  iban: "[À COMPLÉTER : IBAN]",
+  // Hébergeurs (LCEN) — À VÉRIFIER sur les sites de Vercel et Supabase avant publication.
+  hosting: [
+    {
+      role: "Hébergement du site",
+      name: "Vercel Inc.",
+      address: "440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis",
+      phone: "[À VÉRIFIER : téléphone de l'hébergeur]",
+      website: "vercel.com",
+    },
+    {
+      role: "Hébergement des données et des fichiers (serveurs dans l'Union européenne)",
+      name: "Supabase Inc.",
+      address: "[À VÉRIFIER : adresse de Supabase Inc.]",
+      phone: "[À VÉRIFIER : téléphone de l'hébergeur]",
+      website: "supabase.com",
+    },
+  ],
+  paymentTerms:
+    "Paiement par virement ou chèque. Professionnels : acompte à la signature, solde à la fin des travaux. Particuliers : acompte exigible au plus tôt 7 jours après la signature lorsque le devis est signé hors de nos locaux, solde à la fin des travaux.",
   latePenalty:
-    "En cas de retard de paiement : pénalités au taux de 3 fois le taux d'intérêt légal et, pour les professionnels, indemnité forfaitaire de 40 € pour frais de recouvrement.",
-} as const;
+    "Retard de paiement : particuliers, intérêts au taux légal après mise en demeure ; professionnels, pénalités au taux BCE majoré de 10 points et indemnité forfaitaire de 40 € pour frais de recouvrement. Pas d'escompte pour paiement anticipé.",
+};
+
+export const mediatorText = `${company.mediator.name} — ${company.mediator.address} — ${company.mediator.website}`;

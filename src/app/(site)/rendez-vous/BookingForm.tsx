@@ -78,7 +78,6 @@ export function BookingForm({ days }: { days: SlotDay[] }) {
       postalCode: text("postalCode"),
       city: text("city"),
       message: text("message"),
-      privacyConsent: (formData.get("privacyConsent") === "on") as true,
       marketingConsent: formData.get("marketingConsent") === "on",
       website: text("website"),
     });
@@ -179,19 +178,18 @@ export function BookingForm({ days }: { days: SlotDay[] }) {
           </label>
         </div>
         <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
-        <label className="flex items-start gap-3 text-sm text-paper/80">
-          <input type="checkbox" name="privacyConsent" required className="mt-1 accent-accent" />
-          <span>
-            J&apos;accepte que mes informations soient utilisées pour organiser ce rendez-vous.{" "}
-            <Link href="/mentions-legales" className="underline hover:text-accent">
-              En savoir plus
-            </Link>
-          </span>
-        </label>
-        <label className="flex items-start gap-3 text-sm text-paper/60">
+        <label className="flex items-start gap-3 text-sm text-paper/75">
           <input type="checkbox" name="marketingConsent" className="mt-1 accent-accent" />
-          <span>Je souhaite recevoir occasionnellement des conseils et réalisations REFIT Surface.</span>
+          <span>Facultatif : je souhaite recevoir occasionnellement des conseils et réalisations REFIT Surface (désinscription à tout moment).</span>
         </label>
+        <p className="text-xs leading-relaxed text-paper/70">
+          Les informations marquées d&apos;un astérisque servent uniquement à organiser ce rendez-vous et à préparer votre devis ; elles
+          sont conservées 3 ans sans suite donnée. Vos droits et le détail des traitements :{" "}
+          <Link href="/confidentialite" className="underline hover:text-accent">
+            politique de confidentialité
+          </Link>
+          .
+        </p>
       </fieldset>
 
       {error && (

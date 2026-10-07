@@ -86,7 +86,7 @@ export function InvoiceEditor({
                 <input aria-label="Unité" value={l.unit} onChange={(e) => update(l.key, { unit: e.target.value })} className={`${field} sm:col-span-1`} />
                 <input aria-label="Prix unitaire HT" inputMode="decimal" value={l.unit_price} onChange={(e) => update(l.key, { unit_price: num(e.target.value) })} className={`${field} sm:col-span-3`} />
               </div>
-              <button type="button" onClick={() => setLines((prev) => prev.filter((x) => x.key !== l.key))} aria-label="Supprimer la ligne" className="p-2 text-ink/40 hover:text-red-600">
+              <button type="button" onClick={() => setLines((prev) => prev.filter((x) => x.key !== l.key))} aria-label="Supprimer la ligne" className="p-2 text-ink/60 hover:text-red-600">
                 <Trash2 className="size-4" />
               </button>
             </div>

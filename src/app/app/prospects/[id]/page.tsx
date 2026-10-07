@@ -52,10 +52,10 @@ async function LeadDetailView({ params }: { params: PageProps<"/app/prospects/[i
         <div className="flex flex-wrap items-center gap-2">
           <UniversBadge univers={lead.univers} />
           <StatusBadge status={lead.status} />
-          {c?.kind === "professionnel" && <span className="text-xs text-ink/50">Professionnel</span>}
+          {c?.kind === "professionnel" && <span className="text-xs text-ink/60">Professionnel</span>}
         </div>
         <h1 className="mt-3 font-display text-xl font-semibold">{contactName(c)}</h1>
-        <p className="mt-1 text-sm text-ink/50">
+        <p className="mt-1 text-sm text-ink/60">
           Reçu le {dateFormat.format(new Date(lead.created_at))} · {lead.source === "site" ? "formulaire du site" : lead.source}
         </p>
 
@@ -119,7 +119,7 @@ async function LeadDetailView({ params }: { params: PageProps<"/app/prospects/[i
         <div className="space-y-2">
           {quotes.map((q) => (
             <Link key={q.id} href={`/app/devis/${q.id}`} className="flex items-center gap-3 rounded-sm border border-ink/10 p-3 text-sm hover:border-ink/30">
-              <FileText className="size-4 text-ink/50" />
+              <FileText className="size-4 text-ink/60" />
               <span className="font-semibold">{q.number ?? "Brouillon"}</span>
               <QuoteStatusBadge status={q.status} />
               <span className="ml-auto font-semibold">{euro.format(q.total_ttc)}</span>
@@ -222,7 +222,7 @@ function Info({ label, children }: { label: string; children: ReactNode }) {
   if (!children) return null;
   return (
     <div className="flex gap-2">
-      <dt className="text-ink/50">{label} :</dt>
+      <dt className="text-ink/60">{label} :</dt>
       <dd className="min-w-0 break-words">{children}</dd>
     </div>
   );

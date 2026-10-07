@@ -3,6 +3,7 @@
 import { createHash } from "node:crypto";
 import { headers } from "next/headers";
 import { z } from "zod";
+import { company } from "@/content/company";
 import { parisDate } from "@/lib/booking/time";
 import { createJobFromQuote } from "@/lib/jobs/create";
 import { renderQuotePdf } from "@/lib/quotes/pdf";
@@ -15,6 +16,8 @@ const signSchema = z.object({
   token: z.string().regex(/^[0-9a-f]{48}$/),
   name: z.string().trim().min(3, "Indiquez votre nom complet.").max(120),
   consent: z.literal(true, "Cochez la mention « Bon pour accord »."),
+  cgv: z.literal(true, "Acceptez les conditions générales de prestation."),
+  earlyStart: z.boolean(),
   signature: z
     .string()
     .startsWith("data:image/png;base64,", "Signature manquante.")
@@ -26,7 +29,7 @@ export type SignResult = { ok: true } | { ok: false; error: string };
 export async function signQuote(input: z.input<typeof signSchema>): Promise<SignResult> {
   const parsed = signSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Signature invalide." };
-  const { token, name, signature } = parsed.data;
+  const { token, name, signature, earlyStart } = parsed.data;
 
   const quote = await getQuoteByToken(token);
   if (!quote || quote.status !== "envoye" || !quote.pdf_path || !quote.number) {
@@ -55,7 +58,7 @@ export async function signQuote(input: z.input<typeof signSchema>): Promise<Sign
     const { error: sigError } = await db.storage.from("documents").upload(signaturePath, png, { contentType: "image/png", upsert: true });
     if (sigError) throw sigError;
 
-    const signedPdf = await renderQuotePdf(quote, { name, imageDataUrl: signature, signedAt, ip, userAgent, sentPdfSha256: sentHash });
+    const signedPdf = await renderQuotePdf(quote, { name, imageDataUrl: signature, signedAt, ip, userAgent, sentPdfSha256: sentHash, earlyStart });
     const signedPath = `devis/${quote.number}-signe.pdf`;
     const { error: pdfError } = await db.storage.from("documents").upload(signedPath, signedPdf, { contentType: "application/pdf", upsert: true });
     if (pdfError) throw pdfError;
@@ -73,6 +76,9 @@ export async function signQuote(input: z.input<typeof signSchema>): Promise<Sign
           user_agent: userAgent,
           signed_at: signedAt,
           consent: CONSENT,
+          cgv_accepted: true,
+          cgv_url: `https://${company.website}/cgv`,
+          early_start_requested: earlyStart,
           sent_pdf_sha256: sentHash,
           signed_pdf_sha256: createHash("sha256").update(signedPdf).digest("hex"),
         },

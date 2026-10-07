@@ -4,6 +4,7 @@ import { CtaBand } from "@/components/site/CtaBand";
 import { MaterialSwatch } from "@/components/site/MaterialSwatch";
 import { RecentProjects } from "@/components/site/RecentProjects";
 import { ButtonLink } from "@/components/ui/Button";
+import { site } from "@/content/site";
 import { getUnivers, type UniversSlug } from "@/content/univers";
 
 export function universMetadata(slug: UniversSlug): Metadata {
@@ -17,8 +18,20 @@ export function universMetadata(slug: UniversSlug): Metadata {
 
 export function UniversPage({ slug }: { slug: UniversSlug }) {
   const u = getUnivers(slug);
+  // Données structurées : la prestation, son prestataire et sa zone d'intervention
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: `${u.name} — ${u.title}`,
+    description: u.seoDescription,
+    serviceType: u.title,
+    provider: { "@type": "HomeAndConstructionBusiness", name: site.name, url: site.url },
+    areaServed: site.areaServed,
+    url: `${site.url}/${u.slug}`,
+  };
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <section className="relative overflow-hidden border-b border-line">
         <MaterialSwatch slug={slug} className="absolute inset-0 opacity-25" />
         <div className="absolute inset-0 bg-linear-to-r from-ink via-ink/90 to-ink/40" />

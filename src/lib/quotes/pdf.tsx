@@ -1,6 +1,6 @@
 import "server-only";
 import { Document, Image, Page, Text, View, renderToBuffer } from "@react-pdf/renderer";
-import { company } from "@/content/company";
+import { company, mediatorText } from "@/content/company";
 import { CompanyHeader, Logo, dateFr, dateTimeFr, money, qty, s } from "@/lib/pdf/shared";
 import type { QuoteLineRow, QuoteRow } from "./data";
 
@@ -18,6 +18,7 @@ export type SignatureForPdf = {
   ip: string;
   userAgent: string;
   sentPdfSha256: string;
+  earlyStart?: boolean;
 };
 
 function QuoteDocument({ quote, lines, signature }: { quote: QuoteRow; lines: QuoteLineRow[]; signature?: SignatureForPdf }) {
@@ -107,7 +108,13 @@ function QuoteDocument({ quote, lines, signature }: { quote: QuoteRow; lines: Qu
           <Text style={s.small}>Devis gratuit. {company.paymentTerms}</Text>
           <Text style={s.small}>{company.latePenalty}</Text>
           <Text style={s.small}>Assurance professionnelle : {company.insurance}</Text>
-          {isConsumer && <Text style={s.small}>Médiation de la consommation : {company.mediator}</Text>}
+          {isConsumer && <Text style={s.small}>Médiation de la consommation : {mediatorText}</Text>}
+          {isConsumer && (
+            <Text style={s.small}>
+              Particuliers : délai de rétractation de 14 jours à compter de la signature (devis signé à distance ou hors de nos locaux), formulaire de rétractation en annexe des conditions générales.
+            </Text>
+          )}
+          <Text style={s.small}>Conditions générales de prestation : {company.website}/cgv — elles font partie intégrante du présent devis.</Text>
         </View>
 
         <View style={s.signBox} wrap={false}>
@@ -152,6 +159,8 @@ function QuoteDocument({ quote, lines, signature }: { quote: QuoteRow; lines: Qu
             ["Navigateur / appareil", signature.userAgent],
             ["Empreinte SHA-256 du devis envoyé", signature.sentPdfSha256],
             ["Méthode", "Lien personnel unique, lecture du devis, mention « Bon pour accord » cochée, signature manuscrite tracée à l'écran."],
+            ["Conditions générales", `Acceptées (${company.website}/cgv)`],
+            ["Démarrage avant la fin du délai de rétractation", signature.earlyStart ? "Demandé expressément par le client" : "Non demandé"],
           ].map(([label, value]) => (
             <View key={label} style={s.certRow}>
               <Text style={s.certLabel}>{label}</Text>

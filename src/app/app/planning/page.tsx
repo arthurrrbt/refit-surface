@@ -62,7 +62,7 @@ async function Planning() {
                       <div className="flex flex-wrap items-center gap-2">
                         <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${kindStyles[e.kind]}`}>{eventKindLabels[e.kind]}</span>
                         {e.booked_online && (
-                          <span className="inline-flex items-center gap-1 text-xs text-ink/50">
+                          <span className="inline-flex items-center gap-1 text-xs text-ink/60">
                             <Globe className="size-3" /> réservé en ligne
                           </span>
                         )}

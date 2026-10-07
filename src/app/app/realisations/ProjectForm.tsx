@@ -67,6 +67,7 @@ export function ProjectForm({ project }: { project?: GalleryProject }) {
       before_path: paths.avant,
       after_path: paths.apres,
       published: formData.get("published") === "on",
+      clientConsent: formData.get("clientConsent") === "on",
     });
     setSaving(false);
     if (!result.ok) return setError(result.error);
@@ -114,7 +115,7 @@ export function ProjectForm({ project }: { project?: GalleryProject }) {
         {(["avant", "apres"] as const).map((side) => (
           <label key={side} className="block cursor-pointer">
             <span className="text-sm font-semibold">{side === "avant" ? "Photo avant" : "Photo après"}</span>
-            <span className="relative mt-1.5 flex aspect-[4/3] items-center justify-center overflow-hidden rounded-sm border border-dashed border-ink/25 bg-mist text-xs text-ink/50">
+            <span className="relative mt-1.5 flex aspect-[4/3] items-center justify-center overflow-hidden rounded-sm border border-dashed border-ink/25 bg-mist text-xs text-ink/60">
               {previews[side] ? (
                 // eslint-disable-next-line @next/next/no-img-element -- aperçu local ou stockage public
                 <img src={previews[side]!} alt="" className="absolute inset-0 size-full object-cover" />
@@ -137,11 +138,18 @@ export function ProjectForm({ project }: { project?: GalleryProject }) {
           </label>
         ))}
       </div>
-      <p className="text-xs text-ink/50">Astuce : même cadrage avant et après, pour un comparatif saisissant.</p>
+      <p className="text-xs text-ink/60">Astuce : même cadrage avant et après, pour un comparatif saisissant.</p>
 
       <label className="flex items-center gap-3 text-sm">
         <input type="checkbox" name="published" defaultChecked={project?.published} className="size-4 accent-accent" />
         Publier sur le site
+      </label>
+      <label className="flex items-start gap-3 text-sm">
+        <input type="checkbox" name="clientConsent" defaultChecked={project?.published} className="mt-0.5 size-4 accent-accent" />
+        <span>
+          J&apos;ai obtenu l&apos;accord écrit du client pour publier ces photos et la ville du chantier (obligatoire pour publier ;
+          conservez cet accord, par exemple un e-mail).
+        </span>
       </label>
 
       {error && <p className="text-sm text-red-600">{error}</p>}

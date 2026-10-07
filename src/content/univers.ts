@@ -28,7 +28,7 @@ export const univers: Univers[] = [
       { title: "Salle de bain", text: "Meubles vasques, habillages, portes et rangements." },
     ],
     benefits: [
-      "Bien moins cher qu'un remplacement",
+      "Sans dépose ni remplacement des éléments existants",
       "Pose en quelques jours, sans gravats",
       "Moins de déchets : on garde l'existant",
     ],
@@ -47,10 +47,10 @@ export const univers: Univers[] = [
     services: [
       { title: "Anti-chaleur & anti-UV", text: "Confort d'été, protection du mobilier contre la décoloration." },
       { title: "Intimité & décoration", text: "Films dépolis, occultants, sablés ou décoratifs." },
-      { title: "Sécurité", text: "Films anti-effraction et anti-éclats pour vitrages exposés." },
+      { title: "Sécurité", text: "Films de sécurité (anti-éclats, retardateurs d'effraction selon la référence choisie)." },
     ],
     benefits: [
-      "Des pièces plus fraîches en été",
+      "Aide à limiter la chaleur due au soleil à travers les vitrages",
       "Pose rapide, sans dépose des vitrages",
       "Solution réversible",
     ],
@@ -62,7 +62,7 @@ export const univers: Univers[] = [
     slug: "pro",
     name: "REFIT Pro",
     title: "Hôtels, restaurants & commerces",
-    pitch: "Rénover sans fermer.",
+    pitch: "Rénover en limitant l'impact sur votre activité.",
     intro:
       "Chambres d'hôtel, salles de restaurant, comptoirs, bureaux, boutiques : nous rénovons vos espaces professionnels par l'habillage des surfaces, avec des interventions planifiées pour limiter au maximum l'impact sur votre activité.",
     forWho: "Hôtellerie, restauration, commerces, bureaux, architectes",
@@ -76,9 +76,9 @@ export const univers: Univers[] = [
       "Rénovation chambre par chambre",
       "Interlocuteur unique, de l'étude à la pose",
     ],
-    seoTitle: "Rénovation d'hôtels, restaurants et commerces sans fermeture — Saint-Malo",
+    seoTitle: "Rénovation d'hôtels, restaurants et commerces — Saint-Malo",
     seoDescription:
-      "Rénovation de surfaces pour hôtels, restaurants et commerces à Saint-Malo : revêtements adhésifs et films vitrages, interventions planifiées pour ne pas fermer.",
+      "Rénovation de surfaces pour hôtels, restaurants et commerces à Saint-Malo : revêtements adhésifs et films vitrages, interventions planifiées pour limiter la gêne pour votre activité.",
   },
   {
     slug: "boat",

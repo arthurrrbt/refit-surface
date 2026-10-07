@@ -120,7 +120,7 @@ async function JobView({ params }: { params: PageProps<"/app/chantiers/[id]">["p
 
       <Section title="Planification de la pose">
         <ScheduleForm jobId={job.id} start={job.start_date} end={job.end_date} today={parisDate()} />
-        {job.labour_days ? <p className="mt-2 text-xs text-ink/50">Durée prévue au devis : {qty.format(job.labour_days)} jour(s).</p> : null}
+        {job.labour_days ? <p className="mt-2 text-xs text-ink/60">Durée prévue au devis : {qty.format(job.labour_days)} jour(s).</p> : null}
       </Section>
 
       <Section title={`Matière (${materials.length})`}>
@@ -133,7 +133,7 @@ async function JobView({ params }: { params: PageProps<"/app/chantiers/[id]">["p
                   <li key={m.id} className="flex flex-wrap items-center gap-3 py-2">
                     <div className="min-w-0 flex-1">
                       <p className="font-medium">{m.products ? `${m.products.brand} ${m.products.reference} — ${m.products.name}` : m.description}</p>
-                      <p className="text-xs text-ink/50">
+                      <p className="text-xs text-ink/60">
                         {m.description} · <strong className="text-ink">{qty.format(m.quantity_m2)} m²</strong> pertes comprises
                       </p>
                     </div>
@@ -161,7 +161,7 @@ async function JobView({ params }: { params: PageProps<"/app/chantiers/[id]">["p
             )}
           </>
         ) : (
-          <p className="text-sm text-ink/50">Aucune ligne de revêtement dans le devis.</p>
+          <p className="text-sm text-ink/60">Aucune ligne de revêtement dans le devis.</p>
         )}
       </Section>
 
@@ -177,7 +177,7 @@ async function JobView({ params }: { params: PageProps<"/app/chantiers/[id]">["p
         ) : hasBefore && hasAfter ? (
           <PublishForm jobId={job.id} photos={job.photos} />
         ) : (
-          <p className="text-sm text-ink/50">Ajoutez au moins une photo « Avant » et une photo « Après » pour publier ce chantier dans la galerie.</p>
+          <p className="text-sm text-ink/60">Ajoutez au moins une photo « Avant » et une photo « Après » pour publier ce chantier dans la galerie.</p>
         )}
       </Section>
 

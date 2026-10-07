@@ -6,7 +6,7 @@ const styles: Record<LeadStatus, string> = {
   rdv: "bg-violet-100 text-violet-800",
   devis_envoye: "bg-sky-100 text-sky-800",
   gagne: "bg-emerald-100 text-emerald-800",
-  perdu: "bg-ink/10 text-ink/50",
+  perdu: "bg-ink/10 text-ink/60",
 };
 
 export function StatusBadge({ status }: { status: LeadStatus }) {

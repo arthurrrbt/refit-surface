@@ -63,7 +63,7 @@ async function QuoteView({ params }: { params: PageProps<"/app/devis/[id]">["par
           </div>
           <p className="mt-1 text-sm text-ink/60">{contactName(c)}</p>
         </div>
-        <p className="font-display text-2xl font-semibold">{euro.format(quote.total_ttc)} <span className="text-sm font-normal text-ink/50">TTC</span></p>
+        <p className="font-display text-2xl font-semibold">{euro.format(quote.total_ttc)} <span className="text-sm font-normal text-ink/60">TTC</span></p>
         <a href={`/app/devis/${quote.id}/pdf`} target="_blank" className="inline-flex items-center gap-2 rounded-sm border border-ink/15 px-3 py-2 text-sm font-semibold">
           <FileText className="size-4" /> {quote.status === "brouillon" ? "Aperçu PDF" : "PDF"}
         </a>
@@ -191,7 +191,7 @@ async function QuoteBilling({ quoteId, depositRate }: { quoteId: string; deposit
       {options.length > 0 ? (
         <CreateInvoiceButtons quoteId={quoteId} depositPercent={Math.round(depositRate * 100)} options={options} />
       ) : (
-        <p className="text-ink/50">Ce devis est entièrement facturé.</p>
+        <p className="text-ink/60">Ce devis est entièrement facturé.</p>
       )}
     </section>
   );

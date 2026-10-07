@@ -7,6 +7,7 @@ import { company } from "@/content/company";
 import { parisDate } from "@/lib/booking/time";
 import { euro } from "@/lib/quotes/pricing";
 import { getQuoteByToken } from "@/lib/quotes/public";
+import { LegalLinks } from "@/components/site/LegalLinks";
 import { SignaturePad } from "./SignaturePad";
 
 export const metadata: Metadata = {
@@ -95,15 +96,16 @@ async function SignatureContent({ params }: { params: PageProps<"/signature/[tok
           </div>
         ) : expired ? (
           <p className="text-sm text-amber-800">
-            La validité de ce devis est dépassée. Contactez-nous au {company.phone} pour une mise à jour.
+            La validité de ce devis est dépassée. Contactez-nous ({company.phone || company.email}) pour une mise à jour.
           </p>
         ) : (
-          <SignaturePad token={token} defaultName={clientName} />
+          <SignaturePad token={token} defaultName={clientName} isConsumer={c?.kind !== "professionnel"} />
         )}
       </section>
 
-      <p className="text-center text-xs text-ink/50">
-        {company.name} · {company.city} · {company.phone} · {company.email}
+      <LegalLinks className="text-center text-xs text-ink/70 [&_ul]:justify-center" linkClassName="underline" />
+      <p className="text-center text-xs text-ink/60">
+        {[company.name, company.city, company.phone, company.email].filter(Boolean).join(" · ")}
       </p>
     </div>
   );

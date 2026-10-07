@@ -23,6 +23,8 @@ export const metadata: Metadata = {
   },
   description: site.description,
   applicationName: site.name,
+  // Avant le lancement, aucune page n'est indexée (voir site.launched)
+  ...(site.launched ? {} : { robots: { index: false, follow: false } }),
   openGraph: {
     type: "website",
     locale: "fr_FR",

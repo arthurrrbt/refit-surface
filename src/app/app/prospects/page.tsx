@@ -59,7 +59,7 @@ async function LeadList() {
                   <StatusBadge status={lead.status} />
                 </div>
                 <p className="mt-2 truncate font-semibold">{contactName(lead.contacts)}</p>
-                <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-sm text-ink/55">
+                <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-sm text-ink/60">
                   <span>{dateFormat.format(new Date(lead.created_at))}</span>
                   {lead.contacts?.city && <span>{lead.contacts.city}</span>}
                   {photoCount > 0 && (

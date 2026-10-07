@@ -137,8 +137,8 @@ export function QuoteEditor({
                           onChange={(e) => update(l.key, { surface_m2: num(e.target.value) })}
                           className={field}
                         />
-                        <span className="text-xs text-ink/50">m²</span>
-                        <button type="button" onClick={() => setDimsFor(dimsFor === l.key ? null : l.key)} aria-label="Calculer la surface" className="p-1.5 text-ink/50 hover:text-ink">
+                        <span className="text-xs text-ink/60">m²</span>
+                        <button type="button" onClick={() => setDimsFor(dimsFor === l.key ? null : l.key)} aria-label="Calculer la surface" className="p-1.5 text-ink/60 hover:text-ink">
                           <Calculator className="size-4" />
                         </button>
                       </div>
@@ -156,7 +156,7 @@ export function QuoteEditor({
                       />
                       <div className="flex items-center gap-1 sm:col-span-3">
                         <input aria-label="Jours" inputMode="decimal" value={l.days || ""} onChange={(e) => update(l.key, { days: num(e.target.value) })} className={field} />
-                        <span className="text-xs text-ink/50">jour(s)</span>
+                        <span className="text-xs text-ink/60">jour(s)</span>
                       </div>
                     </>
                   )}
@@ -165,7 +165,7 @@ export function QuoteEditor({
                       <input aria-label="Désignation" value={l.description} onChange={(e) => update(l.key, { description: e.target.value })} placeholder="Déplacement" className={`${field} sm:col-span-9`} />
                       <div className="flex items-center gap-1 sm:col-span-3">
                         <input aria-label="Montant" inputMode="decimal" value={l.amount || ""} onChange={(e) => update(l.key, { amount: num(e.target.value) })} className={field} />
-                        <span className="text-xs text-ink/50">€ HT</span>
+                        <span className="text-xs text-ink/60">€ HT</span>
                       </div>
                     </>
                   )}
@@ -178,14 +178,14 @@ export function QuoteEditor({
                     </>
                   )}
                 </div>
-                <button type="button" onClick={() => setLines((prev) => prev.filter((x) => x.key !== l.key))} aria-label="Supprimer la ligne" className="p-2 text-ink/40 hover:text-red-600">
+                <button type="button" onClick={() => setLines((prev) => prev.filter((x) => x.key !== l.key))} aria-label="Supprimer la ligne" className="p-2 text-ink/60 hover:text-red-600">
                   <Trash2 className="size-4" />
                 </button>
               </div>
               <p className="mt-2 text-right text-xs text-ink/60">
                 {c.quantity} {c.unit} × {euro.format(c.unit_price_ht)} = <strong className="text-ink">{euro.format(c.total_ht)} HT</strong>
                 {c.kind === "matiere" && c.cost_ht > 0 && (
-                  <span className="ml-2 text-ink/40">
+                  <span className="ml-2 text-ink/60">
                     (achat {euro.format(c.cost_ht)} pour {String(c.details.purchased_m2)} m² pertes incluses)
                   </span>
                 )}

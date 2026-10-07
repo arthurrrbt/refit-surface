@@ -21,7 +21,7 @@ export default function SettingsPage() {
 
 async function Settings() {
   const settings = await getSettings();
-  const missing = Object.entries(company).filter(([, v]) => typeof v === "string" && v.startsWith("["));
+  const missing = Object.entries(company).filter(([, v]) => JSON.stringify(v).includes("["));
   return (
     <div className="max-w-3xl space-y-6 p-4 sm:p-8">
       <SettingsForm settings={settings} />

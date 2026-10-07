@@ -36,14 +36,14 @@ async function InvoiceList() {
     <div className="space-y-4 p-4 sm:p-8">
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-sm bg-paper p-4 shadow-sm">
-          <p className="text-xs text-ink/50">À encaisser</p>
+          <p className="text-xs text-ink/60">À encaisser</p>
           <p className="mt-1 font-display text-2xl font-semibold">{euro.format(toCollect)}</p>
-          <p className="text-xs text-ink/50">{open.length} facture(s)</p>
+          <p className="text-xs text-ink/60">{open.length} facture(s)</p>
         </div>
         <div className={`rounded-sm p-4 shadow-sm ${overdue.length ? "bg-red-50" : "bg-paper"}`}>
-          <p className="text-xs text-ink/50">En retard</p>
+          <p className="text-xs text-ink/60">En retard</p>
           <p className={`mt-1 font-display text-2xl font-semibold ${overdue.length ? "text-red-700" : ""}`}>{euro.format(overdueAmount)}</p>
-          <p className="text-xs text-ink/50">{overdue.length} facture(s)</p>
+          <p className="text-xs text-ink/60">{overdue.length} facture(s)</p>
         </div>
       </div>
 
@@ -56,10 +56,10 @@ async function InvoiceList() {
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-semibold">{r.number ?? "Brouillon"}</span>
                     <InvoiceBadge kind={r.kind} status={r.status} overdue={r.overdue} partial={r.amount_paid > 0 && r.remaining > 0} />
-                    <span className="text-xs text-ink/50">{invoiceKindLabels[r.kind]}</span>
+                    <span className="text-xs text-ink/60">{invoiceKindLabels[r.kind]}</span>
                   </div>
                   <p className="mt-1 truncate text-sm">{contactName(r.contacts)}</p>
-                  <p className="text-xs text-ink/50">
+                  <p className="text-xs text-ink/60">
                     {r.issued_at ? `Émise le ${dateFr.format(new Date(r.issued_at))}` : `Créée le ${dateFr.format(new Date(r.created_at))}`}
                     {r.remaining > 0 && r.status !== "brouillon" && r.status !== "annulee" ? ` · ${r.kind === "avoir" ? "à rembourser" : "reste"} ${euro.format(r.remaining)}` : ""}
                   </p>

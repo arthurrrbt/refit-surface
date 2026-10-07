@@ -58,7 +58,7 @@ async function QuoteList() {
                 <QuoteStatusBadge status={q.status} />
               </div>
               <p className="mt-1 truncate text-sm">{contactName(q.contacts)}</p>
-              <p className="truncate text-xs text-ink/50">
+              <p className="truncate text-xs text-ink/60">
                 {q.title} · {dateFr.format(new Date(q.created_at))}
               </p>
             </div>

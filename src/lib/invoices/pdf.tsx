@@ -1,6 +1,6 @@
 import "server-only";
 import { Document, Page, Text, View, renderToBuffer } from "@react-pdf/renderer";
-import { company } from "@/content/company";
+import { company, mediatorText } from "@/content/company";
 import { CompanyHeader, dateFr, money, qty, s } from "@/lib/pdf/shared";
 import { invoiceKindLabels, type InvoiceRow } from "./data";
 
@@ -103,7 +103,7 @@ function InvoiceDocument({ invoice }: { invoice: InvoiceRow }) {
               : "Payable à réception."}{" "}
             Virement : {company.iban}
           </Text>
-          <Text style={s.small}>Pas d&apos;escompte pour paiement anticipé. TVA acquittée sur les encaissements.</Text>
+          <Text style={s.small}>TVA acquittée sur les encaissements.</Text>
           <Text style={s.small}>{company.latePenalty}</Text>
         </View>
         )}
@@ -111,7 +111,7 @@ function InvoiceDocument({ invoice }: { invoice: InvoiceRow }) {
         <View style={s.section} wrap={false}>
           <Text style={s.label}>Mentions</Text>
           <Text style={s.small}>Assurance professionnelle : {company.insurance}</Text>
-          {!isPro && <Text style={s.small}>Médiation de la consommation : {company.mediator}</Text>}
+          {!isPro && <Text style={s.small}>Médiation de la consommation : {mediatorText}</Text>}
         </View>
       </Page>
     </Document>

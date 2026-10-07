@@ -38,7 +38,7 @@ export function QualificationPanel({ run, email }: { run: AgentRun<Qualification
             <div className="h-2 rounded-full bg-ink/10">
               <div className={`h-2 rounded-full ${scoreColor(q.score)}`} style={{ width: `${q.score}%` }} />
             </div>
-            <p className="mt-1 text-xs text-ink/50">Priorité {q.priorite}</p>
+            <p className="mt-1 text-xs text-ink/60">Priorité {q.priorite}</p>
           </div>
         </div>
         <span className="rounded-full bg-mist px-3 py-1 text-xs font-semibold">Faisabilité : {faisabiliteLabels[q.faisabilite]}</span>
@@ -49,7 +49,7 @@ export function QualificationPanel({ run, email }: { run: AgentRun<Qualification
       </div>
 
       <p className="text-ink/80">{q.resume}</p>
-      <p className="text-xs text-ink/50">{q.justification_score}</p>
+      <p className="text-xs text-ink/60">{q.justification_score}</p>
 
       {q.observations_photos && (
         <div>
@@ -82,7 +82,7 @@ export function QualificationPanel({ run, email }: { run: AgentRun<Qualification
         <p className="flex items-center gap-2 font-semibold">
           <Mail className="size-4" /> Brouillon de réponse
         </p>
-        <p className="mt-2 text-xs text-ink/50">Objet : {q.brouillon_email.objet}</p>
+        <p className="mt-2 text-xs text-ink/60">Objet : {q.brouillon_email.objet}</p>
         <p className="mt-2 whitespace-pre-line text-ink/80">{q.brouillon_email.corps}</p>
         <div className="mt-4 flex flex-wrap gap-2">
           <a href={mailtoHref(email, q.brouillon_email.objet, q.brouillon_email.corps)} className="inline-flex items-center gap-2 rounded-sm bg-ink px-3 py-2 text-sm font-semibold text-paper">
@@ -91,7 +91,7 @@ export function QualificationPanel({ run, email }: { run: AgentRun<Qualification
           <CopyButton text={q.brouillon_email.corps} />
         </div>
       </div>
-      <p className="text-xs text-ink/40">Analyse du {dateTimeFr.format(new Date(run.created_at))}</p>
+      <p className="text-xs text-ink/60">Analyse du {dateTimeFr.format(new Date(run.created_at))}</p>
     </div>
   );
 }
@@ -153,11 +153,11 @@ export function FollowupCard({
         <span className="font-semibold">
           {channelLabel[followup.channel]} {followup.step}
         </span>
-        <span className={`inline-flex items-center gap-1 text-xs ${overdue ? "font-semibold text-amber-700" : "text-ink/50"}`}>
+        <span className={`inline-flex items-center gap-1 text-xs ${overdue ? "font-semibold text-amber-700" : "text-ink/60"}`}>
           <CalendarClock className="size-3.5" /> {dateFr.format(new Date(followup.due_at))}
           {overdue && " — à faire"}
         </span>
-        {done && <span className="text-xs text-ink/50">({followup.status === "envoye" ? "fait" : "annulé"})</span>}
+        {done && <span className="text-xs text-ink/60">({followup.status === "envoye" ? "fait" : "annulé"})</span>}
         {leadLink && (
           <Link href={leadLink.href} className="ml-auto text-xs underline">
             {leadLink.label}

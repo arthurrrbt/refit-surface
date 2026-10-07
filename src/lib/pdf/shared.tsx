@@ -76,7 +76,7 @@ export function CompanyHeader() {
         <Text>
           {company.postalCode} {company.city}
         </Text>
-        <Text>{company.phone}</Text>
+        {company.phone ? <Text>{company.phone}</Text> : null}
         <Text>{company.email}</Text>
         <Text style={{ marginTop: 4 }}>{company.legalForm}</Text>
         <Text>

@@ -16,7 +16,7 @@ export type ContactInput = {
 
 /**
  * Crée ou met à jour le contact d'un formulaire public (dédupliqué par e-mail)
- * et horodate le consentement RGPD. Retourne l'identifiant du contact.
+ * et horodate l'information RGPD délivrée. Retourne l'identifiant du contact.
  */
 export async function upsertContact(db: ReturnType<typeof createAdminClient>, input: ContactInput, source = "site") {
   const email = input.email.toLowerCase();
@@ -30,6 +30,7 @@ export async function upsertContact(db: ReturnType<typeof createAdminClient>, in
     postal_code: input.postalCode || null,
     city: input.city || null,
     ...(input.address ? { address: input.address } : {}),
+    // Date à laquelle la personne a reçu l'information RGPD (mention sous le formulaire) — ce n'est pas un consentement
     privacy_consent_at: new Date().toISOString(),
   };
 

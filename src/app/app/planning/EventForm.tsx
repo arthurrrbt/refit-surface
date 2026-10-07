@@ -48,7 +48,7 @@ export function EventForm({ today }: { today: string }) {
         </PendingButton>
         {state.error && <p className="text-sm text-red-600">{state.error}</p>}
         {state.ok && <p className="text-sm text-emerald-700">Ajouté.</p>}
-        <p className="text-xs text-ink/50">Les créneaux occupés ne sont plus proposés aux clients sur le site.</p>
+        <p className="text-xs text-ink/60">Les créneaux occupés ne sont plus proposés aux clients sur le site.</p>
       </div>
     </form>
   );

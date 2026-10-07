@@ -43,7 +43,6 @@ export const devisSchema = z
     postalCode: optionalText(10),
     city: optionalText(80),
     message: optionalText(3000),
-    privacyConsent: z.literal(true),
     marketingConsent: z.boolean(),
     uploadId: z.uuid().optional(),
     photos: z.array(z.string().max(200)).max(MAX_PHOTOS),

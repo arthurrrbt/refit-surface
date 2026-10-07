@@ -42,7 +42,7 @@ async function Dashboard() {
         {kpis.map((k) => (
           <li key={k.label}>
             <Link href={k.href} className="block rounded-sm bg-paper p-4 shadow-sm transition-shadow hover:shadow-md">
-              <p className="text-xs text-ink/50">{k.label}</p>
+              <p className="text-xs text-ink/60">{k.label}</p>
               <p className={`mt-2 font-display text-2xl font-semibold ${k.value ? "text-ink" : "text-ink/30"}`}>{"money" in k ? euro.format(k.value) : k.value}</p>
             </Link>
           </li>

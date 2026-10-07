@@ -137,7 +137,6 @@ export function DevisForm() {
         postalCode: text("postalCode"),
         city: text("city"),
         message: text("message"),
-        privacyConsent: formData.get("privacyConsent") === "on",
         marketingConsent: formData.get("marketingConsent") === "on",
         uploadId,
         photos: photoPaths,
@@ -181,7 +180,7 @@ export function DevisForm() {
         {steps.map((label, i) => (
           <li key={label}>
             <span className={`block h-1 rounded-full ${i <= step ? "bg-accent" : "bg-line"}`} />
-            <span className={`mt-2 block text-xs ${i === step ? "text-paper" : "text-paper/40"}`}>
+            <span className={`mt-2 block text-xs ${i === step ? "text-paper" : "text-paper/60"}`}>
               {i + 1}. {label}
             </span>
           </li>
@@ -239,7 +238,7 @@ export function DevisForm() {
                       type="button"
                       onClick={() => setSurfaces((prev) => (prev.length > 1 ? prev.filter((_, j) => j !== i) : [{ ...emptySurface }]))}
                       aria-label="Retirer cette surface"
-                      className="flex size-11 items-center justify-center text-paper/40 hover:text-red-400 sm:order-last"
+                      className="flex size-11 items-center justify-center text-paper/60 hover:text-red-400 sm:order-last"
                     >
                       <Trash2 className="size-4" />
                     </button>
@@ -327,7 +326,7 @@ export function DevisForm() {
         <div hidden={step !== 1} className="space-y-6">
           <Fieldset
             legend="Ajoutez des photos"
-            hint={`Une vue d'ensemble et quelques détails de chaque surface (${MAX_PHOTOS} max). Facultatif, mais très utile pour estimer.`}
+            hint={`Une vue d'ensemble et quelques détails de chaque surface (${MAX_PHOTOS} max). Facultatif, mais très utile pour estimer. Évitez de photographier des personnes ou des documents personnels.`}
           >
             <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4">
               {photos.map((p, i) => (
@@ -396,19 +395,19 @@ export function DevisForm() {
           </label>
           {/* Piège à robots, invisible pour les humains */}
           <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
-          <label className="flex items-start gap-3 text-sm text-paper/80">
-            <input type="checkbox" name="privacyConsent" required className="mt-1 accent-accent" />
-            <span>
-              J&apos;accepte que mes informations soient utilisées pour traiter ma demande de devis.{" "}
-              <Link href="/mentions-legales" className="underline hover:text-accent">
-                En savoir plus
-              </Link>
-            </span>
-          </label>
-          <label className="flex items-start gap-3 text-sm text-paper/60">
+          <label className="flex items-start gap-3 text-sm text-paper/75">
             <input type="checkbox" name="marketingConsent" className="mt-1 accent-accent" />
-            <span>Je souhaite recevoir occasionnellement des conseils et réalisations REFIT Surface.</span>
+            <span>Facultatif : je souhaite recevoir occasionnellement des conseils et réalisations REFIT Surface (désinscription à tout moment).</span>
           </label>
+          <p className="text-xs leading-relaxed text-paper/70">
+            Les informations marquées d&apos;un astérisque sont nécessaires pour étudier votre demande et vous recontacter. Elles sont
+            utilisées uniquement par REFIT Surface pour établir votre devis et conservées 3 ans sans suite donnée. Vous pouvez y accéder, les
+            corriger ou les supprimer : voir notre{" "}
+            <Link href="/confidentialite" className="underline hover:text-accent">
+              politique de confidentialité
+            </Link>
+            .
+          </p>
         </div>
 
         {error && (

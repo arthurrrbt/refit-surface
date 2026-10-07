@@ -24,9 +24,13 @@ const projectSchema = z
     before_path: photoPath,
     after_path: photoPath,
     published: z.boolean(),
+    clientConsent: z.boolean(),
   })
   .refine((p) => !p.published || (p.before_path && p.after_path), {
     message: "Ajoutez les photos avant et après pour publier.",
+  })
+  .refine((p) => !p.published || p.clientConsent, {
+    message: "Confirmez avoir obtenu l'accord du client avant de publier ses photos.",
   });
 
 export type SaveProjectInput = z.input<typeof projectSchema>;
@@ -36,7 +40,8 @@ export async function saveProject(input: SaveProjectInput): Promise<SaveProjectR
   await requireUser();
   const parsed = projectSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Formulaire invalide." };
-  const { id, ...p } = parsed.data;
+  const { id, clientConsent: _consent, ...p } = parsed.data;
+  void _consent;
   const supabase = await createClient();
 
   const fields = {

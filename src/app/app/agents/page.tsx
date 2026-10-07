@@ -122,7 +122,7 @@ function Section({ title, empty, children }: { title: string; empty: string; chi
     <section>
       <h2 className="font-display text-lg font-semibold">{title}</h2>
       <div className="mt-3 space-y-2">
-        {children.length ? children : <p className="rounded-sm bg-paper p-4 text-sm text-ink/50 shadow-sm">{empty}</p>}
+        {children.length ? children : <p className="rounded-sm bg-paper p-4 text-sm text-ink/60 shadow-sm">{empty}</p>}
       </div>
     </section>
   );

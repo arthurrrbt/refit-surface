@@ -6,7 +6,7 @@ import { MaterialSwatch } from "@/components/site/MaterialSwatch";
 import { RecentProjects } from "@/components/site/RecentProjects";
 import { CtaBand } from "@/components/site/CtaBand";
 import { ButtonLink } from "@/components/ui/Button";
-import { site } from "@/content/site";
+import { hasPhone, site } from "@/content/site";
 import { univers } from "@/content/univers";
 
 const steps = [
@@ -17,7 +17,7 @@ const steps = [
 ];
 
 const reasons = [
-  { icon: PiggyBank, title: "Économique", text: "Une fraction du coût d'un remplacement complet." },
+  { icon: PiggyBank, title: "Économique", text: "Vous ne payez que l'habillage des surfaces, pas le remplacement des éléments." },
   { icon: Clock, title: "Rapide", text: "Quelques jours de pose, sans gravats ni longue immobilisation." },
   { icon: Leaf, title: "Responsable", text: "On garde l'existant : moins de déchets, moins de transport." },
 ];
@@ -29,7 +29,7 @@ const jsonLd = {
   slogan: site.tagline,
   description: site.description,
   url: site.url,
-  telephone: site.phone,
+  ...(hasPhone ? { telephone: site.phone } : {}),
   email: site.email,
   address: {
     "@type": "PostalAddress",

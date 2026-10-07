@@ -50,7 +50,7 @@ async function ProjectList() {
                   // eslint-disable-next-line @next/next/no-img-element -- vignette du stockage public
                   <img key={i} src={galleryPublicUrl(path)} alt="" className="size-full object-cover" loading="lazy" />
                 ) : (
-                  <span key={i} className="flex items-center justify-center text-xs text-ink/40">
+                  <span key={i} className="flex items-center justify-center text-xs text-ink/60">
                     {i === 0 ? "Avant ?" : "Après ?"}
                   </span>
                 ),
@@ -59,13 +59,13 @@ async function ProjectList() {
             <div className="p-4">
               <div className="flex items-center gap-2">
                 <UniversBadge univers={p.univers} />
-                <span className={`inline-flex items-center gap-1 text-xs ${p.published ? "text-emerald-700" : "text-ink/50"}`}>
+                <span className={`inline-flex items-center gap-1 text-xs ${p.published ? "text-emerald-700" : "text-ink/60"}`}>
                   {p.published ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
                   {p.published ? "Publiée" : "Brouillon"}
                 </span>
               </div>
               <p className="mt-2 font-semibold">{p.title}</p>
-              {p.city && <p className="text-sm text-ink/55">{p.city}</p>}
+              {p.city && <p className="text-sm text-ink/60">{p.city}</p>}
             </div>
           </Link>
         </li>

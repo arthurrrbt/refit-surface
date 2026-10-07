@@ -38,7 +38,7 @@ async function Dashboard() {
 
       <section className="rounded-sm bg-paper p-5 shadow-sm">
         <h2 className="font-display font-semibold">Chiffre d&apos;affaires facturé HT — 12 derniers mois</h2>
-        <p className="text-xs text-ink/50">Factures émises moins les avoirs, par mois d&apos;émission.</p>
+        <p className="text-xs text-ink/60">Factures émises moins les avoirs, par mois d&apos;émission.</p>
         <BarChart data={months} />
       </section>
 
@@ -108,9 +108,9 @@ function Group({ title, children }: { title: string; children: ReactNode }) {
 function Tile({ label, value, hint, href, alert }: { label: string; value: string; hint?: string; href?: string; alert?: string }) {
   const body = (
     <>
-      <p className="text-xs text-ink/55">{label}</p>
+      <p className="text-xs text-ink/60">{label}</p>
       <p className="mt-1 font-display text-2xl font-semibold tabular-nums">{value}</p>
-      {hint && <p className="mt-0.5 text-xs text-ink/50">{hint}</p>}
+      {hint && <p className="mt-0.5 text-xs text-ink/60">{hint}</p>}
       {alert && (
         <p className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-red-700">
           <AlertTriangle className="size-3.5" /> {alert}
@@ -136,7 +136,7 @@ function BarChart({ data }: { data: MonthPoint[] }) {
     <div className="mt-4">
       <div className="relative">
         <div className="pointer-events-none absolute inset-x-0 top-0 border-t border-dashed border-ink/10" aria-hidden />
-        <span className="absolute -top-2 right-0 bg-paper pl-1 text-[0.65rem] text-ink/40 tabular-nums">{euro0.format(max)}</span>
+        <span className="absolute -top-2 right-0 bg-paper pl-1 text-[0.65rem] text-ink/60 tabular-nums">{euro0.format(max)}</span>
         <ul className="flex h-44 items-end gap-0.5 border-b border-ink/20" aria-label="Chiffre d'affaires facturé HT par mois">
           {data.map((d) => {
             const h = Math.max((Math.max(d.invoicedHt, 0) / scale) * 100, d.invoicedHt > 0 ? 2 : 0);
@@ -155,7 +155,7 @@ function BarChart({ data }: { data: MonthPoint[] }) {
       </div>
       <ul className="mt-1 flex gap-0.5" aria-hidden>
         {data.map((d) => (
-          <li key={d.month} className="flex-1 text-center text-[0.65rem] capitalize text-ink/50">
+          <li key={d.month} className="flex-1 text-center text-[0.65rem] capitalize text-ink/60">
             {d.label}
           </li>
         ))}
@@ -163,7 +163,7 @@ function BarChart({ data }: { data: MonthPoint[] }) {
       <details className="mt-3 text-sm">
         <summary className="cursor-pointer text-xs font-semibold text-ink/60">Voir le tableau</summary>
         <table className="mt-2 w-full text-left text-xs tabular-nums">
-          <thead className="text-ink/50">
+          <thead className="text-ink/60">
             <tr>
               <th className="py-1 font-semibold">Mois</th>
               <th className="py-1 text-right font-semibold">Facturé HT</th>
@@ -197,7 +197,7 @@ function Funnel({ steps }: { steps: { label: string; value: number }[] }) {
             <span>{s.label}</span>
             <span className="font-semibold tabular-nums">
               {s.value}
-              {i > 0 && steps[i - 1].value > 0 && <span className="ml-2 text-xs font-normal text-ink/50">{pct.format(s.value / steps[i - 1].value)}</span>}
+              {i > 0 && steps[i - 1].value > 0 && <span className="ml-2 text-xs font-normal text-ink/60">{pct.format(s.value / steps[i - 1].value)}</span>}
             </span>
           </div>
           <div className="mt-1 h-2 rounded-full bg-ink/5">
@@ -210,7 +210,7 @@ function Funnel({ steps }: { steps: { label: string; value: number }[] }) {
 }
 
 function HBars({ items }: { items: { label: string; value: number }[] }) {
-  if (!items.length) return <p className="mt-4 text-sm text-ink/50">Aucun devis signé cette année.</p>;
+  if (!items.length) return <p className="mt-4 text-sm text-ink/60">Aucun devis signé cette année.</p>;
   const max = Math.max(...items.map((i) => i.value), 1);
   return (
     <ul className="mt-4 space-y-2">

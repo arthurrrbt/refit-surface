@@ -23,7 +23,7 @@ export function InvoiceBadge({
           : status === "payee"
             ? ["Payée", "bg-emerald-100 text-emerald-800"]
             : status === "annulee"
-              ? ["Annulée par avoir", "bg-ink/10 text-ink/50"]
+              ? ["Annulée par avoir", "bg-ink/10 text-ink/60"]
               : partial
                 ? ["Partiellement payée", "bg-amber-100 text-amber-800"]
                 : ["À encaisser", "bg-sky-100 text-sky-800"];

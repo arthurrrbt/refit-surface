@@ -19,7 +19,6 @@ const bookingSchema = z
     postalCode: z.string().trim().max(10).optional(),
     city: z.string().trim().min(1, "Indiquez la ville.").max(80),
     message: z.string().trim().max(2000).optional(),
-    privacyConsent: z.literal(true, "Merci d'accepter le traitement de vos données."),
     marketingConsent: z.boolean(),
     website: z.string().optional(), // piège à robots
   })

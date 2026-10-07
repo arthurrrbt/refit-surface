@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
+import { LegalLinks } from "@/components/site/LegalLinks";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export default function ConnexionPage() {
           <p className="mt-1 mb-8 text-sm text-paper/60">Prospects, devis, factures et planning.</p>
           <LoginForm />
         </div>
+        <LegalLinks className="mt-8 text-xs text-paper/70" linkClassName="hover:text-paper" />
       </div>
     </main>
   );

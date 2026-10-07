@@ -5,7 +5,7 @@ import { Check, Download, Eraser, Loader2 } from "lucide-react";
 import { signQuote } from "./actions";
 
 /** Zone de signature au doigt / à la souris + mention « Bon pour accord ». */
-export function SignaturePad({ token, defaultName }: { token: string; defaultName: string }) {
+export function SignaturePad({ token, defaultName, isConsumer }: { token: string; defaultName: string; isConsumer: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
   const [hasInk, setHasInk] = useState(false);
@@ -61,6 +61,8 @@ export function SignaturePad({ token, defaultName }: { token: string; defaultNam
       token,
       name: String(formData.get("name") ?? ""),
       consent: (formData.get("consent") === "on") as true,
+      cgv: (formData.get("cgv") === "on") as true,
+      earlyStart: formData.get("earlyStart") === "on",
       signature: canvasRef.current.toDataURL("image/png"),
     });
     setSending(false);
@@ -115,6 +117,34 @@ export function SignaturePad({ token, defaultName }: { token: string; defaultNam
         />
       </div>
       <label className="flex items-start gap-3 text-sm">
+        <input type="checkbox" name="cgv" required className="mt-1 size-4 accent-accent" />
+        <span>
+          J&apos;ai lu et j&apos;accepte les{" "}
+          <a href="/cgv" target="_blank" className="underline">
+            conditions générales de prestation
+          </a>
+          .
+        </span>
+      </label>
+      {isConsumer && (
+        <div className="rounded-sm bg-mist p-3 text-sm">
+          <p>
+            Vous disposez de <strong>14 jours</strong> à compter de la signature pour vous rétracter, sans justification (
+            <a href="/cgv#formulaire-retractation" target="_blank" className="underline">
+              formulaire de rétractation
+            </a>
+            ). Aucun acompte ne vous sera demandé avant 7 jours si vous signez hors de nos locaux.
+          </p>
+          <label className="mt-2 flex items-start gap-3">
+            <input type="checkbox" name="earlyStart" className="mt-1 size-4 accent-accent" />
+            <span>
+              Facultatif : je demande que les travaux puissent commencer avant la fin du délai de rétractation. Je reste libre de me
+              rétracter, mais je devrai alors payer les prestations déjà réalisées.
+            </span>
+          </label>
+        </div>
+      )}
+      <label className="flex items-start gap-3 text-sm">
         <input type="checkbox" name="consent" required className="mt-1 size-4 accent-accent" />
         <span>
           J&apos;ai lu le devis et je l&apos;accepte — <strong>Bon pour accord</strong>.
@@ -128,7 +158,7 @@ export function SignaturePad({ token, defaultName }: { token: string; defaultNam
         {sending && <Loader2 className="size-4 animate-spin" />}
         {sending ? "Signature en cours…" : "Signer le devis"}
       </button>
-      <p className="text-xs text-ink/50">
+      <p className="text-xs text-ink/60">
         En signant, vous acceptez le devis ci-dessus. Votre signature est horodatée et associée à l&apos;empreinte numérique du
         document ; un certificat est joint au devis signé.
       </p>

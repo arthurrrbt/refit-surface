@@ -74,7 +74,7 @@ async function InvoiceView({ params }: { params: PageProps<"/app/factures/[id]">
           </p>
         </div>
         <p className={`font-display text-2xl font-semibold ${isCreditNote ? "text-violet-700" : ""}`}>
-          {euro.format(invoice.total_ttc)} <span className="text-sm font-normal text-ink/50">TTC</span>
+          {euro.format(invoice.total_ttc)} <span className="text-sm font-normal text-ink/60">TTC</span>
         </p>
         <a href={`/app/factures/${invoice.id}/pdf`} target="_blank" className="inline-flex items-center gap-2 rounded-sm border border-ink/15 px-3 py-2 text-sm font-semibold">
           <FileText className="size-4" /> {invoice.status === "brouillon" ? "Aperçu PDF" : "PDF"}
@@ -178,7 +178,7 @@ function SendSection({ invoice, label, downloadUrl, overdue, remaining }: { invo
 }
 
 function PaymentList({ invoice, emptyText }: { invoice: InvoiceRow; emptyText: string }) {
-  if (!invoice.invoice_payments.length) return <p className="text-sm text-ink/50">{emptyText}</p>;
+  if (!invoice.invoice_payments.length) return <p className="text-sm text-ink/60">{emptyText}</p>;
   return (
     <ul className="divide-y divide-ink/10 text-sm">
       {invoice.invoice_payments.map((p) => (
@@ -248,7 +248,7 @@ function CreditNotes({ invoice }: { invoice: InvoiceRow }) {
           </div>
         </details>
       ) : (
-        <p className="text-ink/50">Cette facture est entièrement créditée.</p>
+        <p className="text-ink/60">Cette facture est entièrement créditée.</p>
       )}
     </section>
   );

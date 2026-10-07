@@ -51,7 +51,7 @@ async function JobList() {
         return (
           <section key={status}>
             <h2 className="font-display font-semibold">
-              {jobStatusLabels[status]} <span className="text-ink/40">({group.length})</span>
+              {jobStatusLabels[status]} <span className="text-ink/60">({group.length})</span>
             </h2>
             <ul className="mt-2 space-y-2">
               {group.map((j) => {
@@ -70,7 +70,7 @@ async function JobList() {
                           )}
                         </div>
                         <p className="mt-1 truncate font-semibold">{contactName(j.contacts)}</p>
-                        <p className="flex flex-wrap items-center gap-x-3 text-sm text-ink/55">
+                        <p className="flex flex-wrap items-center gap-x-3 text-sm text-ink/60">
                           <span className="truncate">{j.title}</span>
                           {j.start_date && (
                             <span className="inline-flex items-center gap-1">

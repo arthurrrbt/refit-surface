@@ -91,7 +91,7 @@ export function JobPhotos({ jobId, photos, deleteAction }: { jobId: string; phot
         return (
           <div key={st.value}>
             <p className="text-sm font-semibold">
-              {st.label} <span className="font-normal text-ink/50">({list.length})</span>
+              {st.label} <span className="font-normal text-ink/60">({list.length})</span>
             </p>
             <ul className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
               {list.map((p) => (
@@ -179,7 +179,7 @@ export function PublishForm({ jobId, photos }: { jobId: string; photos: JobPhoto
       <PendingButton variant="primary" pendingLabel="Préparation…">
         Préparer la réalisation pour la galerie
       </PendingButton>
-      <p className="text-xs text-ink/50">Un brouillon est créé dans Réalisations : relisez le titre et la description, puis publiez.</p>
+      <p className="text-xs text-ink/60">Un brouillon est créé dans Réalisations : relisez le titre et la description, puis publiez.</p>
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
     </form>
   );

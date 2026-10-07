@@ -46,6 +46,13 @@ export async function createInvoiceFromQuote(_prev: InvoiceActionState, formData
     .parse({ quote_id: formData.get("quote_id"), kind: formData.get("kind") });
   const quote = await getQuote(parsed.quote_id);
   if (!quote || quote.status !== "signe") return { error: "Seul un devis signé peut être facturé." };
+  // Particulier, devis signé hors établissement : aucun paiement exigible avant 7 jours (art. L221-10 C. conso)
+  if (parsed.kind === "acompte" && quote.contacts?.kind !== "professionnel" && quote.signed_at) {
+    const allowedFrom = addDays(parisDate(new Date(quote.signed_at)), 7);
+    if (parisDate() < allowedFrom) {
+      return { error: `Client particulier : l'acompte ne peut pas être demandé avant le ${allowedFrom.split("-").reverse().join("/")} (7 jours après la signature, article L221-10 du Code de la consommation).` };
+    }
+  }
 
   const supabase = await createClient();
   const { data: existing } = await supabase
