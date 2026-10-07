@@ -35,9 +35,9 @@ export function GalleryGrid({ projects, initialFilter }: { projects: PublicGalle
 
       {shown.length ? (
         <ul className="mt-8 grid gap-6 md:grid-cols-2">
-          {shown.map((p) => (
+          {shown.map((p, i) => (
             <li key={p.id} className="overflow-hidden rounded-sm border border-line bg-ink-2">
-              <BeforeAfter before={p.before_url} after={p.after_url} alt={p.title} sizes="(min-width: 768px) 50vw, 100vw" />
+              <BeforeAfter before={p.before_url} after={p.after_url} alt={p.title} sizes="(min-width: 768px) 50vw, 100vw" eager={i < 2} />
               <div className="p-5">
                 <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-accent">
                   REFIT {univers.find((u) => u.slug === p.univers)?.name.replace("REFIT ", "")}

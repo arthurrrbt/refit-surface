@@ -2,18 +2,40 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { MoveHorizontal } from "lucide-react";
+import { Loader2, MoveHorizontal } from "lucide-react";
 
 /** Comparateur avant / après : glisser (souris ou doigt) ou flèches du clavier. */
-export function BeforeAfter({ before, after, alt, sizes }: { before: string; after: string; alt: string; sizes: string }) {
+export function BeforeAfter({
+  before,
+  after,
+  alt,
+  sizes,
+  eager = false,
+}: {
+  before: string;
+  after: string;
+  alt: string;
+  sizes: string;
+  /** Chargement immédiat (première image visible de la page). */
+  eager?: boolean;
+}) {
   const [position, setPosition] = useState(50);
+  const [loaded, setLoaded] = useState(0);
+  const ready = loaded >= 2;
+  const onLoad = () => setLoaded((n) => n + 1);
 
   return (
     <div className="relative aspect-[4/3] touch-pan-y overflow-hidden bg-ink-2 select-none">
-      <Image src={after} alt={`${alt} — après`} fill sizes={sizes} className="object-cover" />
+      <Image src={after} alt={`${alt} — après`} fill sizes={sizes} loading={eager ? "eager" : "lazy"} onLoad={onLoad} className="object-cover" />
       <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}>
-        <Image src={before} alt={`${alt} — avant`} fill sizes={sizes} className="object-cover" />
+        <Image src={before} alt={`${alt} — avant`} fill sizes={sizes} loading={eager ? "eager" : "lazy"} onLoad={onLoad} className="object-cover" />
       </div>
+
+      {!ready && (
+        <div className="absolute inset-0 flex items-center justify-center bg-ink-2/80" aria-hidden>
+          <Loader2 className="size-6 animate-spin text-paper/50" />
+        </div>
+      )}
 
       <span className="pointer-events-none absolute left-3 top-3 rounded-sm bg-ink/75 px-2 py-1 font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-paper">
         Avant

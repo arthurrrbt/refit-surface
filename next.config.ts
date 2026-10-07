@@ -4,6 +4,8 @@ import type { NextConfig } from "next";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
 const nextConfig: NextConfig = {
+  // Développement : autorise un téléphone du réseau local (ex. http://192.168.1.104:3000)
+  allowedDevOrigins: ["192.168.1.*"],
   cacheComponents: true,
   partialPrefetching: true,
   images: {
