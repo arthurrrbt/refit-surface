@@ -48,11 +48,12 @@ test("Flux du planning : refusé avec un jeton faux ou absent", async (t) => {
   assert.equal((await get("/api/planning/ics?token=" + "a".repeat(48))).status, 401);
 });
 
-test("Liens clients : jeton inconnu ou malformé → 404 sans détail", async (t) => {
+test("Liens clients : jeton inconnu ou malformé → refusé sans détail", async (t) => {
   if (!(await needServer(t))) return;
   for (const path of ["/facture/" + "0".repeat(48), "/facture/..%2F..%2Fetc%2Fpasswd", "/signature/" + "0".repeat(48) + "/pdf"]) {
     const r = await get(path);
-    assert.equal(r.status, 404, path);
+    // 404 par l'application, ou 400 si l'hébergeur (Vercel) rejette l'URL avant qu'elle n'atteigne le site
+    assert.ok(r.status === 404 || r.status === 400, `${path} : ${r.status}`);
     const text = await r.text();
     assert.ok(!/at .*\(|node_modules|supabase\.co|stack/i.test(text), `${path} : détails internes`);
   }
