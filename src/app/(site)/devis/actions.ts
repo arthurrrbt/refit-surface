@@ -105,7 +105,7 @@ export async function submitDevis(input: DevisInput): Promise<SubmitResult> {
 
   after(async () => {
     // E-mail de confirmation au client (récapitulatif + exemple de réalisation)
-    const mail = await sendDevisConfirmation(d, photoPaths.length, origin);
+    const mail = await sendDevisConfirmation(leadId, d, photoPaths.length, origin);
     if (!mail.ok) console.warn(`Confirmation devis ${leadId} : ${mail.error}`);
     // Analyse IA de la demande
     const result = await runQualification(leadId);
@@ -116,7 +116,7 @@ export async function submitDevis(input: DevisInput): Promise<SubmitResult> {
 }
 
 /** Envoie le récapitulatif au client, au plus 3 fois par adresse et par 24 h (anti-abus). */
-async function sendDevisConfirmation(d: DevisInput, photoCount: number, origin: string) {
+async function sendDevisConfirmation(leadId: string, d: DevisInput, photoCount: number, origin: string) {
   const db = createAdminClient();
   const email = d.email.toLowerCase();
   const since = new Date(Date.now() - 24 * 3600_000).toISOString();
@@ -147,5 +147,5 @@ async function sendDevisConfirmation(d: DevisInput, photoCount: number, origin: 
     : null;
 
   const { subject, html, text } = devisConfirmationEmail(d, photoCount, origin, example);
-  return sendMail({ to: email, subject, html, text });
+  return sendMail({ to: email, subject, html, text, idempotencyKey: `devis-confirmation/${leadId}` });
 }

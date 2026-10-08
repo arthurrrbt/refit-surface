@@ -138,9 +138,15 @@ export default function ConfidentialitePage() {
             </tr>
             <tr>
               <td>Microsoft Ireland Operations Ltd (Microsoft 365)</td>
-              <td>Messagerie : envoi des e-mails (confirmation de demande, devis, factures) et réception de vos réponses</td>
+              <td>Messagerie du gérant : échanges avec vous, envoi des devis et factures, réception de vos réponses</td>
               <td>Union européenne</td>
               <td>Accord de traitement des données (DPA) et clauses contractuelles types</td>
+            </tr>
+            <tr>
+              <td>Resend (États-Unis)</td>
+              <td>Envoi automatique de l&apos;e-mail de confirmation de votre demande de devis (adresse e-mail, prénom, récapitulatif de la demande)</td>
+              <td>Envoi depuis l&apos;Union européenne (Irlande) ; société américaine</td>
+              <td>Accord de traitement des données (DPA) avec clauses contractuelles types et Data Privacy Framework UE–États-Unis</td>
             </tr>
             <tr>
               <td>IGN — Géoplateforme (France)</td>
