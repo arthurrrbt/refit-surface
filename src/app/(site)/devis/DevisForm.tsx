@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from "react";
-import { Camera, Check, Loader2, Plus, Trash2, X } from "lucide-react";
+import { Camera, Check, Loader2, Mail, Plus, Trash2, X } from "lucide-react";
 import { AddressAutocomplete } from "@/components/AddressAutocomplete";
 import { Button, buttonClass } from "@/components/ui/Button";
 import { univers as universList } from "@/content/univers";
@@ -42,6 +42,7 @@ export function DevisForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
   const [error, setError] = useState<string | null>(null);
   const [firstName, setFirstName] = useState("");
+  const [confirmation, setConfirmation] = useState<{ email: string; sent: boolean } | null>(null);
   const topRef = useRef<HTMLDivElement>(null);
 
   // Libère les aperçus à la fermeture
@@ -146,6 +147,7 @@ export function DevisForm() {
 
       if (!result.ok) throw new Error(result.error);
       setFirstName(text("firstName"));
+      setConfirmation({ email: text("email"), sent: result.emailSent });
       setStatus("done");
       topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (e) {
@@ -166,6 +168,22 @@ export function DevisForm() {
             Votre demande est bien enregistrée. Nous l&apos;étudions et revenons vers vous rapidement pour
             convenir d&apos;une visite.
           </p>
+          {confirmation &&
+            (confirmation.sent ? (
+              <div className="mx-auto mt-6 flex max-w-xl items-start gap-3 rounded-sm border border-line bg-ink p-4 text-left text-sm">
+                <Mail className="mt-0.5 size-5 shrink-0 text-accent" aria-hidden />
+                <p className="text-paper/80">
+                  Un e-mail de confirmation récapitulant votre demande vient de vous être envoyé à{" "}
+                  <strong className="break-all text-paper">{confirmation.email}</strong>. Vous ne le voyez pas d&apos;ici
+                  quelques minutes ? Pensez à regarder dans vos courriers indésirables.
+                </p>
+              </div>
+            ) : (
+              <p className="mx-auto mt-6 max-w-xl text-sm text-paper/60">
+                L&apos;e-mail de confirmation n&apos;a pas pu être envoyé à {confirmation.email}, mais votre demande nous est
+                bien parvenue.
+              </p>
+            ))}
           <Link href="/realisations" className={buttonClass("outline", "mt-8")}>
             Voir nos réalisations
           </Link>

@@ -39,7 +39,8 @@ export async function prepareDevisUpload(extensions: string[]): Promise<UploadSl
   return { uploadId, slots: results.map((r) => ({ path: r.data!.path, token: r.data!.token })) };
 }
 
-type SubmitResult = { ok: true } | { ok: false; error: string };
+/** emailSent : l'e-mail de confirmation est bien parti (le message affiché au client en dépend). */
+type SubmitResult = { ok: true; emailSent: boolean } | { ok: false; error: string };
 
 /** Enregistre la demande : contact (dédupliqué par e-mail), prospect et photos. */
 export async function submitDevis(input: DevisInput): Promise<SubmitResult> {
@@ -50,7 +51,7 @@ export async function submitDevis(input: DevisInput): Promise<SubmitResult> {
   const d = parsed.data;
 
   // Robot : on fait comme si tout s'était bien passé
-  if (d.website) return { ok: true };
+  if (d.website) return { ok: true, emailSent: true };
   if (await isRateLimited("devis")) return { ok: false, error: TOO_MANY };
 
   const supabase = createAdminClient();
@@ -103,16 +104,21 @@ export async function submitDevis(input: DevisInput): Promise<SubmitResult> {
   const h = await headers();
   const origin = `https://${h.get("x-forwarded-host") ?? h.get("host")}`.replace("https://localhost", "http://localhost");
 
+  // E-mail de confirmation (récapitulatif + exemple de réalisation), envoyé avant de répondre
+  // pour annoncer au client uniquement ce qui s'est réellement passé. Un échec ne bloque pas la demande.
+  const mail = await sendDevisConfirmation(leadId, d, photoPaths.length, origin).catch((e: unknown) => ({
+    ok: false as const,
+    error: e instanceof Error ? e.message : String(e),
+  }));
+  if (!mail.ok) console.warn(`Confirmation devis ${leadId} : ${mail.error}`);
+
+  // Analyse IA de la demande, une fois la réponse envoyée au visiteur
   after(async () => {
-    // E-mail de confirmation au client (récapitulatif + exemple de réalisation)
-    const mail = await sendDevisConfirmation(leadId, d, photoPaths.length, origin);
-    if (!mail.ok) console.warn(`Confirmation devis ${leadId} : ${mail.error}`);
-    // Analyse IA de la demande
     const result = await runQualification(leadId);
     if (!result.ok) console.warn(`Qualification ${leadId} : ${result.error}`);
   });
 
-  return { ok: true };
+  return { ok: true, emailSent: mail.ok };
 }
 
 /** Envoie le récapitulatif au client, au plus 3 fois par adresse et par 24 h (anti-abus). */
