@@ -1,0 +1,11 @@
+# Tournée quotidienne de l'agent REFIT (remplace le cron de Vercel).
+# Le secret est passé par l'entrée standard : il n'apparaît jamais dans la liste des processus.
+[Unit]
+Description=Tournee quotidienne de l'agent REFIT
+After=refit-surface.service
+
+[Service]
+Type=oneshot
+User=refit
+EnvironmentFile=/home/refit/app/.env.production
+ExecStart=/bin/sh -c 'printf "Authorization: Bearer %%s\n" "$$CRON_SECRET" | curl -fsS --max-time 330 -H @- -o /dev/null http://127.0.0.1:3000/api/agents/tournee'

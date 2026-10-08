@@ -8,7 +8,7 @@ import { parisDate } from "@/lib/booking/time";
 import { createJobFromQuote } from "@/lib/jobs/create";
 import { renderQuotePdf } from "@/lib/quotes/pdf";
 import { getQuoteByToken } from "@/lib/quotes/public";
-import { isRateLimited, TOO_MANY } from "@/lib/security/rate-limit";
+import { clientIp, isRateLimited, TOO_MANY } from "@/lib/security/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const CONSENT = "J'ai lu le devis et je l'accepte — Bon pour accord.";
@@ -50,7 +50,7 @@ export async function signQuote(input: z.input<typeof signSchema>): Promise<Sign
   }
 
   const h = await headers();
-  const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "inconnue";
+  const ip = await clientIp();
   const userAgent = (h.get("user-agent") ?? "inconnu").slice(0, 300);
   const signedAt = new Date().toISOString();
 

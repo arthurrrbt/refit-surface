@@ -1,0 +1,22 @@
+# Caddy : frontal HTTPS du site (certificats Let's Encrypt automatiques et renouvelés seuls).
+# À copier dans /etc/caddy/Caddyfile puis : sudo systemctl reload caddy
+
+www.refitsurface.fr {
+	encode zstd gzip
+
+	reverse_proxy 127.0.0.1:3000 {
+		# IP réelle du visiteur pour la limitation de débit et la preuve de signature.
+		# Remplace toute valeur envoyée par le client : non falsifiable (CLIENT_IP_HEADER=x-real-ip).
+		header_up X-Real-IP {remote_host}
+	}
+
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+		-Server
+	}
+}
+
+# Le domaine nu redirige vers www (adresse officielle du site)
+refitsurface.fr {
+	redir https://www.refitsurface.fr{uri} permanent
+}

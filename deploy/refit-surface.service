@@ -1,0 +1,34 @@
+# Service systemd du site. À copier dans /etc/systemd/system/ puis :
+#   sudo systemctl daemon-reload && sudo systemctl enable --now refit-surface
+[Unit]
+Description=REFIT Surface (Next.js)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=refit
+Group=refit
+WorkingDirectory=/home/refit/app/.next/standalone
+EnvironmentFile=/home/refit/app/.env.production
+# Écoute uniquement en local : seul Caddy est exposé sur Internet
+Environment=NODE_ENV=production PORT=3000 HOSTNAME=127.0.0.1
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=5
+
+# Durcissement : le site ne peut écrire que dans son cache
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/refit/app/.next/standalone/.next/cache
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryMax=1200M
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+# Déclenche la tournée de l'agent chaque matin à 8 h (heure de Paris).
+# sudo systemctl enable --now refit-tournee.timer
+[Unit]
+Description=Tournee quotidienne de l'agent REFIT (8 h)
+
+[Timer]
+OnCalendar=*-*-* 08:00:00 Europe/Paris
+Persistent=true
+
+[Install]
+WantedBy=timers.target

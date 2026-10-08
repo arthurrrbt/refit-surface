@@ -34,6 +34,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Serveur autonome (.next/standalone) pour l'hébergement sur VPS
+  output: "standalone",
   poweredByHeader: false,
   async headers() {
     return [

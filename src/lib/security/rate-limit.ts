@@ -17,12 +17,15 @@ export const LIMITS = {
 export type LimitedAction = keyof typeof LIMITS;
 
 /**
- * IP du visiteur. Sur Vercel, x-forwarded-for est réécrit par la plateforme :
- * sa première valeur est l'adresse réelle du client, non falsifiable par celui-ci.
+ * IP réelle du visiteur, lue dans l'en-tête posé par le serveur frontal de confiance :
+ * - CLIENT_IP_HEADER=x-real-ip sur le VPS (Caddy l'écrase avec l'adresse de la connexion, le client ne peut pas le choisir) ;
+ * - par défaut x-forwarded-for (première valeur), réécrit par Vercel.
+ * Ne jamais lire un en-tête que le frontal ne réécrit pas : il serait falsifiable.
  */
 export async function clientIp(): Promise<string> {
   const h = await headers();
-  return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip")?.trim() || "inconnue";
+  const header = (env("CLIENT_IP_HEADER") ?? "x-forwarded-for").toLowerCase();
+  return h.get(header)?.split(",")[0]?.trim() || "inconnue";
 }
 
 /** IPv6 : on limite par bloc /64 (un abonné en dispose d'un entier et peut changer d'adresse à volonté). */

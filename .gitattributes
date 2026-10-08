@@ -1,1 +1,4 @@
 * text=auto eol=lf
+
+# Fichiers du serveur Linux : fins de ligne Unix obligatoires
+deploy/* text eol=lf
