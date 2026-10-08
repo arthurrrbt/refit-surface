@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock, Leaf, PiggyBank } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
+import { HeroPaths, RevealTitle } from "@/components/site/HeroPaths";
 import { MaterialSwatch } from "@/components/site/MaterialSwatch";
 import { RecentProjects } from "@/components/site/RecentProjects";
 import { CtaBand } from "@/components/site/CtaBand";
@@ -49,41 +49,27 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 lg:min-h-[78vh] lg:grid-cols-[1.25fr_1fr] lg:py-0">
-          <div className="flex flex-col items-start">
-            <Logo size="lg" align="start" />
-            <span className="accent-rule mt-8" />
-            <h1 className="mt-8 font-display text-lg font-normal uppercase tracking-(--tracking-brand) sm:text-xl xl:text-2xl">
-              {site.tagline}
-            </h1>
-            <p className="mt-4 font-display text-xs uppercase tracking-(--tracking-brand) text-paper/70 sm:text-sm">
-              {site.baseline}
-            </p>
-            <p className="mt-8 text-base text-paper/85 sm:text-lg">
-              Poseur certifié <strong>Cover Styl&apos;</strong>
-              <span className="mx-3 text-accent">•</span>
-              Films solaires <strong>Solar Screen</strong>
-            </p>
-            <div className="mt-10 flex flex-wrap gap-3">
-              <ButtonLink href="/devis">Demander un devis</ButtonLink>
-              <ButtonLink href="/realisations" variant="outline">
-                Voir les réalisations
-              </ButtonLink>
-            </div>
-          </div>
-
-          <div className="relative hidden h-full min-h-[560px] lg:block">
-            <Image
-              src="/brand/matieres.png"
-              alt="Bois, marbre, béton et vitrage : les matières REFIT Surface"
-              fill
-              priority
-              sizes="40vw"
-              className="object-cover object-left"
-            />
-            <div className="absolute inset-y-0 left-0 w-24 bg-linear-to-r from-ink to-transparent" />
+      {/* Hero : lignes animées (un film qui se déroule sur une surface) et signature révélée */}
+      <section className="relative isolate flex min-h-[calc(100svh-4rem)] items-center overflow-hidden">
+        <HeroPaths />
+        {/* Voile central : garde le texte lisible au-dessus des lignes */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_45%_at_center,var(--color-ink)_20%,transparent_100%)] opacity-90" />
+        <div className="relative mx-auto flex w-full max-w-5xl flex-col items-center px-4 py-20 text-center sm:px-6">
+          <Logo size="md" />
+          <RevealTitle
+            text={site.tagline}
+            className="mt-10 font-display text-5xl font-semibold leading-[1.02] tracking-tight text-balance sm:text-7xl lg:text-8xl"
+          />
+          <p className="mt-8 max-w-xl text-lg text-paper/80 sm:text-xl">{site.baseline}.</p>
+          <p className="mt-4 max-w-xl text-sm text-paper/70 sm:text-base">
+            Poseur certifié <strong className="text-paper">Cover Styl&apos;</strong> et films solaires{" "}
+            <strong className="text-paper">Solar Screen</strong>, à Saint-Malo et sur la Côte d&apos;Émeraude.
+          </p>
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
+            <ButtonLink href="/devis">Demander un devis</ButtonLink>
+            <ButtonLink href="/realisations" variant="outline">
+              Voir les réalisations
+            </ButtonLink>
           </div>
         </div>
       </section>
