@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Clock, Leaf, PiggyBank } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
-import { HeroPaths, RevealTitle } from "@/components/site/HeroPaths";
+import { HeroPaths } from "@/components/site/HeroPaths";
 import { MaterialSwatch } from "@/components/site/MaterialSwatch";
 import { RecentProjects } from "@/components/site/RecentProjects";
 import { CtaBand } from "@/components/site/CtaBand";
@@ -55,21 +55,22 @@ export default function HomePage() {
         {/* Voile central : garde le texte lisible au-dessus des lignes */}
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_45%_at_center,var(--color-ink)_20%,transparent_100%)] opacity-90" />
         <div className="relative mx-auto flex w-full max-w-5xl flex-col items-center px-4 py-20 text-center sm:px-6">
-          <Logo size="md" />
-          <RevealTitle
-            text={site.tagline}
-            className="mt-10 font-display text-5xl font-semibold leading-[1.02] tracking-tight text-balance sm:text-7xl lg:text-8xl"
-          />
-          <p className="mt-8 max-w-xl text-lg text-paper/80 sm:text-xl">{site.baseline}.</p>
-          <p className="mt-4 max-w-xl text-sm text-paper/70 sm:text-base">
-            Poseur certifié <strong className="text-paper">Cover Styl&apos;</strong> et films solaires{" "}
-            <strong className="text-paper">Solar Screen</strong>, à Saint-Malo et sur la Côte d&apos;Émeraude.
-          </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            <ButtonLink href="/devis">Demander un devis</ButtonLink>
-            <ButtonLink href="/realisations" variant="outline">
-              Voir les réalisations
-            </ButtonLink>
+          <Logo size="md" className="hero-rise" />
+          <h1 className="hero-rise mt-10 font-display text-5xl font-semibold leading-[1.02] tracking-tight text-balance [animation-delay:80ms] sm:text-7xl lg:text-8xl">
+            {site.tagline}
+          </h1>
+          <div className="hero-rise flex flex-col items-center [animation-delay:300ms]">
+            <p className="mt-8 max-w-xl text-lg text-paper/80 sm:text-xl">{site.baseline}.</p>
+            <p className="mt-4 max-w-xl text-sm text-paper/70 sm:text-base">
+              Poseur certifié <strong className="text-paper">Cover Styl&apos;</strong> et films solaires{" "}
+              <strong className="text-paper">Solar Screen</strong>, à Saint-Malo et sur la Côte d&apos;Émeraude.
+            </p>
+            <div className="mt-10 flex flex-wrap justify-center gap-3">
+              <ButtonLink href="/devis">Demander un devis</ButtonLink>
+              <ButtonLink href="/realisations" variant="outline">
+                Voir les réalisations
+              </ButtonLink>
+            </div>
           </div>
         </div>
       </section>
