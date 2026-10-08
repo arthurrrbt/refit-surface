@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:api": "node --conditions=react-server --import tsx --test \"tests/live/*.test.ts\""
+    "test:api": "node --conditions=react-server --import tsx --test \"tests/live/*.test.ts\"",
+    "test:security": "node --env-file-if-exists=.env.local --conditions=react-server --import tsx --test \"tests/security/*.test.ts\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",

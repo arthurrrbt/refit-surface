@@ -7,6 +7,7 @@ import { preparePhoto } from "@/lib/devis/photos";
 import type { JobPhoto } from "@/lib/jobs/data";
 import { createClient } from "@/lib/supabase/client";
 import { PendingButton } from "../agents/ui";
+import { prepareAdminUpload } from "../uploads";
 import { publishJobToGallery, registerJobPhotos, saveJobNotes, scheduleJob, type JobActionState } from "./actions";
 
 const field = "mt-1 block w-full rounded-sm border border-ink/15 bg-paper px-3 py-2 text-sm focus:border-accent focus:outline-none";
@@ -72,7 +73,9 @@ export function JobPhotos({ jobId, photos, deleteAction }: { jobId: string; phot
       for (const [i, file] of Array.from(files).slice(0, 10).entries()) {
         const photo = await preparePhoto(file);
         const path = photoPath(jobId, stage, i, photo.type);
-        const { error: uploadError } = await storage.upload(path, photo, { contentType: photo.type });
+        const slot = await prepareAdminUpload("chantier", path);
+        if ("error" in slot) throw new Error(slot.error);
+        const { error: uploadError } = await storage.uploadToSignedUrl(slot.path, slot.token, photo, { contentType: photo.type });
         if (uploadError) throw new Error("Envoi d'une photo impossible.");
         paths.push(path);
       }

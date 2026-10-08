@@ -6,10 +6,11 @@ import { after } from "next/server";
 import { z } from "zod";
 import { MAX_PHOTOS, PHOTO_EXTENSIONS, devisSchema, type DevisInput } from "@/lib/devis/schema";
 import { runQualification } from "@/lib/agents/qualification";
-import { upsertContact } from "@/lib/contacts";
+import { submittedContact, upsertContact } from "@/lib/contacts";
 import { galleryPublicUrl } from "@/lib/gallery-shared";
 import { devisConfirmationEmail, type ExampleProject } from "@/lib/mail/devis-confirmation";
 import { sendMail } from "@/lib/mail/send";
+import { isRateLimited, TOO_MANY } from "@/lib/security/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const BUCKET = "lead-photos";
@@ -24,6 +25,7 @@ export async function prepareDevisUpload(extensions: string[]): Promise<UploadSl
     .max(MAX_PHOTOS)
     .safeParse(extensions.map((e) => e.toLowerCase()));
   if (!parsed.success) return { error: "Format de photo non accepté (JPEG, PNG, WebP ou HEIC)." };
+  if (await isRateLimited("devisPhotos")) return { error: TOO_MANY };
 
   const uploadId = randomUUID();
   const storage = createAdminClient().storage.from(BUCKET);
@@ -49,6 +51,7 @@ export async function submitDevis(input: DevisInput): Promise<SubmitResult> {
 
   // Robot : on fait comme si tout s'était bien passé
   if (d.website) return { ok: true };
+  if (await isRateLimited("devis")) return { ok: false, error: TOO_MANY };
 
   const supabase = createAdminClient();
 
@@ -78,7 +81,7 @@ export async function submitDevis(input: DevisInput): Promise<SubmitResult> {
           hauteur_mm: s.hauteurCm ? Math.round(s.hauteurCm * 10) : null,
           quantite: s.quantite,
         })),
-        details: { objectifs: d.objectifs, finitions: d.finitions || null, delai: d.delai || null },
+        details: { objectifs: d.objectifs, finitions: d.finitions || null, delai: d.delai || null, contact_saisi: submittedContact(d) },
       })
       .select("id")
       .single();

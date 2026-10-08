@@ -1,4 +1,5 @@
 import "server-only";
+import type { SubmittedContact } from "@/lib/contacts";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
@@ -48,7 +49,7 @@ export type LeadDetail = {
   source: string | null;
   message: string | null;
   surfaces: LeadSurface[];
-  details: { objectifs?: string[]; finitions?: string | null; delai?: string | null };
+  details: { objectifs?: string[]; finitions?: string | null; delai?: string | null; contact_saisi?: SubmittedContact };
   created_at: string;
   contacts: Contact | null;
   photos: { id: string; url: string | null }[];

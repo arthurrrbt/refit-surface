@@ -2,7 +2,8 @@
 
 import { z } from "zod";
 import { getAvailableSlots } from "@/lib/booking/slots";
-import { upsertContact } from "@/lib/contacts";
+import { submittedContact, upsertContact } from "@/lib/contacts";
+import { isRateLimited, TOO_MANY } from "@/lib/security/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const bookingSchema = z
@@ -36,6 +37,7 @@ export async function bookAppointment(input: BookingInput): Promise<BookingResul
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Formulaire incomplet." };
   const d = parsed.data;
   if (d.website) return { ok: false, error: "Réservation impossible." };
+  if (await isRateLimited("rendezVous")) return { ok: false, error: TOO_MANY };
 
   // Le créneau doit toujours être libre au moment de valider
   const slot = (await getAvailableSlots()).flatMap((day) => day.slots).find((s) => s.start === new Date(d.start).toISOString());
@@ -47,7 +49,7 @@ export async function bookAppointment(input: BookingInput): Promise<BookingResul
     const contactId = await upsertContact(db, d);
     const { data: lead, error: leadError } = await db
       .from("leads")
-      .insert({ contact_id: contactId, univers: d.univers ?? null, status: "rdv", source: "site", message: d.message || null })
+      .insert({ contact_id: contactId, univers: d.univers ?? null, status: "rdv", source: "site", message: d.message || null, details: { contact_saisi: submittedContact(d) } })
       .select("id")
       .single();
     if (leadError) throw leadError;

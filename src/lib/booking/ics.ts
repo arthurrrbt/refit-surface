@@ -13,8 +13,17 @@ function stamp(value: string | Date) {
   return new Date(value).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 }
 
-function escapeText(text: string) {
-  return text.replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
+/**
+ * Échappement RFC 5545. Tout saut de ligne (\r\n, \r seul ou \n) devient « \n » littéral :
+ * un \r laissé brut permettrait d'injecter des propriétés (alarme, pièce jointe…) dans le calendrier.
+ */
+export function escapeText(text: string) {
+  return text
+    .replace(/\\/g, "\\\\")
+    .replace(/\r\n|\r|\n/g, "\\n")
+    .replace(/,/g, "\\,")
+    .replace(/;/g, "\\;")
+    .replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, "");
 }
 
 /** Replie les lignes longues (75 caractères max, norme RFC 5545). */

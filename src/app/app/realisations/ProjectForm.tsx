@@ -7,6 +7,7 @@ import { univers as universList } from "@/content/univers";
 import { preparePhoto } from "@/lib/devis/photos";
 import { galleryPublicUrl, type GalleryProject } from "@/lib/gallery-shared";
 import { createClient } from "@/lib/supabase/client";
+import { prepareAdminUpload } from "../uploads";
 import { saveProject } from "./actions";
 
 type Side = "avant" | "apres";
@@ -43,7 +44,9 @@ export function ProjectForm({ project }: { project?: GalleryProject }) {
     try {
       const photo = await preparePhoto(file);
       const path = newPhotoPath(folder, side, photo.type);
-      const { error: uploadError } = await createClient().storage.from("gallery").upload(path, photo, { contentType: photo.type });
+      const slot = await prepareAdminUpload("realisation", path);
+      if ("error" in slot) throw new Error(slot.error);
+      const { error: uploadError } = await createClient().storage.from("gallery").uploadToSignedUrl(slot.path, slot.token, photo, { contentType: photo.type });
       if (uploadError) throw new Error("Envoi de la photo impossible.");
       setPaths((p) => ({ ...p, [side]: path }));
       setPreviews((p) => ({ ...p, [side]: URL.createObjectURL(photo) }));

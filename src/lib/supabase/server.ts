@@ -12,6 +12,8 @@ export async function createClient() {
   const { url, key } = requireSupabaseEnv();
 
   return createServerClient(url, key, {
+    // Cookie de session illisible par JavaScript (HttpOnly) et réservé au HTTPS en production
+    cookieOptions: { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/" },
     cookies: {
       getAll() {
         return cookieStore.getAll();

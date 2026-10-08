@@ -15,6 +15,7 @@ import { FollowupCard, ProposalCard, QualificationPanel } from "../../agents/com
 import { PendingButton, RequalifyButton } from "../../agents/ui";
 import { createQuoteFromLead } from "../../devis/actions";
 import { TravelInfo } from "../../LiveData";
+import type { SubmittedContact } from "@/lib/contacts";
 import { QuoteStatusBadge } from "../../devis/QuoteStatusBadge";
 
 export const metadata: Metadata = { title: "Prospect" };
@@ -93,6 +94,8 @@ async function LeadDetailView({ params }: { params: PageProps<"/app/prospects/[i
           )}
           <Info label="SIRET">{c?.siret}</Info>
         </dl>
+
+        {c && lead.details.contact_saisi && <SubmittedDiff saisi={lead.details.contact_saisi} contact={c} />}
 
         {c && (
           <details className="mt-4 border-t border-ink/10 pt-3">
@@ -221,6 +224,42 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
       <h2 className="font-display font-semibold">{title}</h2>
       <div className="mt-3">{children}</div>
     </section>
+  );
+}
+
+const diffLabels = {
+  company: "Société",
+  first_name: "Prénom",
+  last_name: "Nom",
+  phone: "Téléphone",
+  postal_code: "Code postal",
+  city: "Ville",
+  address: "Adresse",
+} as const;
+
+/**
+ * Coordonnées saisies dans la demande qui diffèrent de la fiche : jamais appliquées automatiquement
+ * (un formulaire public ne peut pas modifier une fiche existante), à vérifier avant de corriger la fiche.
+ */
+function SubmittedDiff({ saisi, contact }: { saisi: SubmittedContact; contact: Record<string, unknown> }) {
+  const norm = (v: unknown) => String(v ?? "").replace(/\s+/g, "").toLowerCase();
+  const diffs = (Object.keys(diffLabels) as (keyof typeof diffLabels)[]).filter((k) => saisi[k] && norm(saisi[k]) !== norm(contact[k]));
+  if (!diffs.length) return null;
+  return (
+    <div className="mt-4 rounded-sm border border-amber-300 bg-amber-50 p-3 text-sm">
+      <p className="font-semibold text-amber-900">Coordonnées différentes saisies dans cette demande</p>
+      <p className="text-xs text-amber-900/80">
+        Non appliquées automatiquement : vérifiez auprès du client (par le numéro de la fiche) avant de modifier ses coordonnées.
+      </p>
+      <dl className="mt-2 space-y-1">
+        {diffs.map((k) => (
+          <div key={k} className="flex gap-2">
+            <dt className="text-ink/60">{diffLabels[k]} :</dt>
+            <dd className="min-w-0 break-words">{saisi[k]}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
   );
 }
 

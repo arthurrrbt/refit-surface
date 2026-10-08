@@ -1,6 +1,6 @@
 "use server";
 
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { headers } from "next/headers";
 import { z } from "zod";
 import { company } from "@/content/company";
@@ -8,6 +8,7 @@ import { parisDate } from "@/lib/booking/time";
 import { createJobFromQuote } from "@/lib/jobs/create";
 import { renderQuotePdf } from "@/lib/quotes/pdf";
 import { getQuoteByToken } from "@/lib/quotes/public";
+import { isRateLimited, TOO_MANY } from "@/lib/security/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const CONSENT = "J'ai lu le devis et je l'accepte — Bon pour accord.";
@@ -30,6 +31,7 @@ export async function signQuote(input: z.input<typeof signSchema>): Promise<Sign
   const parsed = signSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Signature invalide." };
   const { token, name, signature, earlyStart } = parsed.data;
+  if (await isRateLimited("signature")) return { ok: false, error: TOO_MANY };
 
   const quote = await getQuoteByToken(token);
   if (!quote || quote.status !== "envoye" || !quote.pdf_path || !quote.number) {
@@ -52,15 +54,23 @@ export async function signQuote(input: z.input<typeof signSchema>): Promise<Sign
   const userAgent = (h.get("user-agent") ?? "inconnu").slice(0, 300);
   const signedAt = new Date().toISOString();
 
+  const png = Buffer.from(signature.split(",")[1], "base64");
+  // Le tracé doit être une vraie image PNG (signature des 8 premiers octets)
+  if (!png.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) {
+    return { ok: false, error: "Signature illisible : recommencez le tracé." };
+  }
+
   try {
-    const signaturePath = `devis/${quote.number}-signature.png`;
-    const png = Buffer.from(signature.split(",")[1], "base64");
-    const { error: sigError } = await db.storage.from("documents").upload(signaturePath, png, { contentType: "image/png", upsert: true });
+    // Fichiers propres à cette tentative, jamais écrasés : deux signatures simultanées ne peuvent pas
+    // remplacer la preuve enregistrée par l'autre (seule la mise à jour conditionnelle ci-dessous l'emporte).
+    const attempt = randomBytes(6).toString("hex");
+    const signaturePath = `devis/${quote.number}-signature-${attempt}.png`;
+    const { error: sigError } = await db.storage.from("documents").upload(signaturePath, png, { contentType: "image/png", upsert: false });
     if (sigError) throw sigError;
 
     const signedPdf = await renderQuotePdf(quote, { name, imageDataUrl: signature, signedAt, ip, userAgent, sentPdfSha256: sentHash, earlyStart });
-    const signedPath = `devis/${quote.number}-signe.pdf`;
-    const { error: pdfError } = await db.storage.from("documents").upload(signedPath, signedPdf, { contentType: "application/pdf", upsert: true });
+    const signedPath = `devis/${quote.number}-signe-${attempt}.pdf`;
+    const { error: pdfError } = await db.storage.from("documents").upload(signedPath, signedPdf, { contentType: "application/pdf", upsert: false });
     if (pdfError) throw pdfError;
 
     const { data: updated, error } = await db

@@ -20,7 +20,8 @@ export async function getPublishedProjects(): Promise<PublicGalleryProject[]> {
   const supabase = createSupabaseClient(env.url, env.key, { auth: { persistSession: false } });
   const { data, error } = await supabase
     .from("gallery_projects")
-    .select("*")
+    // Colonnes publiques uniquement (l'anonyme n'a pas accès à job_id)
+    .select("id, slug, title, univers, city, description, before_path, after_path, published, published_at, created_at")
     .eq("published", true)
     .not("before_path", "is", null)
     .not("after_path", "is", null)

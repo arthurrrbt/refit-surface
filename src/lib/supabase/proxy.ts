@@ -9,6 +9,8 @@ export async function updateSession(request: NextRequest) {
   if (!env) return { response, isAuthenticated: false };
 
   const supabase = createServerClient(env.url, env.key, {
+    // Cookie de session illisible par JavaScript (HttpOnly) et réservé au HTTPS en production
+    cookieOptions: { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/" },
     cookies: {
       getAll() {
         return request.cookies.getAll();
