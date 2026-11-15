@@ -81,6 +81,8 @@
 /* Apparition du titre puis du texte : un seul mouvement au chargement */
 .hero-rise {
   animation: hero-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* Après l'ouverture du site quand elle joue (--intro-delay), avec le décalage propre à chaque élément */
+  animation-delay: calc(var(--intro-delay, 0s) + var(--rise-delay, 0s));
 }
 @keyframes hero-rise {
   from { opacity: 0; transform: translate3d(0, 24px, 0); }
@@ -89,4 +91,105 @@
 @media (prefers-reduced-motion: reduce) {
   .hero-drift-a, .hero-drift-b, .hero-rise, .hero-lines { animation: none; }
   .hero-comet { display: none; }
+}
+
+/* ─── Ouverture du site : logo REFIT (src/components/brand/SiteIntro.tsx) ───
+   Uniquement transform et opacity (carte graphique). Jouée une fois par visite (classe intro-play posée par le script). */
+.site-intro {
+  display: none;
+}
+.intro-play {
+  --intro-delay: 1.85s;
+}
+.intro-play .site-intro {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none; /* ne bloque jamais un clic */
+  animation: intro-done 0s linear 2.4s forwards;
+}
+@keyframes intro-done {
+  to { visibility: hidden; }
+}
+/* Rideau : deux moitiés d'écran qui s'écartent */
+.site-intro__panel {
+  position: absolute;
+  inset-inline: 0;
+  height: 50.5%;
+  background: var(--color-ink);
+  will-change: transform;
+  /* Propriétés détaillées : le raccourci « animation » sans nom est mal réécrit par l'optimiseur CSS */
+  animation-duration: 0.8s;
+  animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+  animation-delay: 1.6s;
+  animation-fill-mode: both;
+}
+.site-intro__panel--top {
+  top: 0;
+  animation-name: intro-open-top;
+}
+.site-intro__panel--bottom {
+  bottom: 0;
+  animation-name: intro-open-bottom;
+}
+@keyframes intro-open-top {
+  to { transform: translate3d(0, -101%, 0); }
+}
+@keyframes intro-open-bottom {
+  to { transform: translate3d(0, 101%, 0); }
+}
+/* Logo : construction, puis effacement vers le haut avant l'ouverture du rideau */
+.site-intro__logo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  will-change: transform, opacity;
+  animation: intro-logo-out 0.5s cubic-bezier(0.4, 0, 1, 1) 1.35s both;
+}
+@keyframes intro-logo-out {
+  to { opacity: 0; transform: translate3d(0, -16px, 0) scale(0.98); }
+}
+.intro-band {
+  animation: intro-band 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
+}
+@keyframes intro-band {
+  from { opacity: 0; transform: translate(-36px, -30px); }
+}
+.intro-rbody {
+  animation: intro-fade 0.6s ease-out 0.18s both;
+}
+.intro-letter {
+  animation: intro-letter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes intro-letter {
+  from { opacity: 0; transform: translateY(34px); }
+}
+@keyframes intro-fade {
+  from { opacity: 0; }
+}
+.site-intro__surface {
+  margin-top: 0.9rem;
+  animation: intro-rise-small 0.6s ease-out 0.72s both;
+}
+@keyframes intro-rise-small {
+  from { opacity: 0; transform: translateY(8px); }
+}
+.site-intro__rule {
+  display: block;
+  margin-top: 1rem;
+  width: 4rem;
+  height: 2px;
+  background: var(--color-accent);
+  animation: intro-rule 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.85s both;
+}
+@keyframes intro-rule {
+  from { transform: scaleX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro-play .site-intro { display: none; }
+  .intro-play { --intro-delay: 0s; }
 }

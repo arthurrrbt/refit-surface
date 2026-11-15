@@ -47,7 +47,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className={`${montserrat.variable} ${lato.variable} h-full`}>
+    <html lang="fr" className={`${montserrat.variable} ${lato.variable} h-full`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

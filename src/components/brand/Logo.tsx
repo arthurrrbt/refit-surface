@@ -9,15 +9,25 @@ export function RMark({ className, title = "REFIT" }: MarkProps) {
   );
 }
 
+// Tracés du logo, partagés avec l'animation d'ouverture du site (SiteIntro)
+export const LOGO_PATHS = {
+  rBody: ["M0 0H110A31 31 0 0 1 110 62H92L130 100H82L21 39H110A8 8 0 0 0 110 23H23Z", "M0 42V100H58Z"],
+  rBand: "M12 42H24L82 100H70Z",
+  letters: [
+    "M157 0H249V23H182V38.5H243V61.5H182V77H249V100H157Z", // E
+    "M265 0H355V23H290V38.5H347V61.5H290V100H265Z", // F
+    "M371 0H397V100H371Z", // I
+    "M413 0H525V23H482V100H456V23H413Z", // T
+  ],
+};
+
 function RGlyph() {
   return (
     <>
-      <path
-        fill="currentColor"
-        d="M0 0H110A31 31 0 0 1 110 62H92L130 100H82L21 39H110A8 8 0 0 0 110 23H23Z"
-      />
-      <path fill="currentColor" d="M0 42V100H58Z" />
-      <path className="fill-accent" d="M12 42H24L82 100H70Z" />
+      {LOGO_PATHS.rBody.map((d) => (
+        <path key={d} fill="currentColor" d={d} />
+      ))}
+      <path className="fill-accent" d={LOGO_PATHS.rBand} />
     </>
   );
 }
@@ -28,14 +38,9 @@ export function Wordmark({ className, title = "REFIT" }: MarkProps) {
     <svg viewBox="0 0 545 100" className={className} role="img" aria-label={title}>
       <RGlyph />
       <g fill="currentColor">
-        {/* E */}
-        <path d="M157 0H249V23H182V38.5H243V61.5H182V77H249V100H157Z" />
-        {/* F */}
-        <path d="M265 0H355V23H290V38.5H347V61.5H290V100H265Z" />
-        {/* I */}
-        <rect x="371" y="0" width="26" height="100" />
-        {/* T */}
-        <path d="M413 0H525V23H482V100H456V23H413Z" />
+        {LOGO_PATHS.letters.map((d) => (
+          <path key={d} d={d} />
+        ))}
         {/* ® */}
         <circle cx="537" cy="7" r="6" fill="none" stroke="currentColor" strokeWidth="1.4" />
         <text x="537" y="9.6" fontSize="7.5" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="700">

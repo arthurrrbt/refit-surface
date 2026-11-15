@@ -56,10 +56,10 @@ export default function HomePage() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_45%_at_center,var(--color-ink)_20%,transparent_100%)] opacity-90" />
         <div className="relative mx-auto flex w-full max-w-5xl flex-col items-center px-4 py-20 text-center sm:px-6">
           <Logo size="md" className="hero-rise" />
-          <h1 className="hero-rise mt-10 font-display text-5xl font-semibold leading-[1.02] tracking-tight text-balance [animation-delay:80ms] sm:text-7xl lg:text-8xl">
+          <h1 className="hero-rise mt-10 font-display text-5xl font-semibold leading-[1.02] tracking-tight text-balance [--rise-delay:80ms] sm:text-7xl lg:text-8xl">
             {site.tagline}
           </h1>
-          <div className="hero-rise flex flex-col items-center [animation-delay:300ms]">
+          <div className="hero-rise flex flex-col items-center [--rise-delay:300ms]">
             <p className="mt-8 max-w-xl text-lg text-paper/80 sm:text-xl">{site.baseline}.</p>
             <p className="mt-4 max-w-xl text-sm text-paper/70 sm:text-base">
               Poseur certifié <strong className="text-paper">Cover Styl&apos;</strong> et films solaires{" "}
