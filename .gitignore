@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 !.env.example
+
+# page de maintenance générée (npm run maintenance:html)
+/public/maintenance.html

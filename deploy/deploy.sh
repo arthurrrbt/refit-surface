@@ -15,6 +15,9 @@ git pull --ff-only origin main
 echo "→ Installation des dépendances (versions figées du package-lock.json)"
 npm ci --no-audit --no-fund
 
+echo "→ Page de maintenance (servie par Caddy si le site ne répond plus)"
+npm run maintenance:html
+
 echo "→ Construction du site"
 npm run build
 

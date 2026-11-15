@@ -1,18 +1,59 @@
 # Caddy : frontal HTTPS du site (certificats Let's Encrypt automatiques et renouvelés seuls).
 # À copier dans /etc/caddy/Caddyfile puis : sudo systemctl reload caddy
+#
+# Page de maintenance (/home/refit/app/public/maintenance.html, générée par deploy.sh) — voir README :
+#  - à la demande : fichier /home/refit/maintenance.on présent → page de maintenance (sans redémarrage) ;
+#  - automatiquement : site arrêté, en redémarrage ou qui ne répond plus → page de maintenance.
 
 www.refitsurface.fr {
 	encode zstd gzip
 
-	reverse_proxy 127.0.0.1:3000 {
-		# IP réelle du visiteur pour la limitation de débit et la preuve de signature.
-		# Remplace toute valeur envoyée par le client : non falsifiable (CLIENT_IP_HEADER=x-real-ip).
-		header_up X-Real-IP {remote_host}
-	}
-
 	header {
 		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
 		-Server
+	}
+
+	# Maintenance à la demande. L'espace gérant, la connexion et l'API restent accessibles.
+	@maintenance {
+		file {
+			root /home/refit
+			try_files maintenance.on
+		}
+		not path /app /app/* /connexion /connexion/* /api/* /_next/*
+	}
+	handle @maintenance {
+		root * /home/refit/app/public
+		rewrite * /maintenance.html
+		file_server {
+			status 503
+		}
+	}
+
+	handle {
+		reverse_proxy 127.0.0.1:3000 {
+			# IP réelle du visiteur pour la limitation de débit et la preuve de signature.
+			# Remplace toute valeur envoyée par le client : non falsifiable (CLIENT_IP_HEADER=x-real-ip).
+			header_up X-Real-IP {remote_host}
+
+			# Le site répond qu'il est indisponible : page de maintenance
+			@down status 502 503 504
+			handle_response @down {
+				root * /home/refit/app/public
+				rewrite * /maintenance.html
+				file_server {
+					status 503
+				}
+			}
+		}
+	}
+
+	# Le site ne répond plus du tout (arrêté, en redémarrage, planté) : page de maintenance automatique
+	handle_errors 502 503 504 {
+		root * /home/refit/app/public
+		rewrite * /maintenance.html
+		file_server {
+			status 503
+		}
 	}
 }
 
