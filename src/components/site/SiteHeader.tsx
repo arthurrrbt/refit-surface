@@ -36,7 +36,7 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-3">
           <div className="hidden sm:block">
-            <ButtonLink href="/devis">Demander un devis</ButtonLink>
+            <ButtonLink href="/rendez-vous">Prendre rendez-vous</ButtonLink>
           </div>
 
           {/* Menu mobile sans JavaScript */}
@@ -64,8 +64,8 @@ export function SiteHeader() {
                   </li>
                 ))}
               </ul>
-              <ButtonLink href="/devis" className="mt-6 w-full">
-                Demander un devis
+              <ButtonLink href="/rendez-vous" className="mt-6 w-full">
+                Prendre rendez-vous
               </ButtonLink>
             </nav>
           </MobileMenu>

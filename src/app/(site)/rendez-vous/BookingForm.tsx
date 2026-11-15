@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState, type ComponentProps } from "react";
 import { CalendarCheck, CalendarPlus, Check, Loader2 } from "lucide-react";
 import { AddressAutocomplete } from "@/components/AddressAutocomplete";
@@ -23,6 +24,9 @@ const dateTimeFr = new Intl.DateTimeFormat("fr-FR", {
 });
 
 export function BookingForm({ days }: { days: SlotDay[] }) {
+  // Univers présélectionné quand on arrive depuis une page univers (ex. /rendez-vous?univers=glass)
+  const fromUrl = useSearchParams().get("univers");
+  const defaultUnivers = universList.some((u) => u.slug === fromUrl) ? fromUrl! : "";
   const [dayIndex, setDayIndex] = useState(0);
   const [slot, setSlot] = useState<Slot | null>(null);
   const [sending, setSending] = useState(false);
@@ -167,7 +171,7 @@ export function BookingForm({ days }: { days: SlotDay[] }) {
           <Field label="Ville" name="city" required autoComplete="address-level2" />
           <label className="block text-sm text-paper/80 sm:col-span-2">
             Votre projet concerne
-            <select name="univers" defaultValue="" className={input}>
+            <select name="univers" defaultValue={defaultUnivers} className={input}>
               <option value="">Je ne sais pas encore</option>
               {universList.map((u) => (
                 <option key={u.slug} value={u.slug}>

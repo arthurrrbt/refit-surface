@@ -44,7 +44,7 @@ export function UniversPage({ slug }: { slug: UniversSlug }) {
           <p className="mt-6 max-w-2xl leading-relaxed text-paper/70">{u.intro}</p>
           <p className="mt-6 text-sm text-paper/50">Pour : {u.forWho}</p>
           <div className="mt-10 flex flex-wrap gap-3">
-            <ButtonLink href={`/devis?univers=${u.slug}`}>Demander un devis</ButtonLink>
+            <ButtonLink href={`/rendez-vous?univers=${u.slug}`}>Prendre rendez-vous</ButtonLink>
             <ButtonLink href={`/realisations?univers=${u.slug}`} variant="outline">
               Réalisations {u.name}
             </ButtonLink>

@@ -10,7 +10,7 @@ import { hasPhone, site } from "@/content/site";
 import { univers } from "@/content/univers";
 
 const steps = [
-  { title: "Votre demande", text: "Quelques photos et dimensions via le formulaire, ou un simple appel." },
+  { title: "Votre rendez-vous", text: "Choisissez en ligne un créneau de visite, ou appelez-nous." },
   { title: "Visite & métrage", text: "Nous venons sur place, validons les surfaces et choisissons les finitions avec vous." },
   { title: "Devis détaillé", text: "Un devis clair, signé en ligne, avec une date de pose." },
   { title: "Pose", text: "Une intervention propre et rapide. Vos surfaces sont transformées, sans démolition." },
@@ -66,7 +66,7 @@ export default function HomePage() {
               <strong className="text-paper">Solar Screen</strong>, à Saint-Malo et sur la Côte d&apos;Émeraude.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-3">
-              <ButtonLink href="/devis">Demander un devis</ButtonLink>
+              <ButtonLink href="/rendez-vous">Prendre rendez-vous</ButtonLink>
               <ButtonLink href="/realisations" variant="outline">
                 Voir les réalisations
               </ButtonLink>
