@@ -1,0 +1,6 @@
+#!/bin/sh
+# Chaque publication du site (envoi de main) devient une version nommée V<n>, enregistrée dans iCloud.
+# Activé par : git config core.hooksPath .githooks
+# Un échec de l'enregistrement ne bloque jamais la publication.
+node scripts/version-publiee.mjs || echo "Attention : la version n'a pas pu être enregistrée (la publication continue)."
+exit 0

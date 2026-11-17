@@ -56,6 +56,27 @@ visiteurs le retrouvent.
 
 ---
 
+## 💾 Versions et sauvegardes (iCloud)
+
+**Chaque publication du site crée automatiquement une version nommée** (V4, V5…). Publier = envoyer `main`
+sur GitHub (`git push origin main`), ce qui déclenche Vercel. Juste avant l'envoi, le hook `.githooks/pre-push` :
+
+1. nomme la version publiée `V<n>` (étiquette git, avec le titre du dernier changement et la date) ;
+2. l'enregistre en **archive .zip complète** (photos et vidéos comprises) dans
+   `iCloudDrive\REFIT\sauvegardes\versions\` ;
+3. fait une sauvegarde courante légère (code + historique + brouillons, sans médias).
+
+Un échec de l'enregistrement ne bloque jamais la publication (un avertissement s'affiche).
+
+- Sauvegarde à la main, à tout moment : `npm run sauvegarde`
+- Nommer une version sans publier : `git tag -a V4 -m "description"` puis `npm run sauvegarde`
+- Restaurer : voir `LISEZ-MOI.txt` dans le dossier des sauvegardes
+- **Nouveau poste ou projet recloné** : réactiver le hook une fois avec `git config core.hooksPath .githooks`
+
+Versions existantes : **V2** (15/11, site avant les photos et vidéos), **V3** (17/11, accueil avec photos et vidéos).
+
+---
+
 ## Commandes utiles
 
 ```bash
@@ -65,6 +86,7 @@ npm run lint           # vérification du code
 npm run test:security  # tests de sécurité (base anonyme, en-têtes, accès)
 npm run test:api       # tests des API externes (météo, adresses, trajets)
 npm run maintenance:html  # régénère public/maintenance.html
+npm run sauvegarde     # sauvegarde dans iCloud (+ archive de chaque version nommée V2, V3…)
 ```
 
 ## Où trouver quoi
