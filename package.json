@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test:api": "node --conditions=react-server --import tsx --test \"tests/live/*.test.ts\"",
     "test:security": "node --env-file-if-exists=.env.local --conditions=react-server --import tsx --test \"tests/security/*.test.ts\"",
-    "maintenance:html": "node --import tsx scripts/maintenance-html.mts"
+    "maintenance:html": "node --import tsx scripts/maintenance-html.mts",
+    "sauvegarde": "node scripts/sauvegarde.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
