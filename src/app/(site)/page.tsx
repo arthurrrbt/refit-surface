@@ -1,14 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Clock, Leaf, PiggyBank } from "lucide-react";
-import { BeforeAfter } from "@/components/site/BeforeAfter";
+import { ArrowRight, Clock, Leaf, PiggyBank, Sailboat } from "lucide-react";
 import { HeroPaths } from "@/components/site/HeroPaths";
 import { InspirationCarousel } from "@/components/site/InspirationCarousel";
 import { RecentProjects } from "@/components/site/RecentProjects";
 import { CtaBand } from "@/components/site/CtaBand";
 import { VideoReel } from "@/components/site/VideoReel";
 import { ButtonLink } from "@/components/ui/Button";
-import { heroBeforeAfter, universPhoto, videos } from "@/content/media";
+import { heroPhoto, universPhoto, videos } from "@/content/media";
 import { hasPhone, site } from "@/content/site";
 import { univers, type UniversSlug } from "@/content/univers";
 
@@ -19,6 +18,28 @@ const problems: Record<UniversSlug, string> = {
   pro: "Un établissement à rafraîchir ?",
   boat: "Un intérieur de bateau fatigué ?",
 };
+
+/** Photo de la carte, ou un visuel neutre tant que l'univers n'a pas encore de photo (Boat). */
+function UniversVisual({ slug }: { slug: UniversSlug }) {
+  const photo = universPhoto[slug];
+  if (!photo) {
+    return (
+      <div className="flex size-full items-center justify-center bg-linear-to-br from-ink-3 to-ink" aria-hidden>
+        <Sailboat className="size-14 text-accent/70 transition-transform duration-700 group-hover:scale-110" strokeWidth={1.2} />
+      </div>
+    );
+  }
+  return (
+    <Image
+      src={photo.src}
+      alt={photo.alt}
+      fill
+      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+      placeholder="blur"
+      className="object-cover transition-[scale] duration-700 group-hover:scale-105"
+    />
+  );
+}
 
 const steps = [
   { title: "Votre rendez-vous", text: "Choisissez en ligne un créneau de visite, ou appelez-nous." },
@@ -96,20 +117,24 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <figure className="hero-rise [--rise-delay:200ms]">
-            <div className="overflow-hidden rounded-lg border border-line shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)]">
-              <BeforeAfter
-                before={heroBeforeAfter.before}
-                after={heroBeforeAfter.after}
-                alt={heroBeforeAfter.alt}
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                eager
+          {/* Le résultat (photo) et le geste (vidéo de pose) côte à côte */}
+          <div className="hero-rise grid grid-cols-[1.15fr_1fr] items-end gap-4 [--rise-delay:200ms] sm:gap-5">
+            <figure className="relative aspect-[4/5] overflow-hidden rounded-lg border border-line shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)]">
+              <Image
+                src={heroPhoto.src}
+                alt={heroPhoto.alt}
+                fill
+                priority
+                sizes="(min-width: 1024px) 30vw, 55vw"
+                placeholder="blur"
+                className="object-cover"
               />
-            </div>
-            <figcaption className="mt-3 text-sm text-paper/60">
-              Faites glisser : mêmes meubles, nouveau revêtement.
-            </figcaption>
-          </figure>
+              <figcaption className="absolute inset-x-0 bottom-0 bg-linear-to-t from-ink/90 to-transparent p-4 text-sm text-paper">
+                Façades noir mat, plan de travail clair
+              </figcaption>
+            </figure>
+            <VideoReel video={videos.interieur} className="border border-line shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)]" />
+          </div>
         </div>
       </section>
 
@@ -126,14 +151,7 @@ export default function HomePage() {
                   className="group flex h-full flex-col overflow-hidden rounded-lg border border-line bg-ink transition-colors hover:border-accent"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden">
-                    <Image
-                      src={universPhoto[u.slug].src}
-                      alt={universPhoto[u.slug].alt}
-                      fill
-                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                      placeholder="blur"
-                      className="object-cover transition-[scale] duration-700 group-hover:scale-105"
-                    />
+                    <UniversVisual slug={u.slug} />
                   </div>
                   <div className="flex flex-1 flex-col p-6">
                     <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-accent">{u.title}</p>

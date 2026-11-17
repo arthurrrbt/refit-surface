@@ -38,15 +38,9 @@ export function UniversPage({ slug }: { slug: UniversSlug }) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <section className="relative overflow-hidden border-b border-line">
-        <Image
-          src={photo.src}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          placeholder="blur"
-          className="object-cover opacity-60"
-        />
+        {photo && (
+          <Image src={photo.src} alt="" fill priority sizes="100vw" placeholder="blur" className="object-cover opacity-60" />
+        )}
         <div className="absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/20" />
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28">
           <p className="eyebrow">{u.name}</p>

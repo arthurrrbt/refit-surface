@@ -4,9 +4,6 @@ import type { UniversSlug } from "./univers";
 // Photos et vidéos du site. Elles font partie du code (dossiers src/assets/media et public/media) :
 // elles sont publiées avec le site et ne dépendent d'aucun stockage personnel.
 // Les images sont importées statiquement : Next.js connaît leurs dimensions et sert du WebP/AVIF adapté à l'écran.
-import cuisineAvant from "@/assets/media/cuisine-avant.jpg";
-import cuisineApres from "@/assets/media/cuisine-apres.jpg";
-import bateau from "@/assets/media/bateau-avant-apres.jpg";
 import restaurant from "@/assets/media/restaurant.jpg";
 import cuisineBlanche from "@/assets/media/cuisine-blanche.jpg";
 import cuisineNoire from "@/assets/media/cuisine-noire.jpg";
@@ -21,19 +18,17 @@ import cuisineBois4 from "@/assets/media/cuisine-bois-4.jpg";
 export type Photo = { src: StaticImageData; alt: string };
 export type Video = { src: string; poster: string; title: string };
 
-/** Exemple d'avant / après mis en avant dès l'ouverture de la page d'accueil. */
-export const heroBeforeAfter = {
-  before: cuisineAvant,
-  after: cuisineApres,
-  alt: "Cuisine rénovée par revêtement adhésif, sans changer les meubles",
+/** Photo phare de l'ouverture de la page d'accueil, à côté de la vidéo de pose. */
+export const heroPhoto: Photo = {
+  src: cuisineNoire,
+  alt: "Cuisine aux façades noires mates et plan de travail clair",
 };
 
-/** Photo représentative de chaque univers (cartes de l'accueil et en-tête des pages). */
-export const universPhoto: Record<UniversSlug, Photo> = {
-  home: { src: cuisineNoire, alt: "Cuisine aux façades noires mates et plan de travail clair" },
+/** Photo représentative de chaque univers (cartes de l'accueil et en-tête des pages). Boat : photos à venir. */
+export const universPhoto: Partial<Record<UniversSlug, Photo>> = {
+  home: { src: cuisineBois4, alt: "Cuisine blanche, crédence et plan de travail effet bois" },
   glass: { src: vitragePose, alt: "Pose d'un film sur une porte vitrée" },
   pro: { src: restaurant, alt: "Salle de restaurant et bar rénovés" },
-  boat: { src: bateau, alt: "Intérieur de voilier avant et après rénovation" },
 };
 
 /** Vidéos de pose, au format vertical (téléphone), accélérées et sans son. */
@@ -64,15 +59,14 @@ export const universVideo: Partial<Record<UniversSlug, Video>> = {
 
 /** Carrousel d'inspirations : visuels des fabricants, présentés comme idées de finitions (pas comme nos chantiers). */
 export const inspirations: (Photo & { label: string; univers: UniversSlug })[] = [
-  { src: cuisineBois3, alt: "Cuisine blanche et bois avec crédence effet bois", label: "Bois & blanc", univers: "home" },
+  { src: cuisineBois3, alt: "Gros plan d'un plan de travail effet bois texturé", label: "Bois texturé", univers: "home" },
   { src: cuisineNoire, alt: "Cuisine noire mate et plan de travail clair", label: "Noir mat", univers: "home" },
   { src: filmsSilver, alt: "Trois teintes de films solaires argentés sur vitrage", label: "Films solaires", univers: "glass" },
-  { src: cuisineBois1, alt: "Façades et plan de travail effet bois", label: "Bois en duo", univers: "home" },
+  { src: cuisineBois1, alt: "Cuisine blanche avec îlot et plans effet bois", label: "Bois en duo", univers: "home" },
   { src: restaurant, alt: "Salle de restaurant et comptoir de bar", label: "Restaurant", univers: "pro" },
   { src: cuisineNoireColonnes, alt: "Colonnes de cuisine noires avec fours encastrés", label: "Colonnes noires", univers: "home" },
-  { src: cuisineBois2, alt: "Plan de travail effet bois texturé", label: "Plan de travail", univers: "home" },
+  { src: cuisineBois2, alt: "Crédence et plan de travail effet bois autour d'une plaque de cuisson", label: "Plan de travail", univers: "home" },
   { src: vitragePose, alt: "Pose d'un film sur une porte vitrée", label: "Vitrages", univers: "glass" },
   { src: cuisineBlanche, alt: "Cuisine blanche lumineuse", label: "Blanc lumineux", univers: "home" },
-  { src: cuisineBois4, alt: "Cuisine blanche, bois et crédence assortie", label: "Crédence", univers: "home" },
-  { src: bateau, alt: "Carré de voilier rénové", label: "Bateau", univers: "boat" },
+  { src: cuisineBois4, alt: "Cuisine blanche, crédence et plan de travail effet bois", label: "Bois & blanc", univers: "home" },
 ];
