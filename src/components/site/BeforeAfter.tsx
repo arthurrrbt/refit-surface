@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image, { type ImageProps } from "next/image";
 import { useState } from "react";
 import { Loader2, MoveHorizontal } from "lucide-react";
 
@@ -12,8 +12,9 @@ export function BeforeAfter({
   sizes,
   eager = false,
 }: {
-  before: string;
-  after: string;
+  /** URL (réalisations de la galerie) ou image importée (photos du site). */
+  before: ImageProps["src"];
+  after: ImageProps["src"];
   alt: string;
   sizes: string;
   /** Chargement immédiat (première image visible de la page). */

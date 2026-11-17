@@ -93,6 +93,39 @@
   .hero-comet { display: none; }
 }
 
+/* ─── Carrousel d'inspirations (src/components/site/InspirationCarousel.tsx) ───
+   La bande défile de la moitié de sa largeur (la liste y figure deux fois) : la boucle est invisible.
+   Propriétés longues : Lightning CSS réécrit mal certains raccourcis « animation ». */
+.marquee-track {
+  animation-name: marquee;
+  animation-duration: 80s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to { transform: translate3d(-50%, 0, 0); }
+}
+/* Chaque carte flotte doucement, décalée de ses voisines (délai posé dans le composant) */
+.marquee-float {
+  animation-name: marquee-float;
+  animation-duration: 6s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes marquee-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -12px, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track, .marquee-float { animation: none; }
+  .marquee { overflow-x: auto; }
+  .marquee-track > [aria-hidden] { display: none; }
+}
+
 /* ─── Ouverture du site : logo REFIT (src/components/brand/SiteIntro.tsx) ───
    Uniquement transform et opacity (carte graphique). Jouée une fois par visite (classe intro-play posée par le script). */
 .site-intro {

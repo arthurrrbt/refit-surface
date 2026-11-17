@@ -1,13 +1,24 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock, Leaf, PiggyBank } from "lucide-react";
-import { Logo } from "@/components/brand/Logo";
+import { BeforeAfter } from "@/components/site/BeforeAfter";
 import { HeroPaths } from "@/components/site/HeroPaths";
-import { MaterialSwatch } from "@/components/site/MaterialSwatch";
+import { InspirationCarousel } from "@/components/site/InspirationCarousel";
 import { RecentProjects } from "@/components/site/RecentProjects";
 import { CtaBand } from "@/components/site/CtaBand";
+import { VideoReel } from "@/components/site/VideoReel";
 import { ButtonLink } from "@/components/ui/Button";
+import { heroBeforeAfter, universPhoto, videos } from "@/content/media";
 import { hasPhone, site } from "@/content/site";
-import { univers } from "@/content/univers";
+import { univers, type UniversSlug } from "@/content/univers";
+
+// Chaque domaine présenté par la question que se pose le client
+const problems: Record<UniversSlug, string> = {
+  home: "Cuisine ou meubles datés ?",
+  glass: "Trop de chaleur ou de vis-à-vis ?",
+  pro: "Un établissement à rafraîchir ?",
+  boat: "Un intérieur de bateau fatigué ?",
+};
 
 const steps = [
   { title: "Votre rendez-vous", text: "Choisissez en ligne un créneau de visite, ou appelez-nous." },
@@ -49,58 +60,120 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
-      {/* Hero : lignes animées (un film qui se déroule sur une surface) et signature révélée */}
-      <section className="relative isolate flex min-h-[calc(100svh-4rem)] items-center overflow-hidden">
+      {/* Ouverture : ce que l'on fait, dit en une phrase, et montré par un avant / après manipulable */}
+      <section className="relative isolate overflow-hidden">
         <HeroPaths />
-        {/* Voile central : garde le texte lisible au-dessus des lignes */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_45%_at_center,var(--color-ink)_20%,transparent_100%)] opacity-90" />
-        <div className="relative mx-auto flex w-full max-w-5xl flex-col items-center px-4 py-20 text-center sm:px-6">
-          <Logo size="md" className="hero-rise" />
-          <h1 className="hero-rise mt-10 font-display text-5xl font-semibold leading-[1.02] tracking-tight text-balance [--rise-delay:80ms] sm:text-7xl lg:text-8xl">
-            {site.tagline}
-          </h1>
-          <div className="hero-rise flex flex-col items-center [--rise-delay:300ms]">
-            <p className="mt-8 max-w-xl text-lg text-paper/80 sm:text-xl">{site.baseline}.</p>
-            <p className="mt-4 max-w-xl text-sm text-paper/70 sm:text-base">
-              Poseur certifié <strong className="text-paper">Cover Styl&apos;</strong> et films solaires{" "}
-              <strong className="text-paper">Solar Screen</strong>, à Saint-Malo et sur la Côte d&apos;Émeraude.
-            </p>
-            <div className="mt-10 flex flex-wrap justify-center gap-3">
-              <ButtonLink href="/rendez-vous">Prendre rendez-vous</ButtonLink>
-              <ButtonLink href="/realisations" variant="outline">
-                Voir les réalisations
-              </ButtonLink>
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/40" />
+        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-4 py-14 sm:px-6 lg:min-h-[calc(100svh-4rem)] lg:grid-cols-[1fr_1.05fr] lg:py-16">
+          <div>
+            <p className="hero-rise eyebrow">Saint-Malo · Côte d&apos;Émeraude</p>
+            <h1 className="hero-rise mt-5 font-display text-4xl font-semibold leading-[1.05] tracking-tight text-balance [--rise-delay:80ms] sm:text-6xl">
+              Vos surfaces transformées, <span className="text-accent">sans rien remplacer</span>
+            </h1>
+            <div className="hero-rise [--rise-delay:300ms]">
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-paper/80">
+                Nous habillons vos <strong className="text-paper">cuisines, meubles et agencements</strong> de revêtements
+                adhésifs Cover Styl&apos;, et vos <strong className="text-paper">vitrages</strong> de films Solar Screen.
+                L&apos;aspect du neuf, sans démolition, posé en quelques jours.
+              </p>
+              <ul className="mt-6 flex flex-wrap gap-2" aria-label="Nos domaines">
+                {univers.map((u) => (
+                  <li key={u.slug}>
+                    <Link
+                      href={`/${u.slug}`}
+                      className="inline-flex rounded-full border border-paper/20 px-3.5 py-1.5 text-sm text-paper/85 transition-colors hover:border-accent hover:text-accent"
+                    >
+                      {u.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <ButtonLink href="/rendez-vous">Prendre rendez-vous</ButtonLink>
+                <ButtonLink href="#en-video" variant="outline">
+                  Voir la pose en vidéo
+                </ButtonLink>
+              </div>
             </div>
           </div>
+          <figure className="hero-rise [--rise-delay:200ms]">
+            <div className="overflow-hidden rounded-lg border border-line shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)]">
+              <BeforeAfter
+                before={heroBeforeAfter.before}
+                after={heroBeforeAfter.after}
+                alt={heroBeforeAfter.alt}
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                eager
+              />
+            </div>
+            <figcaption className="mt-3 text-sm text-paper/60">
+              Faites glisser : mêmes meubles, nouveau revêtement.
+            </figcaption>
+          </figure>
         </div>
       </section>
 
-      {/* Univers */}
+      {/* Les 4 domaines, en photos, formulés comme le problème du client */}
       <section className="border-t border-line bg-ink-2">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-          <p className="eyebrow">Quatre univers</p>
-          <h2 className="mt-3 font-display text-2xl font-semibold sm:text-3xl">
-            Une même promesse, quatre terrains de jeu
-          </h2>
+          <p className="eyebrow">Nos solutions</p>
+          <h2 className="mt-3 font-display text-2xl font-semibold sm:text-4xl">Quelle surface voulez-vous transformer ?</h2>
           <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {univers.map((u) => (
               <li key={u.slug}>
                 <Link
                   href={`/${u.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-sm border border-line bg-ink transition-colors hover:border-accent"
+                  className="group flex h-full flex-col overflow-hidden rounded-lg border border-line bg-ink transition-colors hover:border-accent"
                 >
-                  <MaterialSwatch slug={u.slug} className="relative h-40" />
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <Image
+                      src={universPhoto[u.slug].src}
+                      alt={universPhoto[u.slug].alt}
+                      fill
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                      placeholder="blur"
+                      className="object-cover transition-[scale] duration-700 group-hover:scale-105"
+                    />
+                  </div>
                   <div className="flex flex-1 flex-col p-6">
-                    <p className="font-display text-sm font-bold uppercase tracking-[0.2em]">
-                      {u.name}
-                    </p>
-                    <p className="mt-1 text-sm text-accent">{u.title}</p>
-                    <p className="mt-4 flex-1 text-sm leading-relaxed text-paper/65">{u.pitch}</p>
+                    <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-accent">{u.title}</p>
+                    <p className="mt-2 font-display text-lg font-semibold leading-snug">{problems[u.slug]}</p>
+                    <p className="mt-3 flex-1 text-sm leading-relaxed text-paper/65">{u.pitch}</p>
                     <span className="mt-6 inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.2em] text-paper/80 group-hover:text-accent">
-                      Découvrir <ArrowRight className="size-4" />
+                      {u.name} <ArrowRight className="size-4" />
                     </span>
                   </div>
                 </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Inspirations : carrousel flottant */}
+      <section className="overflow-hidden border-t border-line py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <p className="eyebrow">Inspirations</p>
+          <h2 className="mt-3 font-display text-2xl font-semibold sm:text-4xl">Bois, noir mat, marbre, films solaires…</h2>
+          <p className="mt-4 max-w-2xl text-paper/65">
+            Des centaines de finitions Cover Styl&apos; et Solar Screen. Nous les choisissons avec vous, sur place, avec les
+            échantillons.
+          </p>
+        </div>
+        <div className="mt-8">
+          <InspirationCarousel />
+        </div>
+      </section>
+
+      {/* La pose en vidéo */}
+      <section id="en-video" className="scroll-mt-20 border-t border-line bg-ink-2">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+          <p className="eyebrow">En vidéo</p>
+          <h2 className="mt-3 font-display text-2xl font-semibold sm:text-4xl">Une pose propre, sans démolition</h2>
+          <ul className="mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:overflow-visible">
+            {[videos.interieur, videos.vitrage, videos.mobilier].map((v) => (
+              <li key={v.src} className="w-[72vw] max-w-xs shrink-0 snap-center md:w-auto md:max-w-none">
+                <VideoReel video={v} />
               </li>
             ))}
           </ul>
