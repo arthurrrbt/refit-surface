@@ -20,6 +20,9 @@ import miroirAscenseurs from "@/assets/media/miroir-ascenseurs.jpg";
 import comptoirDore from "@/assets/media/comptoir-dore.jpg";
 import hotelCouloir from "@/assets/media/hotel-couloir.jpg";
 
+/** Fond de l'ouverture de l'accueil : Saint-Malo intra-muros vu du ciel. */
+export { default as saintMalo } from "@/assets/media/saint-malo.jpg";
+
 export type Photo = { src: StaticImageData; alt: string };
 export type Video = { src: string; poster: string; title: string };
 

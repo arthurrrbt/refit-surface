@@ -1,14 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock, Leaf, PiggyBank, Sailboat } from "lucide-react";
-import { HeroPaths } from "@/components/site/HeroPaths";
 import { InspirationCarousel } from "@/components/site/InspirationCarousel";
 import { RecentProjects } from "@/components/site/RecentProjects";
 import { CtaBand } from "@/components/site/CtaBand";
 import { VideoCarousel } from "@/components/site/VideoCarousel";
 import { VideoReel } from "@/components/site/VideoReel";
 import { ButtonLink } from "@/components/ui/Button";
-import { heroPhoto, universPhoto, videoCarousel, videos } from "@/content/media";
+import { heroPhoto, saintMalo, universPhoto, videoCarousel, videos } from "@/content/media";
 import { hasPhone, site } from "@/content/site";
 import { univers, type UniversSlug } from "@/content/univers";
 
@@ -82,10 +81,20 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
-      {/* Ouverture : ce que l'on fait, dit en une phrase, et montré par un avant / après manipulable */}
+      {/* Ouverture : ce que l'on fait, dit en une phrase, sur fond de Saint-Malo vu du ciel */}
       <section className="relative isolate overflow-hidden">
-        <HeroPaths />
-        <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/40" />
+        <Image
+          src={saintMalo}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          placeholder="blur"
+          className="-z-10 object-cover object-[60%_center]"
+        />
+        {/* Voiles : texte lisible à gauche, la ville visible à droite, fondu vers la section suivante */}
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-r from-ink/95 via-ink/75 to-ink/35" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-t from-ink to-transparent" />
         <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-4 py-14 sm:px-6 lg:min-h-[calc(100svh-4rem)] lg:grid-cols-[1fr_1.05fr] lg:py-16">
           <div>
             <p className="hero-rise eyebrow">Saint-Malo · Côte d&apos;Émeraude</p>

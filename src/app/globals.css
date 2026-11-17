@@ -47,37 +47,7 @@
 }
 
 
-/* ─── Accueil : lignes animées (src/components/site/HeroPaths.tsx) et apparition du titre ─── */
-/* Dérive lente des nappes : uniquement des transformations, gérées par la carte graphique (aucun redessin) */
-.hero-drift-a {
-  animation: hero-drift 26s ease-in-out infinite alternate;
-  will-change: transform;
-}
-.hero-drift-b {
-  animation: hero-drift 34s ease-in-out infinite alternate-reverse;
-  will-change: transform;
-}
-@keyframes hero-drift {
-  from { transform: translate3d(-2.5%, 1.5%, 0) rotate(-1.2deg); }
-  to { transform: translate3d(2.5%, -1.5%, 0) rotate(1.2deg); }
-}
-/* Ouverture du site : les lignes apparaissent en fondu, puis dérivent (opacité seule : aucun redessin) */
-.hero-lines {
-  animation: hero-fade 1.8s ease-out 0.2s both;
-}
-@keyframes hero-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-/* Reflet bleu court qui parcourt le fil, toujours dans le même sens */
-.hero-comet {
-  stroke-dasharray: 0.12 1.12;
-  animation: hero-comet linear infinite;
-}
-@keyframes hero-comet {
-  from { stroke-dashoffset: 0.12; }
-  to { stroke-dashoffset: -1; }
-}
+/* ─── Accueil : apparition du titre ─── */
 /* Apparition du titre puis du texte : un seul mouvement au chargement */
 .hero-rise {
   animation: hero-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -89,8 +59,7 @@
   to { opacity: 1; transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-drift-a, .hero-drift-b, .hero-rise, .hero-lines { animation: none; }
-  .hero-comet { display: none; }
+  .hero-rise { animation: none; }
 }
 
 /* ─── Carrousel d'inspirations (src/components/site/InspirationCarousel.tsx) ───
