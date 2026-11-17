@@ -94,7 +94,7 @@ export default function HomePage() {
         {/* Voiles légers : texte lisible à gauche, la ville en grand à droite, fondu vers la section suivante */}
         <div className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-r from-ink/90 via-ink/50 to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-32 bg-linear-to-t from-ink to-transparent" />
-        <div className="relative mx-auto flex min-h-[calc(100svh-4rem)] w-full max-w-7xl items-center px-4 py-16 sm:px-6">
+        <div className="relative mx-auto flex min-h-[calc(100svh-5rem)] w-full max-w-7xl items-center px-4 py-16 sm:px-6">
           <div className="max-w-2xl">
             <p className="hero-rise eyebrow">Saint-Malo · Côte d&apos;Émeraude</p>
             <h1 className="hero-rise mt-5 font-display text-4xl font-semibold leading-[1.05] tracking-tight text-balance [--rise-delay:80ms] sm:text-6xl">
@@ -175,7 +175,7 @@ export default function HomePage() {
       </section>
 
       {/* La pose en vidéo */}
-      <section id="en-video" className="scroll-mt-20 border-t border-line bg-ink-2">
+      <section id="en-video" className="scroll-mt-24 border-t border-line bg-ink-2">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <p className="eyebrow">En vidéo</p>
           <h2 className="mt-3 font-display text-2xl font-semibold sm:text-4xl">Une pose propre, sans démolition</h2>

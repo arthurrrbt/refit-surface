@@ -193,7 +193,7 @@ export function DevisForm() {
   }
 
   return (
-    <div ref={topRef} className="mx-auto max-w-3xl scroll-mt-20 px-4 py-12 sm:px-6">
+    <div ref={topRef} className="mx-auto max-w-3xl scroll-mt-24 px-4 py-12 sm:px-6">
       {/* Étapes */}
       <ol className="mb-10 grid grid-cols-3 gap-2">
         {steps.map((label, i) => (

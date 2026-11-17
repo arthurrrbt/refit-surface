@@ -45,7 +45,7 @@ export function Wordmark({ className, title = "REFIT" }: MarkProps) {
 
 type LogoProps = {
   className?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "header" | "lg";
   showSurface?: boolean;
   align?: "center" | "start";
 };
@@ -53,6 +53,8 @@ type LogoProps = {
 const sizes = {
   sm: { mark: "h-5", surface: "text-[0.55rem] mt-1" },
   md: { mark: "h-7", surface: "text-[0.7rem] mt-1.5" },
+  header: { mark: "h-8 sm:h-9", surface: "text-[0.7rem] sm:text-[0.8rem] mt-1.5" }, // bandeau du site
+
   lg: { mark: "h-16 sm:h-24", surface: "text-xl sm:text-3xl mt-3 sm:mt-4" },
 };
 
