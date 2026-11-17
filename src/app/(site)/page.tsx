@@ -5,9 +5,10 @@ import { HeroPaths } from "@/components/site/HeroPaths";
 import { InspirationCarousel } from "@/components/site/InspirationCarousel";
 import { RecentProjects } from "@/components/site/RecentProjects";
 import { CtaBand } from "@/components/site/CtaBand";
+import { VideoCarousel } from "@/components/site/VideoCarousel";
 import { VideoReel } from "@/components/site/VideoReel";
 import { ButtonLink } from "@/components/ui/Button";
-import { heroPhoto, universPhoto, videos } from "@/content/media";
+import { heroPhoto, universPhoto, videoCarousel, videos } from "@/content/media";
 import { hasPhone, site } from "@/content/site";
 import { univers, type UniversSlug } from "@/content/univers";
 
@@ -133,7 +134,7 @@ export default function HomePage() {
                 Façades noir mat, plan de travail clair
               </figcaption>
             </figure>
-            <VideoReel video={videos.interieur} className="border border-line shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)]" />
+            <VideoReel video={videos.cuisine} className="border border-line shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)]" />
           </div>
         </div>
       </section>
@@ -188,13 +189,12 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <p className="eyebrow">En vidéo</p>
           <h2 className="mt-3 font-display text-2xl font-semibold sm:text-4xl">Une pose propre, sans démolition</h2>
-          <ul className="mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:overflow-visible">
-            {[videos.interieur, videos.vitrage, videos.mobilier].map((v) => (
-              <li key={v.src} className="w-[72vw] max-w-xs shrink-0 snap-center md:w-auto md:max-w-none">
-                <VideoReel video={v} />
-              </li>
-            ))}
-          </ul>
+          <p className="mt-4 max-w-2xl text-paper/65">
+            Cuisines, vitrages, murs, mobilier : les étapes de la pose, en accéléré.
+          </p>
+          <div className="mt-6">
+            <VideoCarousel items={videoCarousel} />
+          </div>
         </div>
       </section>
 
