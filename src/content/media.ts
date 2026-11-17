@@ -26,12 +26,6 @@ export { default as saintMalo } from "@/assets/media/saint-malo.jpg";
 export type Photo = { src: StaticImageData; alt: string };
 export type Video = { src: string; poster: string; title: string };
 
-/** Photo phare de l'ouverture de la page d'accueil, à côté de la vidéo de pose. */
-export const heroPhoto: Photo = {
-  src: cuisineNoire,
-  alt: "Cuisine aux façades noires mates et plan de travail clair",
-};
-
 /** Photo représentative de chaque univers (cartes de l'accueil et en-tête des pages). Boat : photos à venir. */
 export const universPhoto: Partial<Record<UniversSlug, Photo>> = {
   home: { src: cuisineBois4, alt: "Cuisine blanche, crédence et plan de travail effet bois" },

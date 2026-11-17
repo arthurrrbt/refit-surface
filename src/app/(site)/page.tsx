@@ -5,9 +5,8 @@ import { InspirationCarousel } from "@/components/site/InspirationCarousel";
 import { RecentProjects } from "@/components/site/RecentProjects";
 import { CtaBand } from "@/components/site/CtaBand";
 import { VideoCarousel } from "@/components/site/VideoCarousel";
-import { VideoReel } from "@/components/site/VideoReel";
 import { ButtonLink } from "@/components/ui/Button";
-import { heroPhoto, saintMalo, universPhoto, videoCarousel, videos } from "@/content/media";
+import { saintMalo, universPhoto, videoCarousel } from "@/content/media";
 import { hasPhone, site } from "@/content/site";
 import { univers, type UniversSlug } from "@/content/univers";
 
@@ -90,13 +89,13 @@ export default function HomePage() {
           priority
           sizes="100vw"
           placeholder="blur"
-          className="-z-10 object-cover object-[60%_center]"
+          className="-z-10 object-cover object-[55%_center]"
         />
-        {/* Voiles : texte lisible à gauche, la ville visible à droite, fondu vers la section suivante */}
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-r from-ink/95 via-ink/75 to-ink/35" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-t from-ink to-transparent" />
-        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-4 py-14 sm:px-6 lg:min-h-[calc(100svh-4rem)] lg:grid-cols-[1fr_1.05fr] lg:py-16">
-          <div>
+        {/* Voiles légers : texte lisible à gauche, la ville en grand à droite, fondu vers la section suivante */}
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-r from-ink/90 via-ink/50 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-32 bg-linear-to-t from-ink to-transparent" />
+        <div className="relative mx-auto flex min-h-[calc(100svh-4rem)] w-full max-w-7xl items-center px-4 py-16 sm:px-6">
+          <div className="max-w-2xl">
             <p className="hero-rise eyebrow">Saint-Malo · Côte d&apos;Émeraude</p>
             <h1 className="hero-rise mt-5 font-display text-4xl font-semibold leading-[1.05] tracking-tight text-balance [--rise-delay:80ms] sm:text-6xl">
               Vos surfaces transformées, <span className="text-accent">sans rien remplacer</span>
@@ -126,24 +125,6 @@ export default function HomePage() {
                 </ButtonLink>
               </div>
             </div>
-          </div>
-          {/* Le résultat (photo) et le geste (vidéo de pose) côte à côte */}
-          <div className="hero-rise grid grid-cols-[1.15fr_1fr] items-end gap-4 [--rise-delay:200ms] sm:gap-5">
-            <figure className="relative aspect-[4/5] overflow-hidden rounded-lg border border-line shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)]">
-              <Image
-                src={heroPhoto.src}
-                alt={heroPhoto.alt}
-                fill
-                priority
-                sizes="(min-width: 1024px) 30vw, 55vw"
-                placeholder="blur"
-                className="object-cover"
-              />
-              <figcaption className="absolute inset-x-0 bottom-0 bg-linear-to-t from-ink/90 to-transparent p-4 text-sm text-paper">
-                Façades noir mat, plan de travail clair
-              </figcaption>
-            </figure>
-            <VideoReel video={videos.cuisine} className="border border-line shadow-[0_40px_80px_-40px_rgba(0,0,0,0.9)]" />
           </div>
         </div>
       </section>
