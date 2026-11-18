@@ -2,10 +2,8 @@
 
 import { randomUUID } from "node:crypto";
 import { headers } from "next/headers";
-import { after } from "next/server";
 import { z } from "zod";
 import { MAX_PHOTOS, PHOTO_EXTENSIONS, devisSchema, type DevisInput } from "@/lib/devis/schema";
-import { runQualification } from "@/lib/agents/qualification";
 import { submittedContact, upsertContact } from "@/lib/contacts";
 import { galleryPublicUrl } from "@/lib/gallery-shared";
 import { devisConfirmationEmail, type ExampleProject } from "@/lib/mail/devis-confirmation";
@@ -112,11 +110,8 @@ export async function submitDevis(input: DevisInput): Promise<SubmitResult> {
   }));
   if (!mail.ok) console.warn(`Confirmation devis ${leadId} : ${mail.error}`);
 
-  // Analyse IA de la demande, une fois la réponse envoyée au visiteur
-  after(async () => {
-    const result = await runQualification(leadId);
-    if (!result.ok) console.warn(`Qualification ${leadId} : ${result.error}`);
-  });
+  // L'analyse IA de la demande est faite par l'Agent REFIT lors de sa prochaine tournée (7 h et 13 h),
+  // sur l'abonnement Claude du gérant : plus d'appel à l'API Claude depuis le site.
 
   return { ok: true, emailSent: mail.ok };
 }

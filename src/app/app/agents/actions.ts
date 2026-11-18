@@ -2,36 +2,12 @@
 
 import { refresh } from "next/cache";
 import { z } from "zod";
-import { runDailyAgent } from "@/lib/agents/orchestrator";
-import { runQualification } from "@/lib/agents/qualification";
 import { requireUser } from "@/lib/auth";
 import { LEAD_STATUSES } from "@/lib/leads";
 import { createClient } from "@/lib/supabase/server";
 
-export type AgentActionState = { message?: string; error?: string };
-
-/** Lance la tournée de l'Agent REFIT tout de suite (même traitement que le cron du matin). */
-export async function lancerTournee(): Promise<AgentActionState> {
-  await requireUser();
-  const result = await runDailyAgent("manuel");
-  refresh();
-  if (!result.ok) return { error: result.error };
-  return {
-    message: result.actions.length
-      ? `Tournée terminée : ${result.actions.length} action(s) préparée(s).`
-      : "Tournée terminée : rien à préparer aujourd'hui.",
-  };
-}
-
-/** Relance l'analyse IA d'une demande. */
-export async function requalifier(_prev: AgentActionState, formData: FormData): Promise<AgentActionState> {
-  await requireUser();
-  const id = z.uuid().safeParse(formData.get("lead_id"));
-  if (!id.success) return { error: "Prospect invalide." };
-  const result = await runQualification(id.data);
-  refresh();
-  return result.ok ? { message: "Analyse terminée." } : { error: result.error };
-}
+// Les agents ne sont plus lancés depuis le site (plus d'API Claude) : ils tournent sur l'abonnement du gérant
+// (tâches planifiées) et publient leurs propositions via scripts/agents/publier.mts. Ici, seulement les validations.
 
 /** Valide ou rejette une proposition d'agent ; un changement de statut validé est appliqué au prospect. */
 export async function deciderProposition(formData: FormData) {

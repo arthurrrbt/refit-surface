@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
 import { Suspense, type ReactNode } from "react";
-import { AlertTriangle, Bot, CheckCircle2, Clock } from "lucide-react";
-import { getAgentsOverview } from "@/lib/agents/data";
+import { AlertTriangle, Bot, CheckCircle2, Clock, FileText } from "lucide-react";
+import { getAgentsOverview, SCHEDULED_AGENTS } from "@/lib/agents/data";
 import { contactName } from "@/lib/leads";
 import Loading from "../loading";
 import { PageHeader } from "../ModulePlaceholder";
 import { BriefCard, FollowupCard, ProposalCard } from "./components";
-import { RoundButton } from "./ui";
 
 export const metadata: Metadata = { title: "Agents IA" };
-
-// La tournée lancée à la main peut durer quelques minutes
-export const maxDuration = 300;
 
 const dateTimeFr = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" });
 
@@ -19,8 +15,9 @@ export default function AgentsPage() {
   return (
     <>
       <PageHeader title="Agents IA">
-        L&apos;Agent REFIT fait sa tournée chaque matin : il qualifie les demandes, prépare les relances et
-        propose les changements de statut. Rien n&apos;est envoyé sans votre validation.
+        Vos agents travaillent avec votre abonnement Claude, depuis votre ordinateur, à heures fixes (l&apos;application
+        Claude doit être ouverte). Ils préparent analyses, relances et rapports : rien n&apos;est envoyé sans votre
+        validation. Pour leur demander une tâche, écrivez à Claude.
       </PageHeader>
       <Suspense fallback={<Loading />}>
         <Overview />
@@ -30,29 +27,54 @@ export default function AgentsPage() {
 }
 
 async function Overview() {
-  const { rounds, brief, proposals, followups, errors } = await getAgentsOverview();
-  const lastRound = rounds[0];
+  const { rounds, brief, proposals, followups, errors, reports } = await getAgentsOverview();
+  // Dernier passage de chaque agent : son dernier rapport (ou, pour la tournée, la dernière tournée)
+  const lastRun = (key: string) => (key === "tournee" ? rounds[0]?.created_at : reports.get(`rapport:${key}`)?.created_at);
 
   return (
     <div className="space-y-8 p-4 sm:p-8">
-      <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
-        <BriefCard run={brief} />
-        <div className="rounded-sm bg-paper p-5 shadow-sm lg:w-80">
-          <p className="flex items-center gap-2 font-display font-semibold">
-            <Bot className="size-5 text-accent-strong" /> Agent REFIT
-          </p>
-          <p className="mt-2 text-sm text-ink/60">
-            {lastRound
-              ? `Dernière tournée : ${dateTimeFr.format(new Date(lastRound.created_at))} — ${
-                  lastRound.status === "execute" ? "terminée" : lastRound.status === "erreur" ? "en échec" : "en cours"
-                }`
-              : "Aucune tournée pour l'instant."}
-          </p>
-          <div className="mt-4">
-            <RoundButton />
-          </div>
-        </div>
-      </div>
+      <BriefCard run={brief} />
+
+      <section>
+        <h2 className="font-display text-lg font-semibold">Vos agents</h2>
+        <ul className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {SCHEDULED_AGENTS.map((a) => {
+            const last = lastRun(a.key);
+            return (
+              <li key={a.key} className="rounded-sm bg-paper p-4 text-sm shadow-sm">
+                <p className="flex items-center gap-2 font-display font-semibold">
+                  <Bot className="size-4 text-accent-strong" /> {a.name}
+                </p>
+                <p className="mt-1 text-ink/70">{a.role}</p>
+                <p className="mt-2 text-xs text-ink/60">
+                  {a.when} · {last ? `dernier passage le ${dateTimeFr.format(new Date(last))}` : "pas encore passé"}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      {reports.size > 0 && (
+        <Section title="Derniers rapports" empty="">
+          {SCHEDULED_AGENTS.filter((a) => reports.has(`rapport:${a.key}`)).map((a) => {
+            const r = reports.get(`rapport:${a.key}`)!;
+            return (
+              <details key={a.key} className="group rounded-sm bg-paper shadow-sm">
+                <summary className="flex cursor-pointer list-none items-center gap-2 p-4 text-sm [&::-webkit-details-marker]:hidden">
+                  <FileText className="size-4 shrink-0 text-accent-strong" />
+                  <span className="font-semibold">{a.name}</span>
+                  <span className="truncate text-ink/60">— {r.output?.titre}</span>
+                  <span className="ml-auto shrink-0 text-xs text-ink/50">{dateTimeFr.format(new Date(r.created_at))}</span>
+                </summary>
+                <pre className="max-h-[70vh] overflow-auto whitespace-pre-wrap border-t border-ink/10 p-4 font-sans text-sm leading-relaxed text-ink/80">
+                  {r.output?.markdown}
+                </pre>
+              </details>
+            );
+          })}
+        </Section>
+      )}
 
       <Section title={`Propositions à valider (${proposals.length})`} empty="Aucune proposition en attente.">
         {proposals.map((p) => (

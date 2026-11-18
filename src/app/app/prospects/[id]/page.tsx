@@ -12,7 +12,7 @@ import { updateLeadStatus } from "../actions";
 import { ContactForm } from "../ContactForm";
 import { StatusBadge, UniversBadge } from "../StatusBadge";
 import { FollowupCard, ProposalCard, QualificationPanel } from "../../agents/components";
-import { PendingButton, RequalifyButton } from "../../agents/ui";
+import { PendingButton } from "../../agents/ui";
 import { createQuoteFromLead } from "../../devis/actions";
 import { TravelInfo } from "../../LiveData";
 import type { SubmittedContact } from "@/lib/contacts";
@@ -153,11 +153,10 @@ async function LeadDetailView({ params }: { params: PageProps<"/app/prospects/[i
             <QualificationPanel run={ai.qualification} email={c?.email ?? null} />
           ) : (
             <p className="flex items-center gap-2 text-sm text-ink/60">
-              <Sparkles className="size-4 text-accent-strong" /> Pas encore analysée : l&apos;agent s&apos;en charge à
-              l&apos;arrivée de la demande ou lors de sa tournée du matin.
+              <Sparkles className="size-4 text-accent-strong" /> Pas encore analysée : l&apos;Agent REFIT s&apos;en charge
+              lors de sa prochaine tournée (7 h et 13 h). Pour une analyse immédiate, demandez-la à Claude.
             </p>
           )}
-          <RequalifyButton leadId={lead.id} label={ai.qualification ? "Relancer l'analyse" : "Analyser maintenant"} />
         </div>
       </Section>
 

@@ -1,7 +1,7 @@
 // Données en LECTURE SEULE pour les agents planifiés (tâches Claude qui tournent sur l'abonnement, sans API).
 //
 //   npm run -s agent:donnees -- <agent> [--photos]
-//   agents : devis | pilotage | planning | marketing
+//   agents : tournee | devis | pilotage | planning | marketing
 //
 // Chaque agent ne reçoit que ce qu'il lui faut (minimisation RGPD : ni e-mail ni téléphone des clients).
 // Le script ne fait que des SELECT : aucune écriture en base n'est possible par ce chemin.
@@ -33,8 +33,68 @@ async function q(promise) {
 
 // Contact réduit : prénom, société, ville. Jamais d'e-mail ni de téléphone.
 const CONTACT = "contact:contacts(kind, company, first_name, city)";
+const daysSince = (iso) => Math.floor((Date.now() - new Date(iso).getTime()) / DAY);
+
+/** Télécharge les photos d'une demande dans un dossier temporaire (chemins ajoutés en `fichier_local`). */
+async function downloadPhotos(kind, lead) {
+  const dir = join(tmpdir(), "refit-agents", kind, lead.id);
+  mkdirSync(dir, { recursive: true });
+  for (const p of lead.photos ?? []) {
+    const { data } = await db.storage.from("lead-photos").download(p.storage_path);
+    if (!data) continue;
+    const file = join(dir, p.storage_path.split("/").pop());
+    writeFileSync(file, Buffer.from(await data.arrayBuffer()));
+    p.fichier_local = file;
+  }
+}
 
 const agents = {
+  /**
+   * Tournée de l'Agent REFIT (remplace l'ancienne tournée par API) : demandes à qualifier avec leur détail
+   * et leurs photos, prospects en cours avec leurs relances, devis envoyés, relances dues.
+   */
+  async tournee() {
+    const ACTIVE = ["nouveau", "qualifie", "rdv", "devis_envoye"];
+    const leads = await q(
+      db
+        .from("leads")
+        .select(`id, univers, status, message, surfaces, details, ai_score, ai_summary, created_at, updated_at, contact:contacts(kind, company, first_name, last_name, postal_code, city), photos:lead_photos(storage_path)`)
+        .in("status", ACTIVE)
+        .order("created_at")
+        .limit(100),
+    );
+    const ids = leads.map((l) => l.id);
+    const none = ["00000000-0000-0000-0000-000000000000"];
+    const [runs, followups, quotes, pending] = await Promise.all([
+      q(db.from("agent_runs").select("target_id").eq("agent", "qualification").in("status", ["propose", "valide", "execute"]).in("target_id", ids.length ? ids : none)),
+      q(db.from("followups").select("lead_id, step, due_at, channel, status").in("lead_id", ids.length ? ids : none)),
+      q(db.from("quotes").select("lead_id, number, status, sent_at, total_ht").in("lead_id", ids.length ? ids : none)),
+      q(db.from("agent_runs").select("target_id, output").eq("agent", "pipeline").eq("status", "propose")),
+    ]);
+    const qualified = new Set(runs.map((r) => r.target_id));
+    const today = new Date().toISOString().slice(0, 10);
+
+    const a_qualifier = leads.filter((l) => l.status === "nouveau" && !qualified.has(l.id));
+    if (withPhotos) for (const lead of a_qualifier) await downloadPhotos("tournee", lead);
+
+    return {
+      date: today,
+      a_qualifier: a_qualifier.map((l) => ({
+        lead_id: l.id, univers: l.univers, recu_il_y_a_jours: daysSince(l.created_at), client: l.contact,
+        message: l.message, surfaces: l.surfaces, details: l.details, photos: l.photos,
+      })),
+      en_cours: leads.filter((l) => !a_qualifier.includes(l)).map((l) => ({
+        lead_id: l.id, client: l.contact, univers: l.univers, statut: l.status, score: l.ai_score, resume: l.ai_summary,
+        recu_il_y_a_jours: daysSince(l.created_at), derniere_modification_il_y_a_jours: daysSince(l.updated_at),
+        devis: quotes.filter((d) => d.lead_id === l.id).map(({ lead_id, ...d }) => d),
+        relances: followups.filter((f) => f.lead_id === l.id).map((f) => ({ etape: f.step, prevue_le: f.due_at.slice(0, 10), canal: f.channel, statut: f.status })),
+        statut_deja_propose: pending.filter((p) => p.target_id === l.id).map((p) => p.output?.statut),
+      })),
+      relances_dues: followups.filter((f) => f.status === "a_faire" && f.due_at.slice(0, 10) <= today)
+        .map((f) => ({ lead_id: f.lead_id, etape: f.step, canal: f.channel, prevue_le: f.due_at.slice(0, 10) })),
+    };
+  },
+
   /** Demandes à chiffrer : pas encore de devis, avec photos, catalogue et réglages de prix. */
   async devis() {
     const leads = await q(
@@ -47,19 +107,7 @@ const agents = {
     );
     const quoted = new Set((await q(db.from("quotes").select("lead_id").not("lead_id", "is", null))).map((r) => r.lead_id));
     const todo = leads.filter((l) => !quoted.has(l.id));
-    if (withPhotos) {
-      for (const lead of todo) {
-        const dir = join(tmpdir(), "refit-agents", "devis", lead.id);
-        mkdirSync(dir, { recursive: true });
-        for (const p of lead.photos ?? []) {
-          const { data } = await db.storage.from("lead-photos").download(p.storage_path);
-          if (!data) continue;
-          const file = join(dir, p.storage_path.split("/").pop());
-          writeFileSync(file, Buffer.from(await data.arrayBuffer()));
-          p.fichier_local = file;
-        }
-      }
-    }
+    if (withPhotos) for (const lead of todo) await downloadPhotos("devis", lead);
     return {
       demandes_sans_devis: todo,
       catalogue: await q(db.from("products").select("id, brand, reference, name, category, univers, finish, roll_width_mm, sale_price_m2, purchase_price_m2, waste_rate").eq("active", true)),

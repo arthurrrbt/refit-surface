@@ -36,10 +36,9 @@ test("Back-office : pages et PDF inaccessibles sans connexion", async (t) => {
   }
 });
 
-test("Cron de l'agent : refusé sans le bon secret", async (t) => {
+test("Ancien cron de l'agent par API : supprimé (les agents tournent sur l'abonnement)", async (t) => {
   if (!(await needServer(t))) return;
-  assert.equal((await get("/api/agents/tournee")).status, 401);
-  assert.equal((await get("/api/agents/tournee", { headers: { Authorization: "Bearer devine" } })).status, 401);
+  assert.equal((await get("/api/agents/tournee")).status, 404);
 });
 
 test("Flux du planning : refusé avec un jeton faux ou absent", async (t) => {

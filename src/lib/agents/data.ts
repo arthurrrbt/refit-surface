@@ -17,6 +17,20 @@ export type QualificationOutput = Qualification & { surface_m2?: number };
 export type StatusProposal = { type: "changement_statut"; statut: string; raison: string };
 export type DailyBrief = { titre: string; priorites: string[]; commentaire: string };
 export type RoundOutput = { conclusion?: string; actions?: string[]; iterations?: number };
+export type AgentReport = { titre: string; markdown: string };
+
+/**
+ * Agents planifiés : ils tournent sur l'abonnement Claude du gérant (tâches planifiées de l'application
+ * Claude sur son PC), sans API. Ils publient ici via `npm run agent:publier` (scripts/agents/publier.mts).
+ */
+export const SCHEDULED_AGENTS = [
+  { key: "tournee", name: "Agent REFIT (tournée)", when: "Tous les jours, 7 h et 13 h", role: "Analyse les demandes, prépare les relances, propose les statuts, publie le point du jour." },
+  { key: "planning", name: "Planning chantier", when: "Du lundi au vendredi, 7 h 30", role: "Chantiers à venir, matière à commander, rappels clients." },
+  { key: "devis", name: "Devis", when: "Du lundi au vendredi, 18 h", role: "Pré-chiffrage des demandes sans devis, à confirmer au métrage." },
+  { key: "pilotage", name: "Pilotage", when: "Le lundi, 8 h", role: "Chiffre d'affaires, encaissements, devis, conversion, marge." },
+  { key: "marketing", name: "Marketing & Prospection", when: "Le mercredi, 9 h", role: "Publications à relire, prospects professionnels locaux." },
+  { key: "medias", name: "Médias (TEGO)", when: "Tous les soirs, 19 h", role: "Prépare les photos et vidéos déposées dans la boîte de dépôt." },
+] as const;
 
 export type Followup = {
   id: string;
@@ -78,8 +92,23 @@ export async function getAgentsOverview() {
       .eq("status", "a_faire")
       .order("due_at")
       .limit(50),
-    supabase.from("agent_runs").select(RUN_FIELDS).eq("status", "erreur").order("created_at", { ascending: false }).limit(5),
+    supabase
+      .from("agent_runs")
+      .select(RUN_FIELDS)
+      .eq("status", "erreur")
+      .gte("created_at", new Date(Date.now() - 14 * 24 * 3600_000).toISOString()) // seulement les erreurs récentes
+      .order("created_at", { ascending: false })
+      .limit(5),
   ]);
+  // Derniers rapports des agents planifiés (un par agent : le plus récent)
+  const { data: reportRows } = await supabase
+    .from("agent_runs")
+    .select(RUN_FIELDS)
+    .like("agent", "rapport:%")
+    .order("created_at", { ascending: false })
+    .limit(40);
+  const reports = new Map<string, AgentRun<AgentReport>>();
+  for (const r of (reportRows ?? []) as AgentRun<AgentReport>[]) if (!reports.has(r.agent)) reports.set(r.agent, r);
 
   // Rattache chaque proposition à son prospect (target_id n'est pas une clé étrangère)
   const proposalRuns = (proposals.data ?? []) as AgentRun<StatusProposal>[];
@@ -95,6 +124,7 @@ export async function getAgentsOverview() {
     proposals: proposalRuns.map((p) => ({ ...p, lead: (leadMap.get(p.target_id ?? "") ?? null) as unknown as ProposalWithLead["lead"] })),
     followups: (followups.data ?? []) as unknown as FollowupWithContact[],
     errors: (errors.data ?? []) as AgentRun[],
+    reports,
   };
 }
 
