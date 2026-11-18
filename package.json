@@ -10,7 +10,9 @@
     "test:api": "node --conditions=react-server --import tsx --test \"tests/live/*.test.ts\"",
     "test:security": "node --env-file-if-exists=.env.local --conditions=react-server --import tsx --test \"tests/security/*.test.ts\"",
     "maintenance:html": "node --import tsx scripts/maintenance-html.mts",
-    "sauvegarde": "node scripts/sauvegarde.mjs"
+    "sauvegarde": "node scripts/sauvegarde.mjs",
+    "agent:donnees": "node --env-file=.env.local scripts/agents/donnees.mjs",
+    "agent:medias": "node scripts/agents/medias.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
