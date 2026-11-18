@@ -71,26 +71,16 @@
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
-.marquee:hover .marquee-track,
-.marquee:focus-within .marquee-track {
+/* Défilement continu : ni le survol de la souris ni le toucher ne l'arrêtent. Seule exception, la navigation
+   au clavier (focus visible sur une carte), pour que la carte sélectionnée ne file pas hors de l'écran. */
+.marquee:has(:focus-visible) .marquee-track {
   animation-play-state: paused;
 }
 @keyframes marquee {
   to { transform: translate3d(-50%, 0, 0); }
 }
-/* Chaque carte flotte doucement, décalée de ses voisines (délai posé dans le composant) */
-.marquee-float {
-  animation-name: marquee-float;
-  animation-duration: 6s;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-}
-@keyframes marquee-float {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(0, -12px, 0); }
-}
 @media (prefers-reduced-motion: reduce) {
-  .marquee-track, .marquee-float { animation: none; }
+  .marquee-track { animation: none; }
   .marquee { overflow-x: auto; }
   .marquee-track > [aria-hidden] { display: none; }
 }

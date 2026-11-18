@@ -3,19 +3,14 @@ import Link from "next/link";
 import { inspirations } from "@/content/media";
 
 /**
- * Carrousel « flottant » : la bande défile en continu (CSS uniquement, aucun JavaScript),
- * se met en pause au survol ou au clavier, et devient un simple défilement manuel
+ * Carrousel : la bande défile en continu, à vitesse constante et sur une ligne droite (CSS uniquement,
+ * aucun JavaScript). Le survol et le toucher ne l'arrêtent pas ; elle devient un simple défilement manuel
  * si le visiteur a demandé moins d'animations (styles .marquee dans globals.css).
  * La liste est affichée deux fois pour boucler sans saut ; la copie est masquée aux lecteurs d'écran.
  */
 export function InspirationCarousel() {
   const card = (item: (typeof inspirations)[number], i: number, copy: boolean) => (
-    <li
-      key={`${copy ? "b" : "a"}-${i}`}
-      aria-hidden={copy || undefined}
-      className="marquee-float shrink-0"
-      style={{ animationDelay: `${-(i % 4) * 1.5}s` }}
-    >
+    <li key={`${copy ? "b" : "a"}-${i}`} aria-hidden={copy || undefined} className="shrink-0">
       <Link
         href={`/${item.univers}`}
         tabIndex={copy ? -1 : undefined}
