@@ -18,7 +18,7 @@ export const univers: Univers[] = [
     slug: "home",
     name: "REFIT Home",
     title: "Cuisine & mobilier",
-    pitch: "Une cuisine neuve sans changer de cuisine.",
+    pitch: "Une cuisine neuve sans changer de cuisine",
     intro:
       "Façades, plans de travail, crédences, portes, placards, salle de bain : nous habillons vos surfaces existantes de revêtements adhésifs Cover Styl'. Bois, marbre, béton, métal, unis mats ou brillants — des centaines de finitions, posées en quelques jours, sans démolition.",
     forWho: "Particuliers, propriétaires bailleurs, locations saisonnières",
@@ -40,7 +40,7 @@ export const univers: Univers[] = [
     slug: "glass",
     name: "REFIT Glass",
     title: "Films pour vitrages",
-    pitch: "Moins de chaleur, plus d'intimité, plus de sécurité.",
+    pitch: "Moins de chaleur, plus d'intimité, plus de sécurité",
     intro:
       "Films solaires Solar Screen posés sur vos vitrages existants : baies vitrées, vérandas, vitrines, bureaux. Ils réduisent la chaleur et l'éblouissement, préservent l'intimité ou renforcent la sécurité, sans changer une seule fenêtre.",
     forWho: "Maisons, vérandas, bureaux, commerces",
@@ -62,7 +62,7 @@ export const univers: Univers[] = [
     slug: "pro",
     name: "REFIT Pro",
     title: "Hôtels, restaurants & commerces",
-    pitch: "Rénover en limitant l'impact sur votre activité.",
+    pitch: "Rénover en limitant l'impact sur votre activité",
     intro:
       "Chambres d'hôtel, salles de restaurant, comptoirs, bureaux, boutiques : nous rénovons vos espaces professionnels par l'habillage des surfaces, avec des interventions planifiées pour limiter au maximum l'impact sur votre activité.",
     forWho: "Hôtellerie, restauration, commerces, bureaux, architectes",
@@ -84,7 +84,7 @@ export const univers: Univers[] = [
     slug: "boat",
     name: "REFIT Boat",
     title: "Intérieurs de bateaux",
-    pitch: "Un carré refait à neuf, sans alourdir le bateau.",
+    pitch: "Un carré refait à neuf, sans alourdir le bateau",
     intro:
       "Carré, cabines, cuisine, boiseries, hublots : nous rénovons l'intérieur de votre bateau avec des revêtements légers et résistants, adaptés aux espaces contraints et à l'environnement marin. Intervention au port de Saint-Malo et alentours.",
     forWho: "Propriétaires, loueurs, brokers, chantiers nautiques",

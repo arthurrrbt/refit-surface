@@ -23,10 +23,10 @@ export function SunToday() {
   if (!weather?.available) return null;
 
   return (
-    <aside className="mt-10 flex flex-col gap-3 rounded-sm border border-line bg-ink-2 p-5 sm:flex-row sm:items-center sm:gap-5">
-      <Sun className="size-8 shrink-0 text-accent" aria-hidden />
+    <aside className="mt-12 flex flex-col gap-3 rounded-xl border border-line bg-ink-2 p-6 sm:flex-row sm:items-center sm:gap-5">
+      <Sun className="size-6 shrink-0 text-stone" strokeWidth={1.5} aria-hidden />
       <div className="min-w-0">
-        <p className="font-display font-semibold">
+        <p className="font-display font-medium">
           {weather.when} à {weather.place} : {weather.label.toLowerCase()},{" "}
           {weather.tempMin === weather.tempMax ? weather.tempMin : `${weather.tempMin}–${weather.tempMax}`} °C
           {weather.uvMax !== null && (
