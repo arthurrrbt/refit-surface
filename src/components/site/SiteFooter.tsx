@@ -34,20 +34,20 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-3 text-sm text-paper/75">
             {hasPhone && (
               <li className="flex items-center gap-3">
-                <Phone className="size-4 text-accent" aria-hidden />
+                <Phone className="size-4 text-stone" strokeWidth={1.5} aria-hidden />
                 <a href={phoneHref} className="hover:text-accent">
                   {site.phone}
                 </a>
               </li>
             )}
             <li className="flex items-center gap-3">
-              <Mail className="size-4 text-accent" aria-hidden />
+              <Mail className="size-4 text-stone" strokeWidth={1.5} aria-hidden />
               <a href={`mailto:${site.email}`} className="hover:text-accent">
                 {site.email}
               </a>
             </li>
             <li className="flex items-center gap-3">
-              <MapPin className="size-4 text-accent" aria-hidden />
+              <MapPin className="size-4 text-stone" strokeWidth={1.5} aria-hidden />
               {site.city} et Côte d&apos;Émeraude
             </li>
           </ul>

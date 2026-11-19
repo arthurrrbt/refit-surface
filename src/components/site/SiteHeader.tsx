@@ -36,13 +36,15 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-3">
           <div className="hidden sm:block">
-            <ButtonLink href="/rendez-vous" className="whitespace-nowrap">Prendre rendez-vous</ButtonLink>
+            <ButtonLink href="/rendez-vous" variant="outline" size="sm" className="whitespace-nowrap">
+              Prendre rendez-vous
+            </ButtonLink>
           </div>
 
           {/* Menu mobile sans JavaScript */}
           <MobileMenu className="group lg:hidden">
             <summary
-              className="flex size-11 cursor-pointer list-none items-center justify-center rounded-sm border border-line [&::-webkit-details-marker]:hidden"
+              className="flex size-11 cursor-pointer list-none items-center justify-center rounded-md border border-line [&::-webkit-details-marker]:hidden"
               aria-label="Ouvrir le menu"
             >
               <Menu className="size-5 group-open:hidden" />

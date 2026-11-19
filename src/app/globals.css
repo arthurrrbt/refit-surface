@@ -38,8 +38,14 @@
   }
 }
 
+/* Étiquette de section : en minuscules, discrète */
 @utility eyebrow {
-  @apply font-display text-xs font-medium uppercase tracking-(--tracking-brand) text-stone;
+  @apply font-display text-sm font-medium text-stone;
+}
+
+/* Signature : les capitales espacées de « SURFACE » (logo), réservées à la ligne de lieu de l'ouverture */
+@utility kicker {
+  @apply font-display text-xs font-medium uppercase tracking-(--tracking-brand) text-paper/70;
 }
 
 @utility accent-rule {
@@ -50,12 +56,12 @@
 /* ─── Accueil : apparition du titre ─── */
 /* Apparition du titre puis du texte : un seul mouvement au chargement */
 .hero-rise {
-  animation: hero-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: hero-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   /* Après l'ouverture du site quand elle joue (--intro-delay), avec le décalage propre à chaque élément */
   animation-delay: calc(var(--intro-delay, 0s) + var(--rise-delay, 0s));
 }
 @keyframes hero-rise {
-  from { opacity: 0; transform: translate3d(0, 24px, 0); }
+  from { opacity: 0; transform: translate3d(0, 10px, 0); }
   to { opacity: 1; transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {

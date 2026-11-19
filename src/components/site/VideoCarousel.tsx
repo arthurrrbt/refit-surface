@@ -21,16 +21,16 @@ export function VideoCarousel({ items }: { items: Video[] }) {
     el.scrollBy({ left: direction * step, behavior: reduce ? "auto" : "smooth" });
   };
 
-  const arrow = "flex size-11 items-center justify-center rounded-full border border-paper/25 text-paper transition-colors hover:border-accent hover:text-accent";
+  const arrow = "flex size-11 items-center justify-center rounded-md border border-paper/25 text-paper transition-colors hover:border-paper/60 hover:bg-paper/5";
 
   return (
     <div>
       <div className="flex justify-end gap-2">
         <button type="button" onClick={() => scroll(-1)} aria-label="Vidéo précédente" className={arrow}>
-          <ChevronLeft className="size-5" />
+          <ChevronLeft className="size-5" strokeWidth={1.5} />
         </button>
         <button type="button" onClick={() => scroll(1)} aria-label="Vidéo suivante" className={arrow}>
-          <ChevronRight className="size-5" />
+          <ChevronRight className="size-5" strokeWidth={1.5} />
         </button>
       </div>
       <ul

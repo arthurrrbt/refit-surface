@@ -41,7 +41,7 @@ export function VideoReel({ video, className = "" }: { video: Video; className?:
   };
 
   return (
-    <figure className={`relative overflow-hidden rounded-lg bg-ink-2 ${className}`}>
+    <figure className={`relative overflow-hidden rounded-xl bg-ink-2 ${className}`}>
       <video
         ref={ref}
         src={video.src}
@@ -62,7 +62,7 @@ export function VideoReel({ video, className = "" }: { video: Video; className?:
         type="button"
         onClick={toggle}
         aria-label={playing ? "Mettre la vidéo en pause" : "Lire la vidéo"}
-        className="absolute bottom-3 right-3 flex size-11 items-center justify-center rounded-full bg-paper/90 text-ink transition-colors hover:bg-accent"
+        className="absolute bottom-3 right-3 flex size-11 items-center justify-center rounded-full bg-paper/90 text-ink transition-colors hover:bg-paper"
       >
         {playing ? <Pause className="size-5" /> : <Play className="size-5 translate-x-px" />}
       </button>

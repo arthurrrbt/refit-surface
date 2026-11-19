@@ -38,10 +38,10 @@ export function BeforeAfter({
         </div>
       )}
 
-      <span className="pointer-events-none absolute left-3 top-3 rounded-sm bg-ink/75 px-2 py-1 font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-paper">
+      <span className="pointer-events-none absolute left-3 top-3 rounded-md bg-ink/75 px-2 py-1 font-display text-xs font-medium text-paper">
         Avant
       </span>
-      <span className="pointer-events-none absolute right-3 top-3 rounded-sm bg-accent px-2 py-1 font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink">
+      <span className="pointer-events-none absolute right-3 top-3 rounded-md bg-paper px-2 py-1 font-display text-xs font-medium text-ink">
         Après
       </span>
 

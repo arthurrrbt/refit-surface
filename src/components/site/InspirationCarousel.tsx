@@ -17,17 +17,17 @@ export function InspirationCarousel() {
         tabIndex={copy ? -1 : undefined}
         className="group block w-60 sm:w-72"
       >
-        <div className="relative aspect-[4/5] overflow-hidden rounded-lg shadow-[0_30px_50px_-30px_rgba(0,0,0,0.9)]">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-xl shadow-[0_30px_50px_-30px_rgba(0,0,0,0.9)]">
           <Image
             src={item.src}
             alt={copy ? "" : item.alt}
             fill
             sizes="(min-width: 640px) 288px, 240px"
             placeholder="blur"
-            className="object-cover transition-[scale] duration-700 group-hover:scale-105"
+            className="object-cover"
           />
         </div>
-        <p className="mt-3 font-display text-xs font-semibold uppercase tracking-[0.2em] text-paper/80 group-hover:text-accent">
+        <p className="mt-3 text-sm text-paper/75 transition-colors group-hover:text-paper">
           {item.label}
         </p>
       </Link>

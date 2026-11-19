@@ -12,24 +12,24 @@ export async function RecentProjects({ univers, limit = 2 }: { univers?: Univers
 
   return (
     <section className="border-t border-line">
-      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="eyebrow">Avant / après</p>
-            <h2 className="mt-3 font-display text-2xl font-semibold sm:text-3xl">Réalisations récentes</h2>
+            <h2 className="mt-3 font-display text-2xl font-medium tracking-tight sm:text-4xl">Réalisations récentes</h2>
           </div>
           <Link
             href={univers ? `/realisations?univers=${univers}` : "/realisations"}
-            className="inline-flex items-center gap-2 font-display text-xs uppercase tracking-[0.2em] text-paper/80 hover:text-accent"
+            className="inline-flex items-center gap-2 text-sm font-medium text-paper/80 transition-colors hover:text-accent"
           >
-            Toutes les réalisations <ArrowRight className="size-4" />
+            Toutes les réalisations <ArrowRight className="size-4" strokeWidth={1.5} />
           </Link>
         </div>
         <ul className="mt-10 grid gap-6 md:grid-cols-2">
           {projects.map((p) => (
-            <li key={p.id} className="overflow-hidden rounded-sm border border-line bg-ink-2">
+            <li key={p.id} className="overflow-hidden rounded-xl border border-line bg-ink-2">
               <BeforeAfter before={p.before_url} after={p.after_url} alt={p.title} sizes="(min-width: 768px) 50vw, 100vw" />
-              <p className="p-4 font-display font-semibold">
+              <p className="p-4 font-display font-medium">
                 {p.title}
                 {p.city && <span className="font-normal text-paper/50"> · {p.city}</span>}
               </p>
