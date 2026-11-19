@@ -6,7 +6,7 @@ import { RecentProjects } from "@/components/site/RecentProjects";
 import { CtaBand } from "@/components/site/CtaBand";
 import { VideoCarousel } from "@/components/site/VideoCarousel";
 import { ButtonLink } from "@/components/ui/Button";
-import { saintMalo, universPhoto, videoCarousel } from "@/content/media";
+import { saintMalo, universCardPhoto, videoCarousel } from "@/content/media";
 import { hasPhone, site } from "@/content/site";
 import { univers, type UniversSlug } from "@/content/univers";
 
@@ -18,9 +18,9 @@ const problems: Record<UniversSlug, string> = {
   boat: "Un intérieur de bateau fatigué ?",
 };
 
-/** Photo de la carte, ou un visuel neutre tant que l'univers n'a pas encore de photo (Boat). */
+/** Photo de la carte, ou un visuel neutre si un univers n'a pas encore de photo. */
 function UniversVisual({ slug }: { slug: UniversSlug }) {
-  const photo = universPhoto[slug];
+  const photo = universCardPhoto[slug];
   if (!photo) {
     return (
       <div className="flex size-full items-center justify-center bg-linear-to-br from-ink-3 to-ink" aria-hidden>

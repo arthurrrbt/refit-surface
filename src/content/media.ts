@@ -19,6 +19,7 @@ import miroirBuffet from "@/assets/media/miroir-buffet.jpg";
 import miroirAscenseurs from "@/assets/media/miroir-ascenseurs.jpg";
 import comptoirDore from "@/assets/media/comptoir-dore.jpg";
 import hotelCouloir from "@/assets/media/hotel-couloir.jpg";
+import bateauCuisine from "@/assets/media/bateau-cuisine.jpg";
 
 /** Fond de l'ouverture de l'accueil : Saint-Malo intra-muros vu du ciel. */
 export { default as saintMalo } from "@/assets/media/saint-malo.jpg";
@@ -31,6 +32,12 @@ export const universPhoto: Partial<Record<UniversSlug, Photo>> = {
   home: { src: cuisineBois4, alt: "Cuisine blanche, crédence et plan de travail effet bois" },
   glass: { src: vitragePose, alt: "Pose d'un film sur une porte vitrée" },
   pro: { src: restaurant, alt: "Salle de restaurant et bar rénovés" },
+};
+
+/** Photos des cartes de l'accueil : celles des univers, plus Boat (carte uniquement, pas l'en-tête de sa page). */
+export const universCardPhoto: Partial<Record<UniversSlug, Photo>> = {
+  ...universPhoto,
+  boat: { src: bateauCuisine, alt: "Cuisine d'un yacht en bois verni avec plan de travail sombre" },
 };
 
 const video = (name: string, title: string): Video => ({
