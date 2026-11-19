@@ -62,29 +62,6 @@
   .hero-rise { animation: none; }
 }
 
-/* ─── Carrousel d'inspirations (src/components/site/InspirationCarousel.tsx) ───
-   La bande défile de la moitié de sa largeur (la liste y figure deux fois) : la boucle est invisible.
-   Propriétés longues : Lightning CSS réécrit mal certains raccourcis « animation ». */
-.marquee-track {
-  animation-name: marquee;
-  animation-duration: 80s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-/* Défilement continu : ni le survol de la souris ni le toucher ne l'arrêtent. Seule exception, la navigation
-   au clavier (focus visible sur une carte), pour que la carte sélectionnée ne file pas hors de l'écran. */
-.marquee:has(:focus-visible) .marquee-track {
-  animation-play-state: paused;
-}
-@keyframes marquee {
-  to { transform: translate3d(-50%, 0, 0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track { animation: none; }
-  .marquee { overflow-x: auto; }
-  .marquee-track > [aria-hidden] { display: none; }
-}
-
 /* ─── Ouverture du site : logo REFIT (src/components/brand/SiteIntro.tsx) ───
    Uniquement transform et opacity (carte graphique). Jouée une fois par visite (classe intro-play posée par le script). */
 .site-intro {

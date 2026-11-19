@@ -2,11 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { inspirations } from "@/content/media";
 
+import { AutoScroll } from "./AutoScroll";
+
 /**
- * Carrousel : la bande défile en continu, à vitesse constante et sur une ligne droite (CSS uniquement,
- * aucun JavaScript). Le survol et le toucher ne l'arrêtent pas ; elle devient un simple défilement manuel
- * si le visiteur a demandé moins d'animations (styles .marquee dans globals.css).
- * La liste est affichée deux fois pour boucler sans saut ; la copie est masquée aux lecteurs d'écran.
+ * Carrousel : défile tout seul en continu, en ligne droite, et se fait glisser au doigt ou au trackpad
+ * (voir AutoScroll). Le survol ne l'arrête pas.
+ * La liste est affichée deux fois pour boucler sans fin ; la copie est masquée aux lecteurs d'écran.
  */
 export function InspirationCarousel() {
   const card = (item: (typeof inspirations)[number], i: number, copy: boolean) => (
@@ -34,11 +35,11 @@ export function InspirationCarousel() {
   );
 
   return (
-    <div className="marquee overflow-hidden">
-      <ul className="marquee-track flex w-max gap-6 px-4 py-6 sm:px-6">
+    <AutoScroll label="Inspirations : faites glisser pour parcourir">
+      <ul className="flex w-max gap-6 px-4 py-6 sm:px-6">
         {inspirations.map((item, i) => card(item, i, false))}
         {inspirations.map((item, i) => card(item, i, true))}
       </ul>
-    </div>
+    </AutoScroll>
   );
 }
