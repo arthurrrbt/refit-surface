@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
+import { LogoLink } from "@/components/site/LogoLink";
 import { MobileMenu } from "@/components/site/MobileMenu";
 import { ButtonLink } from "@/components/ui/Button";
 import { univers } from "@/content/univers";
@@ -15,9 +16,9 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-line/60 bg-ink/85 backdrop-blur">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6">
-        <Link href="/" aria-label="REFIT Surface — accueil" className="shrink-0">
+        <LogoLink className="shrink-0">
           <Logo size="header" />
-        </Link>
+        </LogoLink>
 
         <nav aria-label="Navigation principale" className="hidden lg:block">
           <ul className="flex items-center gap-5 xl:gap-9">
