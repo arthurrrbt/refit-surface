@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
-import { company } from "@/content/company";
+import { company, pending } from "@/content/company";
 import { hasPhone, phoneHref, site } from "@/content/site";
 import { univers } from "@/content/univers";
 import { LegalLinks } from "./LegalLinks";
@@ -68,7 +68,8 @@ export function SiteFooter() {
       <div className="border-t border-line/60">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-6 text-xs text-paper/70 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <p>
-            © {company.name} · Médiation : {company.mediator.name}
+            © {company.name} · {company.legalForm} · SIRET {company.siret}
+            {!pending(company.mediator.name) && ` · Médiation : ${company.mediator.name}`}
           </p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
             <LegalLinks linkClassName="hover:text-paper" />

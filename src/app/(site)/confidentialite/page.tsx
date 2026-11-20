@@ -73,7 +73,7 @@ const treatments = [
 
 export default function ConfidentialitePage() {
   return (
-    <LegalPage eyebrow="Données personnelles" title="Politique de confidentialité" updated="7 octobre 2026">
+    <LegalPage eyebrow="Données personnelles" title="Politique de confidentialité" updated="20 novembre 2026">
       <section>
         <h2>Responsable du traitement</h2>
         <p>

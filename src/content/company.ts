@@ -1,19 +1,21 @@
 // Identité légale de l'entreprise — imprimée sur les mentions légales, CGV, devis et factures.
-// Chaque valeur entre crochets est À COMPLÉTER après l'immatriculation.
+// Source : attestation d'immatriculation au Registre national des entreprises (INPI) du 5 novembre 2026.
+// Les valeurs encore entre crochets sont À COMPLÉTER (voir pending() ci-dessous).
 import { site } from "./site";
 
 export const company = {
-  name: site.name, // dénomination (société) ou nom commercial (entrepreneur individuel)
-  // Micro-entreprise : « Entrepreneur individuel — Arnaud Biet (EI) ».
-  // Société : « SASU au capital de X € » (forme + capital social).
-  legalForm: "[À COMPLÉTER : forme juridique (et capital social si société)]",
-  address: "[À COMPLÉTER : adresse du siège]",
+  name: site.name, // nom commercial
+  // Entrepreneur individuel : la mention « EI » après le nom est obligatoire sur tous les documents (loi du 14 février 2022)
+  legalForm: "Arnaud Biet, entrepreneur individuel (EI)",
+  address: "2 impasse de la Ville Esse",
   postalCode: site.postalCode,
   city: site.city,
-  siret: "[À COMPLÉTER : SIRET]",
-  // Société : « RCS Saint-Malo n° … ». Micro-entreprise : immatriculation au Registre national des entreprises (RNE).
-  rcs: "[À COMPLÉTER : RCS + ville (société) ou RNE (entrepreneur individuel)]",
-  vatNumber: "[À COMPLÉTER : n° de TVA intracommunautaire]",
+  siren: "848 462 438",
+  siret: "848 462 438 00013",
+  rcs: "RNE 848 462 438",
+  registeredOn: "12 février 2024", // date d'immatriculation au RNE
+  apeCode: "4334Z — Travaux de peinture et vitrerie",
+  vatNumber: "FR44 848 462 438",
   publicationDirector: site.manager,
   phone: site.phone,
   email: site.email,
@@ -25,20 +27,21 @@ export const company = {
     website: "[site internet du médiateur]",
   },
   iban: "[À COMPLÉTER : IBAN]",
-  // Hébergeurs (LCEN) — À VÉRIFIER sur les sites de Vercel et Supabase avant publication.
+  // Hébergeurs (LCEN). Vérifié le 20/11/2026 sur leurs pages légales (vercel.com/legal/privacy-notice,
+  // supabase.com/terms) : aucun des deux ne publie de numéro de téléphone, d'où un e-mail de contact.
   hosting: [
     {
       role: "Hébergement du site",
       name: "Vercel Inc.",
       address: "440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis",
-      phone: "[À VÉRIFIER : téléphone de l'hébergeur]",
+      contact: "privacy@vercel.com",
       website: "vercel.com",
     },
     {
       role: "Hébergement des données et des fichiers (serveurs dans l'Union européenne)",
-      name: "Supabase Inc.",
-      address: "[À VÉRIFIER : adresse de Supabase Inc.]",
-      phone: "[À VÉRIFIER : téléphone de l'hébergeur]",
+      name: "Supabase Pte. Ltd.",
+      address: "65 Chulia Street #38-02/03, OCBC Centre, Singapour 049513",
+      contact: "privacy@supabase.com",
       website: "supabase.com",
     },
   ],
@@ -49,3 +52,6 @@ export const company = {
 };
 
 export const mediatorText = `${company.mediator.name} — ${company.mediator.address} — ${company.mediator.website}`;
+
+/** Vrai tant qu'une valeur n'est pas encore renseignée (texte entre crochets) : on ne l'affiche pas en public. */
+export const pending = (value: string) => value.trim().startsWith("[");

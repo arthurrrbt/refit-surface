@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPage } from "@/components/site/LegalPage";
-import { company } from "@/content/company";
+import { company, pending } from "@/content/company";
 import { site } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 // À faire relire par un avocat avant mise en service.
 export default function CgvPage() {
   return (
-    <LegalPage eyebrow="Conditions générales" title="Conditions générales de prestation" updated="7 octobre 2026">
+    <LegalPage eyebrow="Conditions générales" title="Conditions générales de prestation" updated="20 novembre 2026">
       <section>
         <h2>1. Objet et champ d&apos;application</h2>
         <p>
@@ -111,7 +111,7 @@ export default function CgvPage() {
             fournis et leur installation) et de la garantie des vices cachés (articles 1641 et suivants du Code civil), indépendamment des
             garanties commerciales des fabricants.
           </li>
-          <li>Assurance professionnelle : {company.insurance}.</li>
+          {!pending(company.insurance) && <li>Assurance professionnelle : {company.insurance}.</li>}
         </ul>
       </section>
 
@@ -127,8 +127,8 @@ export default function CgvPage() {
         <h2>9. Médiation de la consommation (clients particuliers)</h2>
         <p>
           Après une réclamation écrite restée sans solution, le client particulier peut recourir gratuitement au médiateur de la consommation
-          dont nous relevons : {company.mediator.name} — {company.mediator.address} — {company.mediator.website} (articles L611-1 et suivants
-          du Code de la consommation).
+          dont nous relevons (articles L611-1 et suivants du Code de la consommation)
+          {pending(company.mediator.name) ? "." : ` : ${company.mediator.name} — ${company.mediator.address} — ${company.mediator.website}.`}
         </p>
       </section>
 
