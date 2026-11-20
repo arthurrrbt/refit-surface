@@ -1,4 +1,5 @@
 import "server-only";
+import { site } from "@/content/site";
 import { env } from "@/lib/env";
 
 /** Délai maximum d'un appel à une API externe. */
@@ -9,7 +10,7 @@ export const TIMEOUT_MS = 8000;
  * LIVE_DATA_CONTACT = adresse e-mail ou site du gérant (facultatif).
  */
 export function userAgent() {
-  const contact = env("LIVE_DATA_CONTACT") ?? "https://refit-surface.vercel.app";
+  const contact = env("LIVE_DATA_CONTACT") ?? site.url;
   return `REFIT-Surface/1.0 (${contact})`;
 }
 

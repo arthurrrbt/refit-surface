@@ -7,7 +7,7 @@ restent chez **Supabase**, les e-mails chez **Resend** : rien à déménager de 
 Visiteur ──HTTPS──▶ Caddy (ports 80/443) ──▶ Site Next.js (127.0.0.1:3000, invisible d'Internet)
                                                    │
                                                    ├──▶ Supabase (base, fichiers)
-                                                   └──▶ Resend, Anthropic, MET Norway, IGN
+                                                   └──▶ Resend, MET Norway, IGN
 ```
 
 Les commandes précédées de `$` se tapent sur le serveur, celles marquées **PC** dans PowerShell sur votre ordinateur.
@@ -120,10 +120,10 @@ $ chmod 600 .env.production
 
 ```
 $ exit                                               # retour en root
-$ cp /home/refit/app/deploy/refit-surface.service /home/refit/app/deploy/refit-tournee.* /etc/systemd/system/
+$ cp /home/refit/app/deploy/refit-surface.service /etc/systemd/system/
 $ systemctl daemon-reload
 $ su - refit -c '~/app/deploy/deploy.sh'             # construit le site (quelques minutes)
-$ systemctl enable --now refit-surface refit-tournee.timer
+$ systemctl enable --now refit-surface
 $ curl -I http://127.0.0.1:3000/                     # doit répondre 200
 ```
 
@@ -154,7 +154,7 @@ $env:SECURITY_BASE_URL="https://www.refitsurface.fr"; npm run test:security
 ```
 
 Puis : une demande de devis test, une connexion au back-office, un envoi de photo de chantier.
-Tournée de l'agent : `systemctl list-timers refit-tournee` (prochain déclenchement à 8 h).
+Les agents IA ne tournent pas sur le serveur : ce sont des tâches planifiées de l'application Claude, sur votre PC.
 
 ## 10. Quitter Vercel
 
@@ -176,7 +176,6 @@ ssh refit@ADRESSE_IP "~/app/deploy/deploy.sh"
 |---|---|
 | Le site ne répond pas | `journalctl -u refit-surface -n 50` |
 | Problème de certificat / HTTPS | `journalctl -u caddy -n 50` |
-| La tournée de l'agent n'a pas eu lieu | `journalctl -u refit-tournee -n 20` |
 | Redémarrer le site | `sudo systemctl restart refit-surface` |
 
 ## Entretien
