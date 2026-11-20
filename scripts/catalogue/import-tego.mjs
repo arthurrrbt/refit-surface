@@ -79,10 +79,12 @@ for (const r of all) {
   const price = r.prix_unitaire.replace(/\s+/g, " ").match(/([\d.]+) ?EUR ?\/ ?(m²|m2|m)(?![\w²])/);
   if (!price) throw new Error(`Prix illisible : ${r.produit} (${r.prix_unitaire})`);
   const unit = price[2] === "m" ? "ml" : "m2";
-  // Référence : le code (« WOB1 ») s'il est unique dans la marque, sinon le libellé complet (variantes de largeur)
-  const unique = codeCounts.get(`${r.marque}|${code(label)}`) === 1 && label.includes(" - ");
+  // Référence : le code (« WOB1 ») s'il est unique dans la marque et que la suite est un vrai nom (« Wood ») ;
+  // sinon le libellé complet (« AURORA SUMMER - 135cm » : la suite n'est qu'une largeur de rouleau)
+  const rest = label.includes(" - ") ? label.slice(label.indexOf(" - ") + 3) : "";
+  const unique = codeCounts.get(`${r.marque}|${code(label)}`) === 1 && rest !== "" && !/^\d{2,3}\s*cm\b/i.test(rest);
   const reference = unique ? code(label) : label;
-  const name = unique ? label.slice(label.indexOf(" - ") + 3) : label;
+  const name = unique ? rest : label;
   const brand = BRAND[r.marque] ?? r.marque;
   if (/\(disc\.?\)/i.test(r.produit)) {
     discontinued.push({ brand, reference });
