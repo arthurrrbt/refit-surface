@@ -1,6 +1,7 @@
 import "server-only";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import type { PriceUnit } from "@/lib/quotes/pricing";
 
 export type JobStatus = "a_planifier" | "planifie" | "en_cours" | "termine";
 
@@ -19,7 +20,7 @@ export type JobMaterial = {
   status: "a_commander" | "commande" | "recu";
   ordered_at: string | null;
   received_at: string | null;
-  products: { brand: string; reference: string; name: string; roll_width_mm: number | null } | null;
+  products: { brand: string; reference: string; name: string; roll_width_mm: number | null; price_unit?: PriceUnit } | null;
 };
 
 export type JobPhoto = { id: string; stage: "avant" | "pendant" | "apres" | null; storage_path: string; url: string | null; created_at: string };
@@ -68,7 +69,7 @@ export async function getJob(id: string): Promise<JobRow | null> {
   const { data, error } = await supabase
     .from("jobs")
     .select(
-      "*, contacts(company, first_name, last_name, phone, email, city), quotes!jobs_quote_id_fkey(number, total_ttc), job_materials(*, products(brand, reference, name, roll_width_mm))",
+      "*, contacts(company, first_name, last_name, phone, email, city), quotes!jobs_quote_id_fkey(number, total_ttc), job_materials(*, products(brand, reference, name, roll_width_mm, price_unit))",
     )
     .eq("id", id)
     .order("created_at", { referencedTable: "job_materials" })

@@ -13,7 +13,8 @@
     "sauvegarde": "node scripts/sauvegarde.mjs",
     "agent:donnees": "node --env-file=.env.local scripts/agents/donnees.mjs",
     "agent:medias": "node scripts/agents/medias.mjs",
-    "agent:publier": "node --env-file=.env.local --import tsx scripts/agents/publier.mts"
+    "agent:publier": "node --env-file=.env.local --import tsx scripts/agents/publier.mts",
+    "catalogue:tego": "node --env-file=.env.local scripts/catalogue/import-tego.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",

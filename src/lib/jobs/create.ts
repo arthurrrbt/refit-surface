@@ -25,7 +25,7 @@ export async function createJobFromQuote(db: SupabaseClient, quoteId: string): P
     lead_id: string | null;
     labour_days: number | null;
     contacts: { address: string | null; postal_code: string | null; city: string | null } | null;
-    quote_lines: { kind: string; product_id: string | null; description: string; quantity: number; details: { purchased_m2?: number } }[];
+    quote_lines: { kind: string; product_id: string | null; description: string; quantity: number; details: { purchased?: number; purchased_m2?: number } }[];
   };
   const address = [q.contacts?.address, [q.contacts?.postal_code, q.contacts?.city].filter(Boolean).join(" ")].filter(Boolean).join(", ");
 
@@ -50,7 +50,9 @@ export async function createJobFromQuote(db: SupabaseClient, quoteId: string): P
       job_id: job.id,
       product_id: l.product_id,
       description: l.description,
-      quantity_m2: Number(l.details?.purchased_m2 ?? l.quantity),
+      // Quantité à commander, pertes comprises, dans l'unité de la référence (m², ou mètres linéaires) ;
+      // la colonne garde son nom historique quantity_m2.
+      quantity_m2: Number(l.details?.purchased ?? l.details?.purchased_m2 ?? l.quantity),
     }));
   if (materials.length) await db.from("job_materials").insert(materials);
   await db.from("quotes").update({ job_id: job.id }).eq("id", q.id);

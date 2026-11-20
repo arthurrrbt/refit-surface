@@ -19,14 +19,23 @@ export type Product = {
   name: string;
   category: string | null;
   finish: string | null;
+  /** Prix d'achat / de vente HT PAR UNITÉ : m² ou mètre linéaire selon price_unit (noms de colonnes historiques). */
   purchase_price_m2: number | null;
   sale_price_m2: number | null;
+  /** « m2 » : prix au m² ; « ml » : prix au mètre linéaire de rouleau (largeur choisie au chantier). */
+  price_unit?: PriceUnit;
   waste_rate: number;
   active: boolean;
 };
 
+export type PriceUnit = "m2" | "ml";
+/** Libellé court de l'unité, tel qu'affiché dans les devis, le catalogue et les chantiers. */
+export const unitLabel = (unit: PriceUnit | null | undefined) => (unit === "ml" ? "m" : "m²");
+export const unitLongLabel = (unit: PriceUnit | null | undefined) => (unit === "ml" ? "mètre linéaire" : "m²");
+
 export type LineInput =
-  | { kind: "matiere"; product_id: string; description: string; surface_m2: number }
+  /** quantity : dans l'unité de la référence choisie (m², ou mètres linéaires de rouleau). */
+  | { kind: "matiere"; product_id: string; description: string; quantity: number }
   | { kind: "main_oeuvre"; description: string; days: number }
   | { kind: "deplacement"; description: string; amount: number }
   | { kind: "libre"; description: string; quantity: number; unit: string; unit_price: number };
@@ -56,7 +65,7 @@ export type QuoteTotals = {
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
-/** Prix de vente HT au m² d'une référence : prix fixé, sinon achat × (1 + pertes) × (1 + marge). */
+/** Prix de vente HT par unité d'une référence : prix fixé, sinon achat × (1 + pertes) × (1 + marge). */
 export function productSalePrice(product: Product, settings: PricingSettings) {
   if (product.sale_price_m2) return round2(product.sale_price_m2);
   const purchase = product.purchase_price_m2 ?? 0;
@@ -70,17 +79,26 @@ export function computeLine(line: LineInput, products: Map<string, Product>, set
       const product = products.get(line.product_id);
       const unitPrice = product ? productSalePrice(product, settings) : 0;
       const waste = product?.waste_rate ?? settings.default_waste_rate;
-      const purchased = round2(line.surface_m2 * (1 + waste)); // m² achetés, pertes comprises
+      const priceUnit: PriceUnit = product?.price_unit ?? "m2";
+      const purchased = round2(line.quantity * (1 + waste)); // quantité achetée, pertes comprises
       return {
         kind: "matiere",
         product_id: product?.id ?? null,
         description: line.description || (product ? `${product.brand} ${product.reference} — ${product.name}` : "Revêtement"),
-        quantity: round2(line.surface_m2),
-        unit: "m²",
+        quantity: round2(line.quantity),
+        unit: unitLabel(priceUnit),
         unit_price_ht: unitPrice,
-        total_ht: round2(line.surface_m2 * unitPrice),
+        total_ht: round2(line.quantity * unitPrice),
         cost_ht: round2(purchased * (product?.purchase_price_m2 ?? 0)),
-        details: { surface_m2: line.surface_m2, waste_rate: waste, purchased_m2: purchased, purchase_price_m2: product?.purchase_price_m2 ?? null },
+        details: {
+          quantity: line.quantity,
+          price_unit: priceUnit,
+          waste_rate: waste,
+          purchased,
+          purchase_price: product?.purchase_price_m2 ?? null,
+          // Anciennes clés, gardées pour les lignes au m² (devis existants, création des chantiers)
+          ...(priceUnit === "m2" ? { surface_m2: line.quantity, purchased_m2: purchased, purchase_price_m2: product?.purchase_price_m2 ?? null } : {}),
+        },
       };
     }
     case "main_oeuvre":

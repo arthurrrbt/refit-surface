@@ -15,12 +15,13 @@ const optionalPrice = z.preprocess(
 const productSchema = z.object({
   id: z.preprocess((v) => (v === "" ? undefined : v), z.uuid().optional()),
   brand: z.string().trim().min(1, "Indiquez la marque.").max(60),
-  reference: z.string().trim().min(1, "Indiquez la référence.").max(60),
+  reference: z.string().trim().min(1, "Indiquez la référence.").max(120),
   name: z.string().trim().min(1, "Indiquez le nom.").max(120),
   category: z.string().trim().max(60).optional(),
   finish: z.string().trim().max(60).optional(),
   purchase_price_m2: optionalPrice,
   sale_price_m2: optionalPrice,
+  price_unit: z.enum(["m2", "ml"]).default("m2"),
   waste_rate: z.coerce.number().min(0).max(100),
 });
 
@@ -38,6 +39,7 @@ export async function saveProduct(_prev: ProductState, formData: FormData): Prom
     finish: p.finish || null,
     purchase_price_m2: p.purchase_price_m2 ?? null,
     sale_price_m2: p.sale_price_m2 ?? null,
+    price_unit: p.price_unit,
     waste_rate: p.waste_rate / 100,
   };
   const supabase = await createClient();

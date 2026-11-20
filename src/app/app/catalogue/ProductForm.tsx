@@ -33,7 +33,14 @@ export function ProductForm({ product, defaultWaste }: { product?: Product; defa
         <input name="finish" defaultValue={product?.finish ?? ""} placeholder="Mat, structuré…" className={field} />
       </label>
       <label className="text-xs font-semibold sm:col-span-2">
-        Prix d&apos;achat TEGO (€ HT / m²)
+        Vendu
+        <select name="price_unit" defaultValue={product?.price_unit ?? "m2"} className={field}>
+          <option value="m2">au m²</option>
+          <option value="ml">au mètre linéaire (rouleau)</option>
+        </select>
+      </label>
+      <label className="text-xs font-semibold sm:col-span-2">
+        Prix d&apos;achat TEGO (€ HT par unité)
         <input type="number" name="purchase_price_m2" step="0.01" min={0} defaultValue={product?.purchase_price_m2 ?? ""} className={field} />
       </label>
       <label className="text-xs font-semibold sm:col-span-2">
@@ -41,8 +48,8 @@ export function ProductForm({ product, defaultWaste }: { product?: Product; defa
         <input type="number" name="waste_rate" step="0.5" min={0} required defaultValue={Math.round((product?.waste_rate ?? defaultWaste) * 1000) / 10} className={field} />
       </label>
       <label className="text-xs font-semibold sm:col-span-2">
-        Prix de vente imposé (€ HT / m²)
-        <input type="number" name="sale_price_m2" step="0.01" min={0} defaultValue={product?.sale_price_m2 ?? ""} placeholder="Sinon calculé" className={field} />
+        Prix de vente (€ HT par unité)
+        <input type="number" name="sale_price_m2" step="0.01" min={0} defaultValue={product?.sale_price_m2 ?? ""} placeholder="À fixer" className={field} />
       </label>
       <div className="flex items-center gap-3 sm:col-span-6">
         <PendingButton variant="primary" pendingLabel="Enregistrement…">

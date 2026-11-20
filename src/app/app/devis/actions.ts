@@ -51,7 +51,7 @@ export async function createQuoteFromLead(formData: FormData) {
       kind: "matiere" as const,
       product_id: "",
       description: sf.type,
-      surface_m2: sf.largeur_mm && sf.hauteur_mm ? Math.round(((sf.largeur_mm * sf.hauteur_mm * sf.quantite) / 1_000_000) * 100) / 100 : 0,
+      quantity: sf.largeur_mm && sf.hauteur_mm ? Math.round(((sf.largeur_mm * sf.hauteur_mm * sf.quantite) / 1_000_000) * 100) / 100 : 0,
     })),
     { kind: "main_oeuvre", description: "", days: 1 },
     ...(s.travel_fee > 0 ? [{ kind: "deplacement" as const, description: "", amount: s.travel_fee }] : []),
@@ -61,7 +61,7 @@ export async function createQuoteFromLead(formData: FormData) {
 }
 
 const lineSchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("matiere"), product_id: z.string(), description: z.string().max(300), surface_m2: z.number().min(0).max(100000) }),
+  z.object({ kind: z.literal("matiere"), product_id: z.string(), description: z.string().max(300), quantity: z.number().min(0).max(100000) }),
   z.object({ kind: z.literal("main_oeuvre"), description: z.string().max(300), days: z.number().min(0).max(1000) }),
   z.object({ kind: z.literal("deplacement"), description: z.string().max(300), amount: z.number().min(0).max(100000) }),
   z.object({

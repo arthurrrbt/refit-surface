@@ -13,6 +13,7 @@ import { PageHeader } from "../../ModulePlaceholder";
 import { UniversBadge } from "../../prospects/StatusBadge";
 import { deleteJobPhoto, setJobStatus, setMaterialStatus } from "../actions";
 import { JobPhotos, NotesForm, PublishForm, ScheduleForm } from "../JobForms";
+import { unitLabel } from "@/lib/quotes/pricing";
 import { JobWeather, TravelInfo } from "../../LiveData";
 
 export const metadata: Metadata = { title: "Chantier" };
@@ -47,7 +48,7 @@ async function JobView({ params }: { params: PageProps<"/app/chantiers/[id]">["p
   const materials = job.job_materials;
   const orderText = materials
     .filter((m) => m.status === "a_commander")
-    .map((m) => `- ${m.products ? `${m.products.brand} ${m.products.reference} (${m.products.name})` : m.description} : ${qty.format(m.quantity_m2)} m²`)
+    .map((m) => `- ${m.products ? `${m.products.brand} ${m.products.reference} (${m.products.name})` : m.description} : ${qty.format(m.quantity_m2)} ${unitLabel(m.products?.price_unit)}`)
     .join("\n");
   const hasBefore = job.photos.some((p) => p.stage === "avant");
   const hasAfter = job.photos.some((p) => p.stage === "apres");
@@ -152,7 +153,7 @@ async function JobView({ params }: { params: PageProps<"/app/chantiers/[id]">["p
                     <div className="min-w-0 flex-1">
                       <p className="font-medium">{m.products ? `${m.products.brand} ${m.products.reference} — ${m.products.name}` : m.description}</p>
                       <p className="text-xs text-ink/60">
-                        {m.description} · <strong className="text-ink">{qty.format(m.quantity_m2)} m²</strong> pertes comprises
+                        {m.description} · <strong className="text-ink">{qty.format(m.quantity_m2)} {unitLabel(m.products?.price_unit)}</strong> pertes comprises
                       </p>
                     </div>
                     <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${step.style}`}>{step.label}</span>

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Calculator, Hammer, Loader2, Package, Plus, Trash2, Truck, Type } from "lucide-react";
 import type { QuoteLineRow } from "@/lib/quotes/data";
-import { computeLine, computeTotals, euro, type LineInput, type PricingSettings, type Product } from "@/lib/quotes/pricing";
+import { computeLine, computeTotals, euro, unitLabel, type LineInput, type PricingSettings, type Product } from "@/lib/quotes/pricing";
 import { saveQuote } from "./actions";
 
 type EditableLine = LineInput & { key: string };
@@ -17,7 +17,7 @@ function fromRow(row: QuoteLineRow): EditableLine {
   const key = row.id;
   switch (row.kind) {
     case "matiere":
-      return { key, kind: "matiere", product_id: row.product_id ?? "", description: row.description, surface_m2: Number(row.details.surface_m2 ?? row.quantity) };
+      return { key, kind: "matiere", product_id: row.product_id ?? "", description: row.description, quantity: Number(row.details.quantity ?? row.details.surface_m2 ?? row.quantity) };
     case "main_oeuvre":
       return { key, kind: "main_oeuvre", description: row.description, days: row.quantity };
     case "deplacement":
@@ -97,6 +97,8 @@ export function QuoteEditor({
       <ul className="space-y-2">
         {lines.map((l, i) => {
           const c = computed[i];
+          const product = l.kind === "matiere" ? productMap.get(l.product_id) : undefined;
+          const linear = product?.price_unit === "ml"; // vendu au mètre linéaire de rouleau
           return (
             <li key={l.key} className="rounded-sm bg-paper p-3 shadow-sm">
               <div className="flex items-start gap-2">
@@ -116,7 +118,8 @@ export function QuoteEditor({
                               .filter((p) => p.brand === b && (p.active || p.id === l.product_id))
                               .map((p) => (
                                 <option key={p.id} value={p.id}>
-                                  {p.reference} — {p.name}
+                                  {p.reference === p.name ? p.name : `${p.reference} — ${p.name}`}
+                                  {p.price_unit === "ml" ? " · au mètre" : ""}
                                 </option>
                               ))}
                           </optgroup>
@@ -131,18 +134,30 @@ export function QuoteEditor({
                       />
                       <div className="flex items-center gap-1 sm:col-span-3">
                         <input
-                          aria-label="Surface en m²"
+                          aria-label={linear ? "Longueur de rouleau en mètres" : "Surface en m²"}
                           inputMode="decimal"
-                          value={l.surface_m2 || ""}
-                          onChange={(e) => update(l.key, { surface_m2: num(e.target.value) })}
+                          value={l.quantity || ""}
+                          onChange={(e) => update(l.key, { quantity: num(e.target.value) })}
                           className={field}
                         />
-                        <span className="text-xs text-ink/60">m²</span>
-                        <button type="button" onClick={() => setDimsFor(dimsFor === l.key ? null : l.key)} aria-label="Calculer la surface" className="p-1.5 text-ink/60 hover:text-ink">
-                          <Calculator className="size-4" />
-                        </button>
+                        <span className="text-xs text-ink/60">{unitLabel(product?.price_unit)}</span>
+                        {!linear && (
+                          <button type="button" onClick={() => setDimsFor(dimsFor === l.key ? null : l.key)} aria-label="Calculer la surface" className="p-1.5 text-ink/60 hover:text-ink">
+                            <Calculator className="size-4" />
+                          </button>
+                        )}
                       </div>
-                      {dimsFor === l.key && <DimsHelper onApply={(m2) => { update(l.key, { surface_m2: m2 }); setDimsFor(null); }} />}
+                      {!linear && dimsFor === l.key && <DimsHelper onApply={(m2) => { update(l.key, { quantity: m2 }); setDimsFor(null); }} />}
+                      {linear && (
+                        <p className="text-xs text-ink/60 sm:col-span-12">
+                          Vendu au mètre linéaire de rouleau : indiquez la longueur à poser, selon la largeur choisie pour ce chantier.
+                        </p>
+                      )}
+                      {product && !product.sale_price_m2 && (
+                        <p className="text-xs text-amber-700 sm:col-span-12">
+                          Prix de vente non fixé dans le catalogue : prix calculé depuis l&apos;achat et votre marge, à vérifier.
+                        </p>
+                      )}
                     </>
                   )}
                   {l.kind === "main_oeuvre" && (
@@ -196,7 +211,7 @@ export function QuoteEditor({
       </ul>
 
       <div className="flex flex-wrap gap-2">
-        <AddButton icon={Package} label="Revêtement" onClick={() => add({ kind: "matiere", product_id: "", description: "", surface_m2: 0 })} />
+        <AddButton icon={Package} label="Revêtement" onClick={() => add({ kind: "matiere", product_id: "", description: "", quantity: 0 })} />
         <AddButton icon={Hammer} label="Main d'œuvre" onClick={() => add({ kind: "main_oeuvre", description: "", days: 1 })} />
         <AddButton icon={Truck} label="Déplacement" onClick={() => add({ kind: "deplacement", description: "", amount: settings.travel_fee })} />
         <AddButton icon={Type} label="Ligne libre" onClick={() => add({ kind: "libre", description: "", quantity: 1, unit: "u", unit_price: 0 })} />

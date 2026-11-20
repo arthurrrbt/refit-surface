@@ -48,6 +48,15 @@ async function downloadPhotos(kind, lead) {
   }
 }
 
+/** Catalogue actif. Sans la colonne price_unit (migration du 20/11 pas encore appliquée), tout est au m². */
+async function catalogue() {
+  const cols = "id, brand, reference, name, category, univers, finish, roll_width_mm, sale_price_m2, purchase_price_m2, waste_rate";
+  const { data, error } = await db.from("products").select(`${cols}, price_unit`).eq("active", true);
+  if (!error) return data;
+  if (!/price_unit/.test(error.message)) throw new Error(error.message);
+  return (await q(db.from("products").select(cols).eq("active", true))).map((p) => ({ ...p, price_unit: "m2" }));
+}
+
 const agents = {
   /**
    * Tournée de l'Agent REFIT (remplace l'ancienne tournée par API) : demandes à qualifier avec leur détail
@@ -110,10 +119,10 @@ const agents = {
     if (withPhotos) for (const lead of todo) await downloadPhotos("devis", lead);
     return {
       demandes_sans_devis: todo,
-      catalogue: await q(db.from("products").select("id, brand, reference, name, category, univers, finish, roll_width_mm, sale_price_m2, purchase_price_m2, waste_rate").eq("active", true)),
+      catalogue: await catalogue(),
       reglages: await q(db.from("settings").select("day_rate, material_margin, default_waste_rate, travel_fee, vat_rate, deposit_rate").limit(1).maybeSingle()),
       regle_de_prix:
-        "Prix matière HT/m² = sale_price_m2 s'il existe, sinon purchase_price_m2 × (1 + waste_rate) × (1 + material_margin). Quantité achetée = surface × (1 + waste_rate). Main d'œuvre = jours × day_rate. Déplacement = travel_fee.",
+        "Unité : price_unit 'm2' = prix au m² ; 'ml' = prix au mètre linéaire de rouleau (la largeur se choisit au chantier : quantité = mètres de rouleau à poser, pas des m²). Prix de vente HT par unité = sale_price_m2 s'il existe (fixé par le gérant), sinon purchase_price_m2 × (1 + waste_rate) × (1 + material_margin) — signaler alors « prix de vente à fixer ». Quantité achetée = quantité × (1 + waste_rate). Main d'œuvre = jours × day_rate. Déplacement = travel_fee.",
     };
   },
 
