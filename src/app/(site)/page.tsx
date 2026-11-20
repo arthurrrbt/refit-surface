@@ -6,6 +6,7 @@ import { InspirationCarousel } from "@/components/site/InspirationCarousel";
 import { RecentProjects } from "@/components/site/RecentProjects";
 import { CtaBand } from "@/components/site/CtaBand";
 import { VideoCarousel } from "@/components/site/VideoCarousel";
+import { WhyRefitSection } from "@/components/site/WhyRefitSection";
 import { ButtonLink } from "@/components/ui/Button";
 import { saintMalo, universCardPhoto, videoCarousel } from "@/content/media";
 import { hasPhone, site } from "@/content/site";
@@ -46,14 +47,6 @@ const steps = [
   { title: "Visite et métrage", text: "Nous venons sur place, validons les surfaces et choisissons les finitions avec vous." },
   { title: "Devis détaillé", text: "Un devis clair, signé en ligne, avec une date de pose." },
   { title: "Pose", text: "Une intervention propre et rapide. Vos surfaces sont transformées, sans démolition." },
-];
-
-// Rénover ou remplacer : la même question, point par point
-const comparison = [
-  { label: "Ce que vous payez", replace: "Des éléments neufs, à la place des anciens", refit: "Uniquement l'habillage des surfaces" },
-  { label: "Durée", replace: "Une longue immobilisation", refit: "Quelques jours de pose" },
-  { label: "Sur place", replace: "Démolition et gravats", refit: "Ni démolition ni gravats" },
-  { label: "Déchets", replace: "Les anciens éléments partent à la benne", refit: "L'existant est conservé, moins de transport" },
 ];
 
 const jsonLd = {
@@ -188,45 +181,8 @@ export default function HomePage() {
 
       <RecentProjects />
 
-      {/* Pourquoi : remplacer ou habiller, comparé point par point */}
-      <section className="bg-paper text-ink">
-        <div className="mx-auto grid max-w-7xl gap-12 px-4 py-24 sm:px-6 lg:grid-cols-[1fr_2fr] lg:gap-16">
-          <div>
-            <p className="font-display text-sm font-medium text-ink/55">Pourquoi rénover plutôt que remplacer</p>
-            <h2 className="mt-3 font-display text-2xl font-medium tracking-tight sm:text-4xl">Le neuf, sans le chantier</h2>
-            <p className="mt-4 max-w-sm text-ink/65">
-              Vos éléments restent en place. Seules leurs surfaces changent.
-            </p>
-          </div>
-
-          <div role="table" aria-label="Remplacer ou habiller avec REFIT" className="text-sm sm:text-base">
-            <div role="row" className="grid grid-cols-2 gap-4 border-b border-ink/10 pb-3 sm:grid-cols-[10rem_1fr_1fr]">
-              <span role="columnheader" className="sr-only sm:not-sr-only" />
-              <span role="columnheader" className="font-display text-sm font-medium text-ink/50">Remplacer</span>
-              <span role="columnheader" className="font-display text-sm font-medium text-accent-strong">
-                Habiller avec REFIT
-              </span>
-            </div>
-            {comparison.map((row) => (
-              <div
-                key={row.label}
-                role="row"
-                className="grid grid-cols-2 gap-x-4 gap-y-1 border-b border-ink/10 py-4 sm:grid-cols-[10rem_1fr_1fr] sm:py-5"
-              >
-                <span role="rowheader" className="col-span-2 text-sm text-ink/55 sm:col-span-1">
-                  {row.label}
-                </span>
-                <span role="cell" className="text-ink/55 line-through decoration-ink/25">
-                  {row.replace}
-                </span>
-                <span role="cell" className="font-medium text-ink">
-                  {row.refit}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Pourquoi rénover plutôt que remplacer : chiffres clés et comparaison face à face */}
+      <WhyRefitSection />
 
       {/* Méthode */}
       <section className="border-t border-line">
