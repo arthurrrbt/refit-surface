@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Sailboat } from "lucide-react";
+import { FinishesSection } from "@/components/site/FinishesSection";
 import { InspirationCarousel } from "@/components/site/InspirationCarousel";
 import { RecentProjects } from "@/components/site/RecentProjects";
 import { CtaBand } from "@/components/site/CtaBand";
@@ -150,16 +151,18 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Les finitions Cover Styl' et Solar Screen, juste avant les inspirations */}
+      <FinishesSection />
+
       {/* Inspirations : carrousel flottant */}
       <section className="overflow-hidden border-t border-line py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <p className="eyebrow">Inspirations</p>
           <h2 className="mt-3 font-display text-2xl font-medium tracking-tight sm:text-4xl">
-            Bois, noir mat, marbre, films solaires
+            Des idées pour votre projet
           </h2>
           <p className="mt-4 max-w-2xl text-paper/65">
-            Des centaines de finitions Cover Styl&apos; et Solar Screen. Nous les choisissons avec vous, sur place, avec les
-            échantillons.
+            Quelques mises en situation des finitions Cover Styl&apos; et Solar Screen. Faites glisser pour en voir plus.
           </p>
         </div>
         <div className="mt-8">
